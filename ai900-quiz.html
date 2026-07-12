@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-900 Practice Assessment</title>
+<style>
+:root{
+  --blue:#0078d4;--blue-dk:#106ebe;--blue-lt:#e8f3fc;--blue-border:#c8dff6;
+  --green:#107c10;--green-lt:#dff6dd;--green-dk:#054b16;
+  --red:#c50f1f;--red-lt:#fde7e9;--red-dk:#6b0c12;
+  --bg:#f0f2f5;--card:#fff;--text:#1b1b2e;--muted:#605e5c;
+  --border:#e1e3e6;--shadow:0 2px 12px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.11),0 0 0 1px rgba(0,0,0,.05);
+  --r:14px;--r-sm:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* Header */
+.header{
+  background:linear-gradient(135deg,#0078d4 0%,#106ebe 60%,#2b5eb8 100%);
+  color:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 3px 12px rgba(0,78,160,.35);position:sticky;top:0;z-index:100;
+}
+.hicon{display:grid;grid-template-columns:1fr 1fr;gap:3px;width:34px;height:34px;flex-shrink:0}
+.hicon span{background:rgba(255,255,255,.9);border-radius:2px}
+.hicon span:nth-child(2),.hicon span:nth-child(3){opacity:.7}
+.hicon span:nth-child(4){opacity:.45}
+.header h1{font-size:18px;font-weight:700;letter-spacing:-.2px;line-height:1.2}
+.header small{font-size:11.5px;opacity:.82;display:block;margin-top:1px}
+
+/* Container */
+.container{max-width:850px;margin:0 auto;padding:28px 16px}
+
+/* Card */
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:32px;margin-bottom:16px}
+
+/* ── START SCREEN ── */
+.start-hero{
+  text-align:center;padding:32px 24px 28px;
+  background:linear-gradient(145deg,#e8f3fc 0%,#ede8ff 100%);
+  border-radius:var(--r-sm);border:1px solid #d0e4f9;margin-bottom:26px;
+}
+.start-badge{display:inline-block;background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:.6px;margin-bottom:12px;text-transform:uppercase}
+.start-title{font-size:30px;font-weight:800;color:#0063b1;margin-bottom:10px;letter-spacing:-.5px}
+.start-desc{color:var(--muted);line-height:1.75;font-size:14px;max-width:540px;margin:0 auto}
+
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px}
+.stat-card{
+  background:#fff;border:1.5px solid #d5e8f8;border-radius:var(--r-sm);
+  padding:18px 14px;text-align:center;box-shadow:0 1px 4px rgba(0,120,212,.08);
+}
+.stat-num{font-size:34px;font-weight:800;color:var(--blue);line-height:1;margin-bottom:5px}
+.stat-label{font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+
+.settings-wrap{background:#f7f8fa;border-radius:var(--r-sm);padding:20px;margin-bottom:22px;border:1.5px solid var(--border)}
+.settings-title{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px}
+.settings-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sg label{display:block;font-weight:600;font-size:13px;margin-bottom:7px}
+.sg select{
+  width:100%;padding:9px 32px 9px 11px;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);font-size:14px;font-family:inherit;background:#fff;
+  cursor:pointer;transition:border-color .15s;outline:none;
+  appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23605e5c' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;
+}
+.sg select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,120,212,.12)}
+
+/* Buttons */
+.btn{
+  padding:11px 22px;border:none;border-radius:var(--r-sm);font-size:14px;
+  font-weight:600;cursor:pointer;font-family:inherit;
+  transition:all .15s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(0,120,212,.28)}
+.btn-primary:hover{background:var(--blue-dk);box-shadow:0 4px 14px rgba(0,120,212,.38);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-secondary{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
+.btn-secondary:hover{background:var(--blue-lt);transform:translateY(-1px)}
+.btn-sm{padding:8px 16px;font-size:13px}
+
+/* ── QUIZ SCREEN ── */
+.prog-wrap{background:#e4e6ea;border-radius:999px;height:7px;margin-bottom:5px;overflow:hidden}
+.prog-bar{background:linear-gradient(90deg,#0078d4,#6264a7);height:7px;border-radius:999px;transition:width .4s ease}
+.prog-info{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);margin-bottom:22px}
+.prog-txt{font-weight:600;color:var(--text)}
+.timer{
+  font-size:14px;font-weight:700;color:var(--blue);
+  background:var(--blue-lt);padding:5px 13px;border-radius:20px;
+  font-variant-numeric:tabular-nums;border:1.5px solid var(--blue-border);
+}
+.timer.warn{color:var(--red);background:var(--red-lt);border-color:#f9b8ba;animation:pulse .8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+.q-meta{margin-bottom:14px}
+.q-num{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.topic-tag{display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;border:1.5px solid transparent}
+.cat-rai{background:#faf5ff;color:#6b21a8;border-color:#e9d5ff}
+.cat-ml{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+.cat-cv{background:#f0fdfa;color:#0f766e;border-color:#99f6e4}
+.cat-nlp{background:#f0fdf4;color:#15803d;border-color:#bbf7d0}
+.cat-ais{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
+.cat-gen{background:#faf5ff;color:#7c3aed;border-color:#ddd6fe}
+.cat-def{background:var(--blue-lt);color:var(--blue);border-color:var(--blue-border)}
+
+.q-text{font-size:16px;line-height:1.72;margin-bottom:22px;font-weight:500}
+.multi-hint{
+  display:flex;align-items:center;gap:8px;font-size:13px;color:#7c3aed;
+  background:#faf5ff;border:1.5px solid #ddd6fe;
+  padding:9px 15px;border-radius:var(--r-sm);margin:-14px 0 18px;font-weight:500;
+}
+
+.options{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.opt{
+  display:flex;align-items:flex-start;gap:13px;padding:14px 16px;
+  border:2px solid var(--border);border-radius:var(--r-sm);
+  cursor:pointer;transition:all .15s;user-select:none;background:#fff;
+}
+.opt:hover{border-color:var(--blue);background:var(--blue-lt);transform:translateX(3px)}
+.opt.sel{border-color:var(--blue);background:var(--blue-lt);box-shadow:0 0 0 3px rgba(0,120,212,.1)}
+.opt.ok{border-color:var(--green);background:var(--green-lt);box-shadow:0 0 0 3px rgba(16,124,16,.1)}
+.opt.bad{border-color:var(--red);background:var(--red-lt);box-shadow:0 0 0 3px rgba(197,15,31,.08)}
+.opt.hint{border-color:var(--green);background:var(--green-lt)}
+.opt-lt{
+  width:30px;height:30px;min-width:30px;border-radius:50%;background:#f0f2f5;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:12px;color:var(--muted);transition:all .15s;
+}
+.opt.sel .opt-lt{background:var(--blue);color:#fff}
+.opt.ok .opt-lt{background:var(--green);color:#fff}
+.opt.bad .opt-lt{background:var(--red);color:#fff}
+.opt.hint .opt-lt{background:var(--green);color:#fff}
+.opt-txt{font-size:14.5px;line-height:1.55;padding-top:2px}
+
+.feedback{
+  padding:14px 18px;border-radius:var(--r-sm);margin-bottom:20px;
+  font-size:14px;line-height:1.6;display:none;border-left:4px solid;
+  animation:fadeUp .2s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.feedback.ok{background:var(--green-lt);border-color:var(--green);color:var(--green-dk)}
+.feedback.bad{background:var(--red-lt);border-color:var(--red);color:var(--red-dk)}
+.feedback b{display:block;font-size:15px;margin-bottom:4px}
+.fb-explain{margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.12);font-size:13px;line-height:1.65;display:flex;gap:7px}
+.fb-explain::before{content:"💡";flex-shrink:0;font-style:normal}
+
+.nav-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nav-btns{display:flex;gap:8px}
+.end-row{margin-top:4px}
+
+/* ── SCORE SCREEN ── */
+.score-wrap{text-align:center;padding:12px 0 26px}
+.score-circle{
+  width:136px;height:136px;border-radius:50%;border:7px solid;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:0 auto 22px;position:relative;
+}
+.score-circle::after{content:'';position:absolute;inset:-12px;border-radius:50%;opacity:.08;background:currentColor}
+.score-circle.pass{border-color:var(--green);color:var(--green)}
+.score-circle.fail{border-color:var(--red);color:var(--red)}
+.score-pct{font-size:40px;font-weight:800;line-height:1}
+.score-lbl{font-size:12px;font-weight:800;letter-spacing:1.2px;margin-top:2px}
+.score-title{font-size:24px;font-weight:700;margin-bottom:8px}
+.score-sub{color:var(--muted);font-size:14px;margin-bottom:24px;line-height:1.65}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:26px}
+.ss{
+  text-align:center;padding:16px 10px;border-radius:var(--r-sm);
+  background:#f7f8fa;border:1.5px solid var(--border);
+}
+.ss-num{font-size:28px;font-weight:800}
+.ss-num.g{color:var(--green)}
+.ss-num.r{color:var(--red)}
+.ss-lbl{font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.action-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* Review */
+.rev-item{
+  padding:15px 18px;border-radius:var(--r-sm);margin-bottom:10px;
+  border-left:4px solid;position:relative;transition:box-shadow .15s;
+}
+.rev-item:hover{box-shadow:var(--shadow)}
+.rev-item.ok{border-color:var(--green);background:#f3fff3}
+.rev-item.bad{border-color:var(--red);background:#fff3f3}
+.rev-q{font-weight:500;margin-bottom:6px;font-size:13.5px;padding-right:72px;line-height:1.5}
+.rev-a{font-size:12.5px;color:var(--muted);margin-top:3px}
+.rev-a span{font-weight:600;color:var(--text)}
+.rev-badge{position:absolute;top:13px;right:14px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.badge-ok{background:var(--green-lt);color:var(--green-dk)}
+.badge-bad{background:var(--red-lt);color:var(--red-dk)}
+.hidden{display:none!important}
+
+@media(max-width:600px){
+  .card{padding:20px 16px}
+  .stats-grid,.sgrid{grid-template-columns:repeat(2,1fr)}
+  .settings-row{grid-template-columns:1fr}
+  .start-title{font-size:22px}
+  .score-circle{width:112px;height:112px}
+  .score-pct{font-size:33px}
+  .q-text{font-size:15px}
+  .opt-txt{font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="hicon"><span></span><span></span><span></span><span></span></div>
+  <div>
+    <h1>Microsoft AI-900</h1>
+    <small>Azure AI Fundamentals — Practice Assessment</small>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- START -->
+  <div id="startScreen" class="card">
+    <div class="start-hero">
+      <div class="start-badge">AI-900 Certification</div>
+      <div class="start-title">Practice Assessment</div>
+      <p class="start-desc">Luyện thi chứng chỉ Microsoft Azure AI Fundamentals. Bộ câu hỏi tổng hợp từ đề thi thực tế — gồm Responsible AI, Machine Learning, Computer Vision, NLP và Generative AI.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Câu hỏi</div></div>
+      <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Chủ đề</div></div>
+      <div class="stat-card"><div class="stat-num">700</div><div class="stat-label">Điểm đậu / 1000</div></div>
+    </div>
+    <div class="settings-wrap">
+      <div class="settings-title">Tùy chỉnh bài thi</div>
+      <div class="settings-row">
+        <div class="sg"><label>Số câu hỏi</label>
+          <select id="qCount"><option value="15">15 câu — Nhanh</option><option value="30">30 câu</option><option value="50" selected>50 câu</option><option value="100">100 câu</option><option value="999">Tất cả</option></select>
+        </div>
+        <div class="sg"><label>Chế độ</label>
+          <select id="mode"><option value="practice">Luyện tập — xem đáp án ngay</option><option value="exam">Thi thử — xem kết quả cuối</option></select>
+        </div>
+        <div class="sg"><label>Thứ tự câu hỏi</label>
+          <select id="shuffle"><option value="1">Ngẫu nhiên</option><option value="0">Theo thứ tự</option></select>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="startQuiz()" style="width:100%;justify-content:center;padding:13px;font-size:15px">Bắt đầu làm bài →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizScreen" class="hidden">
+    <div class="card">
+      <div class="prog-wrap"><div class="prog-bar" id="progBar"></div></div>
+      <div class="prog-info">
+        <span class="prog-txt" id="progTxt"></span>
+        <span class="timer" id="timer">00:00</span>
+      </div>
+      <div class="q-meta">
+        <div class="q-num" id="qNum"></div>
+        <div class="topic-tag cat-def" id="qTopic"></div>
+      </div>
+      <div class="q-text" id="qText"></div>
+      <div class="multi-hint hidden" id="multiHint">Chọn tất cả các đáp án đúng</div>
+      <div class="options" id="opts"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="nav-row">
+        <button class="btn btn-secondary" id="btnPrev" onclick="prevQ()">← Trước</button>
+        <div class="nav-btns">
+          <button class="btn btn-primary" id="btnCheck" onclick="checkAnswer()">Kiểm tra</button>
+          <button class="btn btn-primary hidden" id="btnNext" onclick="nextQ()">Tiếp →</button>
+        </div>
+      </div>
+    </div>
+    <div class="end-row">
+      <button class="btn btn-secondary btn-sm" onclick="if(confirm('Kết thúc và xem kết quả?'))finishQuiz()">Kết thúc bài thi</button>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div id="scoreScreen" class="hidden">
+    <div class="card score-wrap">
+      <div class="score-circle" id="scoreCircle">
+        <div class="score-pct" id="scorePct"></div>
+        <div class="score-lbl" id="scorePass"></div>
+      </div>
+      <div class="score-title" id="scoreTitle"></div>
+      <div class="score-sub" id="scoreSub"></div>
+      <div class="sgrid">
+        <div class="ss"><div class="ss-num g" id="scCorrect"></div><div class="ss-lbl">Đúng</div></div>
+        <div class="ss"><div class="ss-num r" id="scWrong"></div><div class="ss-lbl">Sai</div></div>
+        <div class="ss"><div class="ss-num" id="scTime"></div><div class="ss-lbl">Thời gian</div></div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-primary" onclick="startQuiz()">Làm lại</button>
+        <button class="btn btn-secondary" onclick="showReview()">Xem chi tiết</button>
+        <button class="btn btn-secondary" onclick="goHome()">Trang chủ</button>
+      </div>
+    </div>
+    <div id="reviewWrap"></div>
+  </div>
+
+</div>
+
+<script>
+const Q = [
+// ─── RESPONSIBLE AI ──────────────────────────────────────────
+{t:"Responsible AI",q:"A company develops a webchat bot to provide automated answers to common customer queries. Which business benefit should the company expect as a result of creating the webchat bot solution?",o:["Increased sales","A reduced workload for the customer service agents","Improved product reliability"],c:[1]},
+{t:"Responsible AI",q:"You build a machine learning model by using the automated machine learning user interface (UI). You need to ensure that the model meets the Microsoft transparency principle for responsible AI. What should you do?",o:["Set Validation type to Auto","Enable Explain best model","Set Primary metric to accuracy","Set Max concurrent iterations to 0"],c:[1]},
+{t:"Responsible AI",q:"You are designing an AI system that empowers everyone, including people who have hearing, visual, and other impairments. This is an example of which Microsoft guiding principle for responsible AI?",o:["Fairness","Inclusiveness","Reliability and safety","Accountability"],c:[1]},
+{t:"Responsible AI",q:"You are building an AI system. Which task should you include to ensure that the service meets the Microsoft transparency principle for responsible AI?",o:["Ensure that all visuals have an associated text that can be read by a screen reader","Enable autoscaling to ensure that a service scales based on demand","Provide documentation to help developers debug code","Ensure that a training dataset is representative of the population"],c:[2]},
+{t:"Responsible AI",q:"Your company is exploring the use of voice recognition technologies in its smart home devices. The company wants to identify any barriers that might unintentionally leave out specific user groups. This is an example of which Microsoft guiding principle for responsible AI?",o:["Accountability","Fairness","Inclusiveness","Privacy and security"],c:[2]},
+{t:"Responsible AI",q:"What are three Microsoft guiding principles for responsible AI? Each correct answer presents a complete solution.",o:["Knowledgeability","Decisiveness","Inclusiveness","Fairness","Opinionatedness","Reliability and safety"],c:[2,3,5]},
+{t:"Responsible AI",q:"You run a charity event that involves posting photos of people wearing sunglasses on Twitter. You need to ensure that you only retweet photos that include one or more faces and contain at least one person wearing sunglasses. What should you use to analyze the images?",o:["The Verify operation in the Face service","The Detect operation in the Face service","The Describe Image operation in the Computer Vision service","The Analyze Image operation in the Computer Vision service"],c:[1]},
+{t:"Responsible AI",q:"When you design an AI system to assess whether loans should be approved, the factors used to make the decision should be explainable. This is an example of which Microsoft guiding principle for responsible AI?",o:["Transparency","Inclusiveness","Fairness","Privacy and security"],c:[0]},
+{t:"Responsible AI",q:"You are building an AI-based app. You need to ensure that the app uses the principles for responsible AI. Which two principles should you follow?",o:["Implement an Agile software development methodology","Implement a process of AI model validation as part of the software review process","Establish a risk governance committee that includes members of the legal team, members of the risk management team, and a privacy officer","Prevent the disclosure of the use of AI-based algorithms for automated decision making"],c:[1,2]},
+{t:"Responsible AI",q:"What is an example of the Microsoft responsible AI principle of transparency?",o:["Ensuring that opportunities are allocated equally to all applicants","Helping users understand the decisions made by an AI system","Ensuring that developers are accountable for the solutions they create","Ensuring that the privileged data of users is stored in a secure manner"],c:[1]},
+{t:"Responsible AI",q:"According to Microsoft's principle of responsible AI, AI systems should NOT reflect biases from the data sets that are used to train the systems. Which principle does this refer to?",o:["Fairness","Transparency","Reliability and safety","Inclusiveness"],c:[0]},
+{t:"Responsible AI",q:"As part of the Microsoft responsible AI principles, customers must do what before they can use Azure OpenAI?",o:["Complete a training course","Obtain approval based on their intended usage","Sign a non-disclosure agreement","Purchase a premium subscription"],c:[1]},
+{t:"Responsible AI",q:"You need to scan the news for articles about your customers and alert employees when there is a negative article. Positive articles must be added to a press book. Which natural language processing tasks should you perform first to identify the companies mentioned in articles, and then to classify sentiment?",o:["Entity recognition, then Sentiment analysis","Sentiment analysis, then Entity recognition","Key phrase extraction, then Translation","Language detection, then Entity recognition"],c:[0]},
+// ─── MACHINE LEARNING ────────────────────────────────────────
+{t:"Machine Learning",q:"For a machine learning process, how should you split data for training and evaluation?",o:["Use features for training and labels for evaluation","Randomly split the data into rows for training and rows for evaluation","Use labels for training and features for evaluation","Randomly split the data into columns for training and columns for evaluation"],c:[1]},
+{t:"Machine Learning",q:"Which type of model is the Predicted vs. True chart used to evaluate?",o:["Classification","Regression","Clustering"],c:[1]},
+{t:"Machine Learning",q:"Which type of machine learning should you use to predict the number of gift cards that will be sold next month?",o:["Classification","Regression","Clustering"],c:[1]},
+{t:"Machine Learning",q:"You have a dataset about taxi journeys. You need to train a model to predict the fare of a taxi journey. What should you use as a feature?",o:["The number of taxi journeys in the dataset","The trip distance of individual taxi journeys","The fare of individual taxi journeys","The trip ID of individual taxi journeys"],c:[1]},
+{t:"Machine Learning",q:"You need to predict the sea level in meters for the next 10 years. Which type of machine learning should you use?",o:["Classification","Regression","Clustering"],c:[1]},
+{t:"Machine Learning",q:"A medical research project uses a large dataset of brain scan images categorized into predefined brain haemorrhage types. You need to use machine learning to support early detection of the different brain haemorrhage types. This is an example of which type of machine learning?",o:["Clustering","Regression","Classification"],c:[2]},
+{t:"Machine Learning",q:"When training a model, why should you randomly split the rows into separate subsets?",o:["To train the model twice to attain better accuracy","To train multiple models simultaneously to attain better performance","To test the model by using data that was not used to train the model"],c:[2]},
+{t:"Machine Learning",q:"Which type of machine learning should you use to identify groups of people who have similar purchasing habits?",o:["Classification","Regression","Clustering"],c:[2]},
+{t:"Machine Learning",q:"Which metric can you use to evaluate a classification model?",o:["True positive rate","Mean absolute error (MAE)","Coefficient of determination (R2)","Root mean squared error (RMSE)"],c:[0]},
+{t:"Machine Learning",q:"Which two components can you drag onto a canvas in Azure Machine Learning designer? Each correct answer presents a complete solution.",o:["Dataset","Compute","Pipeline","Module"],c:[0,3]},
+{t:"Machine Learning",q:"You need to create a training dataset and validation dataset from an existing dataset. Which module in the Azure Machine Learning designer should you use?",o:["Select Columns in Dataset","Add Rows","Split Data","Join Data"],c:[2]},
+{t:"Machine Learning",q:"What are two metrics that you can use to evaluate a regression model? Each correct answer presents a complete solution.",o:["Coefficient of determination (R2)","F1 score","Root mean squared error (RMSE)","Area under curve (AUC)","Balanced accuracy"],c:[0,2]},
+{t:"Machine Learning",q:"What are two actions performed during the data ingestion and data preparation stage of an Azure Machine Learning process? Each correct answer presents part of the solution.",o:["Calculate the accuracy of the model","Score test data by using the model","Combine multiple datasets","Use the model for real-time predictions","Remove records that have missing values"],c:[2,4]},
+{t:"Machine Learning",q:"You need to predict the animal population of an area. Which Azure Machine Learning type should you use?",o:["Regression","Clustering","Classification"],c:[0]},
+{t:"Machine Learning",q:"Which two languages can you use to write custom code for Azure Machine Learning designer? Each correct answer presents a complete solution.",o:["Python","R","C#","Scala"],c:[0,1]},
+{t:"Machine Learning",q:"You use Azure Machine Learning designer to publish an inference pipeline. Which two parameters should you use to access the web service? Each correct answer presents part of the solution.",o:["The model name","The training endpoint","The authentication key","The REST endpoint"],c:[2,3]},
+{t:"Machine Learning",q:"You need to predict the income range of a given customer. The dataset has: First Name, Last Name, Age, Education Level, Income Range. Which two fields should you use as features?",o:["Education Level","Last Name","Age","Income Range","First Name"],c:[0,2]},
+{t:"Machine Learning",q:"A banking system that predicts whether a loan will be repaid is an example of which type of machine learning?",o:["Clustering","Regression","Classification"],c:[2]},
+{t:"Machine Learning",q:"For a vehicle, predicting the miles per gallon based on weight, engine power, and other factors is an example of which type of machine learning?",o:["Classification","Regression","Clustering"],c:[1]},
+{t:"Machine Learning",q:"You need to predict the population size of a specific species of animal in an area. Which Azure Machine Learning type should you use?",o:["Regression","Classification","Clustering"],c:[0]},
+{t:"Machine Learning",q:"You have a large dataset of motor vehicle sales data. You need to train an automated ML model to predict vehicle sale values. Which task should you select?",o:["Classification","Regression","Clustering","Forecasting"],c:[1]},
+{t:"Machine Learning",q:"What should you do to reduce the number of false positives produced by a machine learning classification model?",o:["Increase the training dataset size","Modify the threshold value in favor of false negatives","Add more features to the model","Use a different algorithm"],c:[1]},
+{t:"Machine Learning",q:"You use Azure Machine Learning designer to build a model pipeline. What should you create before you can run the pipeline?",o:["A datastore","A compute resource","A training dataset","An inference cluster"],c:[1]},
+{t:"Machine Learning",q:"Data values that are used to make a prediction are called:",o:["Labels","Predictions","Features","Classes"],c:[2]},
+{t:"Machine Learning",q:"Automated machine learning is the process of automating the time-consuming, iterative tasks of machine learning model development. Which statement about automated ML is TRUE?",o:["Automated ML can automatically infer the training data from the use case provided","Automated ML works by running multiple training iterations that are scored and ranked by the metrics you specify","Automated ML enables you to specify a dataset and will automatically understand which label to predict","Automated ML requires no compute resources to run"],c:[1]},
+{t:"Machine Learning",q:"What is a use case for classification?",o:["Predicting how many cups of coffee a person will drink based on hours slept","Analyzing the contents of images and grouping images that have similar colors","Predicting whether someone uses a bicycle to travel to work based on the distance from home to work","Predicting how many minutes it will take someone to run a race based on past race times"],c:[2]},
+{t:"Machine Learning",q:"You need to provide content for a business chatbot that will help answer simple user queries. What are three ways to create question and answer text by using Azure AI Language Service's question answering? Each correct answer presents a complete solution.",o:["Generate the questions and answers from an existing webpage","Manually enter the questions and answers","Import a PowerPoint file","Import chit-chat content from a predefined data source","Use Azure Machine Learning to generate questions"],c:[0,1,3]},
+// ─── AZURE AI SERVICES / DOCUMENT INTELLIGENCE ───────────────
+{t:"Azure AI Services",q:"Which service should you use to extract text, key/value pairs, and table data automatically from scanned documents?",o:["Form Recognizer","Text Analytics","Language Understanding","Custom Vision"],c:[0]},
+{t:"Azure AI Services",q:"In which two scenarios can you use the Form Recognizer service? Each correct answer presents a complete solution.",o:["Extract the invoice number from an invoice","Translate a form from French to English","Find images of products in a catalog","Identify the retailer from a receipt"],c:[0,3]},
+{t:"Azure AI Services",q:"You need to convert receipts into transactions in a spreadsheet, including date, merchant, total spent, and taxes paid. Which Azure AI service should you use?",o:["Custom Vision","Form Recognizer","Face","Language"],c:[1]},
+{t:"Azure AI Services",q:"Which Azure AI Document Intelligence prebuilt model should you use to extract parties and jurisdictions from a legal document?",o:["Invoice","Receipt","Contract","ID document"],c:[2]},
+{t:"Azure AI Services",q:"Which term is used to describe uploading your own data to customize an Azure OpenAI model?",o:["Transfer learning","Grounding","Fine tuning","Prompt engineering"],c:[2]},
+{t:"Azure AI Services",q:"Which OpenAI model does GitHub Copilot use to make suggestions for client-side JavaScript?",o:["GPT-3.5","DALL-E","Codex","Whisper"],c:[2]},
+{t:"Azure AI Services",q:"Which two tools can you use to call the Azure OpenAI service? Each correct answer presents a complete solution.",o:["Azure SDK for Python","Azure CLI","Azure REST API","Azure Portal","Azure DevOps"],c:[0,2]},
+// ─── COMPUTER VISION ─────────────────────────────────────────
+{t:"Computer Vision",q:"Your company wants to build a recycling machine for bottles. The recycling machine must automatically identify bottles of the correct shape and reject all other items. Which type of AI workload should the company use?",o:["Anomaly detection","Conversational AI","Computer vision","Natural language processing"],c:[2]},
+{t:"Computer Vision",q:"You need to develop a mobile app for employees to scan and store their expenses while travelling. Which type of computer vision should you use?",o:["Semantic segmentation","Image classification","Object detection","Optical character recognition (OCR)"],c:[3]},
+{t:"Computer Vision",q:"You are processing photos of runners in a race. You need to read the numbers on the runners' shirts to identify the runners. Which type of computer vision should you use?",o:["Facial recognition","Optical character recognition (OCR)","Image classification","Object detection"],c:[1]},
+{t:"Computer Vision",q:"You use drones to identify where weeds grow between rows of crops. This is an example of which type of computer vision?",o:["Object detection","Optical character recognition (OCR)","Scene segmentation"],c:[0]},
+{t:"Computer Vision",q:"You need to determine the location of cars in an image so that you can estimate the distance between the cars. Which type of computer vision should you use?",o:["Optical character recognition (OCR)","Object detection","Image classification","Face detection"],c:[1]},
+{t:"Computer Vision",q:"You send an image to a Computer Vision API and receive back an annotated image with bounding boxes around detected items. Which type of computer vision was used?",o:["Object detection","Face detection","Optical character recognition (OCR)","Image classification"],c:[0]},
+{t:"Computer Vision",q:"What are two tasks that can be performed by using the Computer Vision service? Each correct answer presents a complete solution.",o:["Train a custom image classification model","Detect faces in an image","Recognize handwritten text","Translate the text in an image between languages"],c:[1,2]},
+{t:"Computer Vision",q:"You need to build an image tagging solution for social media that tags images of your friends automatically. Which Azure Cognitive Services service should you use?",o:["Face","Form Recognizer","Text Analytics","Computer Vision"],c:[0]},
+{t:"Computer Vision",q:"Which Computer Vision feature can you use to generate automatic captions for digital photographs?",o:["Recognize text","Identify the areas of interest","Detect objects","Describe the images"],c:[3]},
+{t:"Computer Vision",q:"You need to identify street names based on street signs in photographs. Which type of computer vision should you use?",o:["Object detection","Optical character recognition (OCR)","Image classification","Facial recognition"],c:[1]},
+{t:"Computer Vision",q:"You have an app that identifies the coordinates of a product in an image of a supermarket shelf. Which service does the app use?",o:["Custom Vision classification","Custom Vision object detection","Computer Vision Read","Computer Vision OCR"],c:[1]},
+{t:"Computer Vision",q:"For which two workloads can you use computer vision? Each correct answer presents a complete solution.",o:["Assigning the color pixels in an image to object names","Detecting inconsistencies and anomalies in a stream of data","Creating visual representations of numerical data","Creating photorealistic images by using 3D models","Describing the contents of an image"],c:[0,4]},
+{t:"Computer Vision",q:"You have a security system that analyzes images from CCTV to provide authorized staff entry into a restricted area. Which type of computer vision does the system use?",o:["Optical character recognition (OCR)","Semantic segmentation","Facial detection and facial recognition","Image analysis"],c:[2]},
+{t:"Computer Vision",q:"You have a bot that identifies the brand names of products in images of supermarket shelves. Which service does the bot use?",o:["AI enrichment for Azure Search capabilities","Computer Vision Image Analysis capabilities","Custom Vision Image Classification capabilities","Language Understanding capabilities"],c:[1]},
+{t:"Computer Vision",q:"You are building a tool that will process images from retail stores and identify the products of competitors. The solution will use a custom model. Which Azure Cognitive Services service should you use?",o:["Custom Vision","Form Recognizer","Face","Computer Vision"],c:[0]},
+{t:"Computer Vision",q:"What are two tasks that can be performed by using computer vision? Each correct answer presents a complete solution.",o:["Predict stock prices","Detect brands in an image","Detect the color scheme in an image","Translate text between languages","Extract key phrases"],c:[1,2]},
+{t:"Computer Vision",q:"A historian wants to digitize newspaper articles from printed copies. Which technology should they use?",o:["Optical character recognition (OCR)","Image classification","Object detection","Facial recognition"],c:[0]},
+{t:"Computer Vision",q:"You need to count the number of animals in a photograph. Which type of computer vision should you use?",o:["Image classification","Object detection","Semantic segmentation","OCR"],c:[1]},
+{t:"Computer Vision",q:"An AI solution helps photographers take better portrait photographs by providing feedback on exposure, noise, and occlusion. This is an example of which computer vision task?",o:["Object detection","Facial analysis","Image classification","OCR"],c:[1]},
+// ─── NATURAL LANGUAGE PROCESSING ─────────────────────────────
+{t:"Natural Language Processing",q:"You are developing a natural language processing solution that will analyze customer reviews and determine how positive or negative each review is. This is an example of which type of NLP workload?",o:["Language detection","Sentiment analysis","Key phrase extraction","Entity recognition"],c:[1]},
+{t:"Natural Language Processing",q:"You use NLP to process text from a news story. The output identifies named entities such as people, places, and organizations. Which type of NLP was performed?",o:["Entity recognition","Key phrase extraction","Sentiment analysis","Translation"],c:[0]},
+{t:"Natural Language Processing",q:"You are authoring a Language Understanding (LUIS) application. A user asks: 'Which act is playing on the main stage?' This question is an example of which type of element?",o:["An intent","An utterance","A domain","An entity"],c:[1]},
+{t:"Natural Language Processing",q:"You build a QnA Maker bot by using a FAQ page. You need to add professional greetings and other responses to make the bot more user friendly. What should you do?",o:["Increase the confidence threshold of responses","Enable active learning","Create multi-turn questions","Add chit-chat"],c:[3]},
+{t:"Natural Language Processing",q:"You need to develop a chatbot for a website. The chatbot must answer users' questions based on information in a product troubleshooting guide and a FAQ webpage. Which service should you use to process the documents?",o:["Azure Bot Service","Language Understanding","Text Analytics","QnA Maker"],c:[3]},
+{t:"Natural Language Processing",q:"You are building a Language Understanding model for an e-commerce business. You need to ensure that the model detects when utterances are outside the intended scope of the model. What should you do?",o:["Test the model by using new utterances","Add utterances to the None intent","Create a prebuilt task entity","Create a new model"],c:[1]},
+{t:"Natural Language Processing",q:"Which two scenarios are examples of a natural language processing workload? Each correct answer presents a complete solution.",o:["Monitoring the temperature of machinery to turn on a fan","A smart device in the home that responds to questions such as 'What will the weather be like today?'","A website that uses a knowledge base to interactively respond to users' questions","Assembly line machinery that autonomously inserts headlamps into cars"],c:[1,2]},
+{t:"Natural Language Processing",q:"You have an AI solution that provides users with the ability to control smart devices by using verbal commands. Which two types of NLP workloads does the solution use? Each correct answer presents part of the solution.",o:["Text-to-speech","Key phrase extraction","Speech-to-text","Language modeling","Translation"],c:[0,2]},
+{t:"Natural Language Processing",q:"You are developing a solution using the Text Analytics service. You need to identify the main talking points in a collection of documents. Which type of NLP should you use?",o:["Entity recognition","Key phrase extraction","Sentiment analysis","Language detection"],c:[1]},
+{t:"Natural Language Processing",q:"In which two scenarios can you use speech recognition? Each correct answer presents a complete solution.",o:["An in-car system that reads text messages aloud","Providing closed captions for recorded or live videos","Creating an automated public address system for a train station","Creating a transcript of a telephone call or meeting"],c:[1,3]},
+{t:"Natural Language Processing",q:"You need to build an app that will read recipe instructions aloud to support users who have reduced vision. Which service should you use?",o:["Text Analytics","Translator","Speech","Language Understanding (LUIS)"],c:[2]},
+{t:"Natural Language Processing",q:"Your website has a chatbot to assist customers. You need to detect when a customer is upset based on what the customer types in the chatbot. Which type of AI workload should you use?",o:["Anomaly detection","Computer vision","Regression","Natural language processing"],c:[3]},
+{t:"Natural Language Processing",q:"You plan to develop a bot that will enable users to query a knowledge base by using natural language processing. Which two services should you include in the solution? Each correct answer presents part of the solution.",o:["QnA Maker","Azure Bot Service","Form Recognizer","Anomaly Detector"],c:[0,1]},
+{t:"Natural Language Processing",q:"In which two scenarios can you use a speech synthesis solution? Each correct answer presents a complete solution.",o:["An automated voice that reads back a credit card number entered by using a numeric keypad","Generating live captions for a news broadcast","Extracting key phrases from the audio recording of a meeting","An AI character in a computer game that speaks audibly to a player"],c:[0,3]},
+{t:"Natural Language Processing",q:"You are building a knowledge base by using QnA Maker. Which file format can you use to populate the knowledge base?",o:["PPTX","XML","ZIP","PDF"],c:[3]},
+{t:"Natural Language Processing",q:"In which scenario should you use key phrase extraction?",o:["Identifying whether reviews of a restaurant are positive or negative","Generating captions for a video based on the audio track","Identifying which documents provide information about the same topics","Translating a set of documents from English to German"],c:[2]},
+{t:"Natural Language Processing",q:"You have insurance claim reports stored as text. You need to extract key terms from the reports to generate summaries. Which type of AI workload should you use?",o:["Natural language processing","Conversational AI","Anomaly detection","Computer vision"],c:[0]},
+{t:"Natural Language Processing",q:"Which AI service can you use to interpret the meaning of a user input such as 'Call me back later'?",o:["Translator","Text Analytics","Speech","Language Understanding (LUIS)"],c:[3]},
+{t:"Natural Language Processing",q:"You are developing a chatbot solution in Azure. Which service should you use to determine a user's intent?",o:["Translator","QnA Maker","Speech","Language Understanding (LUIS)"],c:[3]},
+{t:"Natural Language Processing",q:"You need to make the written press releases of your company available in a range of languages. Which service should you use?",o:["Translator","Text Analytics","Speech","Language Understanding (LUIS)"],c:[0]},
+{t:"Natural Language Processing",q:"You need to provide customers with the ability to query the status of orders by using phones, social media, or digital assistants. What should you use?",o:["An Azure Machine Learning model","The Translator service","A Form Recognizer model","Azure Bot Service"],c:[3]},
+{t:"Natural Language Processing",q:"You plan to build a conversational AI solution that can be surfaced in Microsoft Teams, Microsoft Cortana, and Amazon Alexa. Which service should you use?",o:["Azure Bot Service","Azure Cognitive Search","Speech","Language service"],c:[0]},
+{t:"Natural Language Processing",q:"A smart device that responds to the question 'What is the stock price of Contoso, Ltd.?' is an example of which AI workload?",o:["Knowledge mining","Natural language processing","Computer vision","Anomaly detection"],c:[1]},
+{t:"Natural Language Processing",q:"You have a solution that reads manuscripts in different languages and categorizes the manuscripts based on topic. Which types of NLP workloads does the solution use?",o:["Speech recognition and entity recognition","Speech recognition and language modeling","Translation and key phrase extraction","Translation and sentiment analysis"],c:[2]},
+{t:"Natural Language Processing",q:"You have 100 instructional videos with no audio. Each has a script. You need to generate a narration audio file for each video based on the script. Which type of workload should you use?",o:["Language modeling","Speech recognition","Speech synthesis","Translation"],c:[2]},
+{t:"Natural Language Processing",q:"You need to build an app that extracts intent from a user input such as 'Call me back later'. Which service should you use?",o:["Azure Cognitive Search","Translator","Language","Speech"],c:[2]},
+{t:"Natural Language Processing",q:"Which type of NLP entity is used to identify a phone number in the Language Understanding service?",o:["Regular expression","Machine-learned","List","Pattern.any"],c:[0]},
+{t:"Natural Language Processing",q:"You have a website that includes customer reviews. You need to store the reviews in English and present them in each user's local language. Which NLP workload should you use?",o:["Sentiment analysis","Entity recognition","Translation","Key phrase extraction"],c:[2]},
+// ─── GENERATIVE AI ────────────────────────────────────────────
+{t:"Generative AI",q:"Which type of Azure AI workload should you use to create illustrations based on the text of an article?",o:["Natural language processing","Computer vision","Anomaly detection","Generative AI"],c:[3]},
+{t:"Generative AI",q:"Which parameter should you configure to produce more deterministic responses from a chat solution that uses the Azure OpenAI GPT-3.5 model?",o:["Presence penalty","Top P","Temperature","Max tokens"],c:[2]},
+{t:"Generative AI",q:"Which parameter should you configure to produce a more diverse range of tokens in the responses from a chat solution that uses the Azure OpenAI GPT-3.5 model?",o:["Temperature","Top P","Presence penalty","Frequency penalty"],c:[2]},
+{t:"Generative AI",q:"Providing contextual information to improve the response quality of a generative AI solution is an example of which prompt engineering technique?",o:["System prompting","Grounding data","Few-shot learning","Chain-of-thought"],c:[1]},
+{t:"Generative AI",q:"Which two types of content can be generated by using Azure OpenAI generative AI apps? Each correct answer presents a complete solution.",o:["Text","Audio","Image","Video","Documents"],c:[0,2]},
+{t:"Generative AI",q:"Which three actions improve the quality of responses returned by a generative AI solution that uses GPT-3.5? Each correct answer presents a complete solution.",o:["Add training data to prompts","Provide additional examples to prompts","Reduce the size of the dataset","Add grounding data to prompts","Use a smaller model"],c:[0,1,3]},
+{t:"Generative AI",q:"Which two actions can you perform by using the Azure OpenAI DALL-E model? Each correct answer presents a complete solution.",o:["Create an image from a text description","Transcribe speech to text","Generate a caption for an image","Translate text between languages"],c:[0,2]},
+{t:"Generative AI",q:"The Azure OpenAI GPT-3.5 Turbo model can transcribe speech to text. The Azure OpenAI DALL-E model generates images based on text prompts. The Azure OpenAI embeddings model can convert text into numerical vectors. Which are TRUE?",o:["Only GPT-3.5 can transcribe speech","Only DALL-E and embeddings statements are true","All three statements are true","Only the DALL-E statement is true"],c:[1]},
+{t:"Generative AI",q:"What can be used to build an AI model that will create short articles for a website?",o:["Azure Machine Learning designer","Custom Vision","ChatGPT","Azure Form Recognizer"],c:[2]},
+{t:"Generative AI",q:"What can be used to complete a paragraph based on a sentence provided by a user?",o:["Azure AI Custom Vision","Azure AI Language","Azure AI Speech","Azure AI Document Intelligence"],c:[1]},
+{t:"Generative AI",q:"What are three stages in a transformer model? Each correct answer presents a complete solution.",o:["Tokenization","Feature extraction","Next token prediction","Model compression","Embedding calculation"],c:[0,2,4]},
+{t:"Generative AI",q:"Predicting agricultural yields based on weather conditions and soil quality measurements is an example of which type of machine learning model?",o:["Classification","Regression","Clustering"],c:[1]},,
+{t:"Azure AI Services",q:"A company employs a team of customer service agents to provide telephone and email support to customers. The company develops a webchat bot to provide automated answers to common customer queries. Which business benefit should the company expect as a result of creating the webchat bot solution?",o:["increased sales","a reduced workload for the customer service agents","improved product reliability"],c:[1]},
+{t:"Machine Learning",q:"You have the Predicted vs. True chart shown in an exhibit. Which type of model is the chart used to evaluate?",o:["classification","regression","clustering"],c:[1]},
+{t:"Machine Learning",q:"You have a dataset that contains information about taxi journeys that occurred during a given period. You need to train a model to predict the fare of a taxi journey. What should you use as a feature?",o:["the number of taxi journeys in the dataset","the trip distance of individual taxi journeys","the fare of individual taxi journeys","the trip ID of individual taxi journeys"],c:[1]},
+{t:"Machine Learning",q:"A medical research project uses a large anonymized dataset of brain scan images that are categorized into predefined brain haemorrhage types. You need to use machine learning to support early detection of the different brain haemorrhage types in the images before the images are reviewed by a person. This is an example of which type of machine learning?",o:["clustering","regression","classification"],c:[2]},
+{t:"Machine Learning",q:"You are evaluating whether to use a basic workspace or an enterprise workspace in Azure Machine Learning. What are two tasks that require an enterprise workspace? Each correct answer presents a complete solution.",o:["Use a graphical user interface (GUI) to run automated machine learning experiments","Create a compute instance to use as a workstation","Use a graphical user interface (GUI) to define and run machine learning experiments from Azure Machine Learning designer","Create a dataset from a comma-separated value (CSV) file"],c:[0, 2]},
+{t:"Machine Learning",q:"You need to predict the income range of a given customer by using a dataset with columns: First Name, Last Name, Age, Education Level, Income Range. Which two fields should you use as features? Each correct answer presents a complete solution.",o:["Education Level","Last Name","Age","Income Range","First Name"],c:[0, 2]},
+{t:"Machine Learning",q:"Which two actions are performed during the data ingestion and data preparation stage of an Azure Machine Learning process? Each correct answer presents part of the solution.",o:["Calculate the accuracy of the model","Score test data by using the model","Combine multiple datasets","Use the model for real-time predictions","Remove records that have missing values"],c:[2, 4]},
+{t:"Computer Vision",q:"You use drones to identify where weeds grow between rows of crops to send an instruction for the removal of the weeds. This is an example of which type of computer vision?",o:["object detection","optical character recognition (OCR)","scene segmentation"],c:[0]},
+{t:"Natural Language Processing",q:"You are developing a solution that uses the Text Analytics service. You need to identify the main talking points in a collection of documents. Which type of natural language processing should you use?",o:["entity recognition","key phrase extraction","sentiment analysis","language detection"],c:[1]},
+{t:"Natural Language Processing",q:"You have insurance claim reports that are stored as text. You need to extract key terms from the reports to generate summaries. Which type of AI workload should you use?",o:["natural language processing","conversational AI","anomaly detection","computer vision"],c:[0]},
+{t:"Natural Language Processing",q:"You are developing a natural language processing solution in Azure. The solution will analyze customer reviews and determine how positive or negative each review is. This is an example of which type of natural language processing workload?",o:["language detection","sentiment analysis","key phrase extraction","entity recognition"],c:[1]},
+{t:"Natural Language Processing",q:"You use natural language processing to process text from a Microsoft news story and receive output showing identified organizations, persons, and locations. Which type of natural language processing was performed?",o:["entity recognition","key phrase extraction","sentiment analysis","translation"],c:[0]},
+{t:"Natural Language Processing",q:"You are authoring a Language Understanding (LUIS) application to support a music festival. You want users to be able to ask questions about scheduled shows, such as: 'Which act is playing on the main stage?' The question 'Which act is playing on the main stage?' is an example of which type of element?",o:["an intent","an utterance","a domain","an entity"],c:[1]},
+{t:"Natural Language Processing",q:"You build a QnA Maker bot by using a frequently asked questions (FAQ) page. You need to add professional greetings and other responses to make the bot more user friendly. What should you do?",o:["Increase the confidence threshold of responses","Enable active learning","Create multi-turn questions","Add chit-chat"],c:[3]},
+{t:"Natural Language Processing",q:"You need to develop a chatbot for a website. The chatbot must answer users' questions based on the information in the following documents: A product troubleshooting guide in a Microsoft Word document. A frequently asked questions (FAQ) list on a webpage. Which service should you use to process the documents?",o:["Azure Bot Service","Language Understanding","Text Analytics","QnA Maker"],c:[3]},
+{t:"Natural Language Processing",q:"You have a webchat bot that provides responses from a QnA Maker knowledge base. You need to ensure that the bot uses user feedback to improve the relevance of the responses over time. What should you use?",o:["key phrase extraction","sentiment analysis","business logic","active learning"],c:[3]},
+{t:"Azure AI Services",q:"You are developing a conversational AI solution that will communicate with users through multiple channels including email, Microsoft Teams, and webchat. Which service should you use?",o:["Text Analytics","Azure Bot Service","Translator","Form Recognizer"],c:[1]},
+{t:"Natural Language Processing",q:"You have a frequently asked questions (FAQ) PDF file. You need to create a conversational support system based on the FAQ. Which service should you use?",o:["QnA Maker","Text Analytics","Computer Vision","Language Understanding (LUIS)"],c:[0]},
+{t:"Azure AI Services",q:"You need to reduce the load on telephone operators by implementing a chatbot to answer simple questions with predefined answers. Which two AI services should you use to achieve the goal? Each correct answer presents part of the solution.",o:["Text Analytics","QnA Maker","Azure Bot Service","Translator"],c:[1, 2]},
+{t:"Azure AI Services",q:"Which two scenarios are examples of a conversational AI workload? Each correct answer presents a complete solution.",o:["a smart device in the home that responds to questions such as What will the weather be like today?","a website that uses a knowledge base to interactively respond to users' questions","assembly line machinery that autonomously inserts headlamps into cars","monitoring the temperature of machinery to turn on a fan when the temperature reaches a specific threshold"],c:[0, 1]},
+{t:"Azure AI Services",q:"You have a process that uses a knowledge base to accept user queries and provide answers through a webchat interface. Which type of AI solution is shown?",o:["a sentiment analysis solution","a chatbot","a machine learning model","a computer vision application"],c:[1]},
+{t:"Natural Language Processing",q:"You need to develop a web-based AI solution for a customer support system. Users must be able to interact with a web app that will guide them to the best resource or answer. Which service should you use?",o:["Custom Vision","QnA Maker","Translator Text","Face"],c:[1]},
+{t:"Natural Language Processing",q:"Which AI service should you use to create a bot from a frequently asked questions (FAQ) document?",o:["QnA Maker","Language Understanding (LUIS)","Text Analytics","Speech"],c:[0]},
+{t:"Azure AI Services",q:"Which scenario is an example of a webchat bot?",o:["Determine whether reviews entered on a website for a concert are positive or negative, and then add a thumbs up or thumbs down emoji to the reviews","Translate into English questions entered by customers at a kiosk so that the appropriate person can call the customers back","Accept questions through email, and then route the email messages to the correct person based on the content of the message","From a website interface, answer common questions about scheduled events and ticket purchases for a music festival"],c:[3]},
+{t:"Azure AI Services",q:"You have a knowledge base of frequently asked questions (FAQ). You create a bot that uses the knowledge base to respond to customer requests. You need to identify what the bot can perform without adding additional skills. What should you identify?",o:["Register customer purchases","Register customer complaints","Answer questions from multiple users simultaneously","Provide customers with return materials authorization (RMA) numbers"],c:[2]},
+{t:"Machine Learning",q:"You have an Azure Machine Learning pipeline that contains a Split Data module. The Split Data module outputs to a Train Model module and a Score Model module. What is the function of the Split Data module?",o:["scaling numeric variables so that they are within a consistent numeric range","creating training and validation datasets","diverting records that have missing data","selecting columns that must be included in the model"],c:[1]},
+{t:"Responsible AI",q:"Which statement is an example of a Microsoft responsible AI principle?",o:["AI systems must use only publicly available data","AI systems must be transparent and inclusive","AI systems must keep personal details public","AI systems must protect the interests of the company"],c:[1]},
+{t:"Machine Learning",q:"During the process of Machine Learning, when should you review evaluation metrics?",o:["Before you train a model","After you clean the data","Before you choose the type of model","After you test a model on the validation data"],c:[3]},
+{t:"Responsible AI",q:"You have a natural language processing (NLP) model that was created by using data obtained without permission. Which Microsoft principle for responsible AI does this breach?",o:["reliability and safety","privacy and security","inclusiveness","transparency"],c:[1]},
+{t:"Machine Learning",q:"Which machine learning technique can be used for anomaly detection?",o:["A machine learning technique that classifies objects based on user supplied images","A machine learning technique that understands written and spoken language","A machine learning technique that classifies images based on their contents","A machine learning technique that analyzes data over time and identifies unusual changes"],c:[3]},
+{t:"Responsible AI",q:"You have an AI-based loan approval system. During testing, you discover that the system has a gender bias. Which responsible AI principle does this violate?",o:["accountability","reliability and safety","transparency","fairness"],c:[3]},
+{t:"Responsible AI",q:"You are developing a system to predict the prices of insurance for drivers in the United Kingdom. You need to minimize bias in the system. What should you do?",o:["Remove information about protected characteristics from the data before sampling","Take a training sample that is representative of the population in the United Kingdom","Create a training dataset that uses data from global insurers","Take a completely random training sample"],c:[1]},
+{t:"Machine Learning",q:"You have a dataset. You need to build an Azure Machine Learning classification model that will identify defective products. What should you do first?",o:["Load the dataset","Create a clustering model","Split the data into training and testing datasets","Create a classification model"],c:[0]},
+{t:"Azure AI Services",q:"You need to create a customer support solution to help customers access information. The solution must support email, phone, and live chat channels. Which type of AI solution should you use?",o:["machine learning","computer vision","chatbot","natural language processing (NLP)"],c:[2]},
+{t:"Machine Learning",q:"Predicting how many vehicles will travel across a bridge on a given day is an example of ______.",o:["regression","translation","classification","clustering"],c:[0]},
+{t:"Machine Learning",q:"In a machine learning model, the data that is used as inputs are called ________.",o:["dataset","labels","variables"],c:[2]},
+{t:"Machine Learning",q:"You need to create a clustering model and evaluate the model by using Azure Machine Learning designer. What should you do?",o:["Split the original dataset into a dataset for training and a dataset for testing. Use the testing dataset for evaluation","Use the original dataset for training and evaluation","Split the original dataset into a dataset for features and a dataset for labels. Use the features dataset for evaluation","Split the original dataset into a dataset for training and a dataset for testing. Use the training dataset for evaluation"],c:[0]},
+{t:"Machine Learning",q:"You have a dataset that contains numeric columns (ColumnA through ColumnE). You have a machine learning model that predicts the value of ColumnE based on the other numeric columns. Which type of model is this?",o:["analysis","clustering","regression"],c:[2]},
+{t:"Machine Learning",q:"You need to track multiple versions of a model that was trained by using Azure Machine Learning. What should you do?",o:["Explain the model","Register the model","Register the training data","Provision an inference cluster"],c:[1]},
+{t:"Machine Learning",q:"You need to identify groups of rows with similar numeric values in a dataset. Which type of machine learning should you use?",o:["clustering","regression","classification"],c:[0]},
+{t:"Computer Vision",q:"A historian can use ________ to digitize newspaper articles.",o:["Object detection","Facial recognition","Image classification","Optical character recognition (OCR)"],c:[3]},
+{t:"Computer Vision",q:"You need to create a model that labels a collection of your personal digital photographs. Which Azure Cognitive Services service should you use?",o:["Form Recognizer","Custom Vision","Language","Computer Vision"],c:[1]},
+{t:"Computer Vision",q:"Your company manufactures widgets. You have 1,000 digital photos of the widgets. You need to identify the location of the widgets within the photos. What should you use?",o:["Computer Vision Spatial Analysis","Custom Vision object detection","Computer Vision Image Analysis","Custom Vision classification"],c:[1]},
+{t:"Computer Vision",q:"You need to convert handwritten notes into digital text. Which type of computer vision should you use?",o:["facial detection","optical character recognition (OCR)","image classification","object detection"],c:[1]},
+{t:"Computer Vision",q:"You need to implement a pre-built solution that will identify well-known brands in digital photographs. Which Azure Cognitive Services service should you use?",o:["Custom Vision","Form Recognizer","Face","Computer Vision"],c:[3]},
+{t:"Natural Language Processing",q:"Natural language processing can be used to __________.",o:["Analyze video content","Generate speech","Classify email messages as work-related or personal","Classify images"],c:[2]},
+{t:"Natural Language Processing",q:"An app that analyzes social media posts to identify their tone is an example of which type of natural language processing (NLP) workload?",o:["sentiment analysis","speech recognition","key phrase extraction","entity recognition"],c:[0]},
+{t:"Natural Language Processing",q:"You are building a chatbot that will use natural language processing (NLP) to perform the following actions based on the text input of a user: Accept customer orders. Retrieve support documents. Retrieve order status updates. Which type of NLP should you use?",o:["sentiment analysis","named entity recognition","translation","language modeling"],c:[1]},
+{t:"Natural Language Processing",q:"You have a solution that analyzes social media posts to extract the mentions of city names and the city names discussed most frequently. Which type of natural language processing (NLP) workload does the solution use?",o:["speech recognition","sentiment analysis","key phrase extraction","entity recognition"],c:[3]},
+{t:"Natural Language Processing",q:"You are developing a solution that uses the Language service. You need to identify the main talking points in a collection of documents. Which type of natural language processing should you use?",o:["language detection","sentiment analysis","entity recognition","key phrase extraction"],c:[3]},
+{t:"Natural Language Processing",q:"Which type of natural language processing (NLP) entity is used to identify a phone number?",o:["regular expression","machine-learned","list","Pattern.any"],c:[0]},
+{t:"Azure AI Services",q:"You need to convert receipts into transactions in a spreadsheet. The spreadsheet must include the date of the transaction, the merchant, the total spent, and any taxes paid. Which Azure AI service should you use?",o:["Custom Vision","Form Recognizer","Face","Language"],c:[1]},
+{t:"Natural Language Processing",q:"You have 100 instructional videos that do NOT contain any audio. Each instructional video has a script. You need to generate a narration audio file for each video based on the script. Which type of workload should you use?",o:["language modeling","speech recognition","speech synthesis","translation"],c:[2]},
+{t:"Natural Language Processing",q:"Which AI service can you use to extract intent from a user input such as 'Call me back later'?",o:["Azure Cognitive Search","Translator","Language","Speech"],c:[2]},
+{t:"Azure AI Services",q:"Which Azure Cognitive Services service can be used to identify documents that contain sensitive information?",o:["Custom Vision","Conversational Language Understanding","Form Recognizer"],c:[2]},
+{t:"Natural Language Processing",q:"A smart device that responds to the question 'What is the stock price of Contoso. Ltd.?' is an example of which AI workload?",o:["knowledge mining","natural language processing","computer vision","anomaly detection"],c:[1]},
+{t:"Natural Language Processing",q:"You use natural language processing to process text from a Microsoft news story and receive output identifying named items like people, places, and organizations. Which type of NLP was performed?",o:["QnA Maker","Language Understanding (LUIS)","Azure Bot Service","entity recognition"],c:[3]},
+{t:"Generative AI",q:"You need to generate cartoons for use in a brochure. Each cartoon will be based on a text description. Which Azure OpenAI model should you use?",o:["Babbage","DALL-E","Codex","GPT-3.5 Turbo"],c:[1]},
+{t:"Natural Language Processing",q:"Which service enables the use of natural language to query a knowledge base? Which service enables the real-time transcription of speech-to-text?",o:["QnA Maker","Azure AI Speech","Azure AI Language Service enables natural language queries;","Language Understanding (LUIS)"],c:[2]},
+{t:"Generative AI",q:"Which extension for Microsoft Visual Studio Code uses the OpenAI Codex model?",o:["GPT-4","Codex","Ada","The GitHub Copilot"],c:[3]},
+{t:"Azure AI Services",q:"Which solution can be used to extract data from scanned invoices?",o:["Azure OpenAI","Azure Machine Learning","Azure AI Language","Document Intelligence"],c:[3]},
+{t:"Generative AI",q:"Which parameter should you configure to produce more verbose responses from a chat solution that uses the Azure OpenAI GPT-3.5 model?",o:["GPT-3.5 Turbo","GPT-4","Codex","Temperature"],c:[3]},
+{t:"Generative AI",q:"Which two resources can you use to analyze code and generate explanations of code function and code comments?",o:["The GitHub Copilot service / The Azure OpenAI GPT-4 model","Ada","Babbage","Whisper"],c:[0]},
+{t:"Computer Vision",q:"Which Azure AI service can be used to train an object detection model by using your own images?",o:["Form Recognizer","Document Intelligence","Azure AI Custom Vision","Object detection"],c:[2]},
+{t:"Computer Vision",q:"Which Azure AI Vision feature can you use to generate automatic captions for digital photographs?",o:["Semantic segmentation","Azure AI Custom Vision","Describe the images","Face API"],c:[2]},
+{t:"Computer Vision",q:"What is used to identify and locate multiple types of items in one image?",o:["Object Detection","Form Recognizer","Azure AI Vision","Face API"],c:[0]},
+{t:"Azure AI Services",q:"In which two scenarios can you use the Azure AI Document Intelligence service (formerly Form Recognizer)? Each correct answer presents a complete solution.",o:["Azure AI Speech","Custom Vision","Azure Machine Learning","Identify the retailer from a receipt. / Extract the invoice"],c:[3]},
+{t:"Computer Vision",q:"An AI solution that helps photographers take better portrait photographs by providing feedback on exposure, noise, and occlusion is an example of which type of facial analysis?",o:["Document Intelligence","OCR","Azure AI Vision","Analysis"],c:[3]},
+{t:"Machine Learning",q:"You have a large dataset that contains motor vehicle sales data. You need to train an automated machine learning (automated ML) model to predict vehicle sale values based on the type of vehicle. Which ML task should you select?",o:["Clustering","Deep learning","Regression","Classification"],c:[2]},
+{t:"Azure AI Services",q:"You can see a REST API to manage your Knowledge Base. Which type of AI solution is shown?",o:["Azure Bot Service","Azure AI Vision","a chatbot","Azure AI Language"],c:[2]},
+{t:"Computer Vision",q:"Counting the number of animals in an area based on a video feed is an example of which AI workload?",o:["Image classification","Object detection","Computer vision","Custom Vision"],c:[2]},
+{t:"Computer Vision",q:"You need to analyze images of vehicles on a highway and measure the distance between the vehicles. Which type of computer vision should you use?",o:["Object Detection","Image classification","Form Recognizer","Face API"],c:[0]},
+{t:"Natural Language Processing",q:"You are building a chatbot that will use natural language processing (NLP) to accept customer orders, retrieve support documents, and retrieve order status updates. Which NLP type should you use?",o:["named entity recognition","Azure AI Language","Azure AI Services","Language Understanding (LUIS)"],c:[0]},
+{t:"Azure AI Services",q:"What enables the use of natural language to query a knowledge base? What enables the real-time transcription of speech-to-text?",o:["Azure AI Speech","Custom Vision","Language Service / Speech","Document Intelligence"],c:[2]},
+{t:"Natural Language Processing",q:"What can be used to create a knowledge base from frequently asked questions (FAQ)?",o:["Azure Bot Service","Text Analytics","Azure QnA Maker","Azure Translator"],c:[2]},
+{t:"Computer Vision",q:"Azure AI Vision can be used to identify the location of a bicycle in an image. Which computer vision capability is used?",o:["Azure AI Custom Vision","Custom Vision","object detection","Azure AI Vision"],c:[2]},
+{t:"Machine Learning",q:"Predicting how many vehicles will travel across a bridge on a given day is an example of which ML type?",o:["regression","Reinforcement learning","Deep learning","Clustering"],c:[0]},
+{t:"Machine Learning",q:"You have a dataset with columns: Household Income, Postal Code, House Price Category. Household Income is a ___. House Price Category is a ___ .",o:["Clustering","Deep learning","Classification","A feature / A label"],c:[3]},
+{t:"Machine Learning",q:"Data values that are used to make a prediction are called ___.",o:["Clustering","Reinforcement learning","Features","Deep learning"],c:[2]},
+{t:"Machine Learning",q:"A medical research project uses a large dataset of brain scan images that are categorized into predefined brain hemorrhage types. You need to use machine learning to support early detection of the different brain hemorrhage types before images are reviewed by a person. Which ML type?",o:["Reinforcement learning","Deep learning","Classification","Regression"],c:[2]},
+{t:"Computer Vision",q:"Computer vision capabilities can be deployed to ___ .",o:["Face API","integrate a face detection feature into an app","Form Recognizer","Image classification"],c:[1]},
+{t:"Computer Vision",q:"What extracts text from handwritten documents?",o:["Custom Vision","Form Recognizer","OCR","Semantic segmentation"],c:[2]},
+{t:"Computer Vision",q:"Generating text that describes an image is an example of which AI task?",o:["Object detection","Custom Vision","image classification","Azure Cognitive Services"],c:[2]},
+{t:"Machine Learning",q:"True or False: Azure Machine Learning designer provides a drag-and-drop visual canvas to build, test, and deploy machine learning models?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: Azure Machine Learning designer enables you to save your progress as a pipeline draft?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: Azure Machine Learning designer enables you to include custom JavaScript functions?",o:["True","False"],c:[1]},
+{t:"Natural Language Processing",q:"True or False: You can use the Azure AI Speech service to transcribe a call to text?",o:["True","False"],c:[0]},
+{t:"Natural Language Processing",q:"True or False: You can use the Azure AI Language service to extract key entities from a call transcript?",o:["True","False"],c:[0]},
+{t:"Natural Language Processing",q:"True or False: You can use the Azure AI Speech service to translate the audio of a call to a different language?",o:["True","False"],c:[0]},
+{t:"Generative AI",q:"True or False: The Azure OpenAI GPT-3.5 Turbo model can transcribe speech to text?",o:["True","False"],c:[1]},
+{t:"Generative AI",q:"True or False: The Azure OpenAI DALL-E model generates images based on text prompts?",o:["True","False"],c:[0]},
+{t:"Generative AI",q:"True or False: The Azure OpenAI embeddings model can convert text into numerical vectors based on text similarities?",o:["True","False"],c:[0]},
+{t:"Azure AI Services",q:"True or False: Chatbots can only be built by using custom code?",o:["True","False"],c:[1]},
+{t:"Azure AI Services",q:"True or False: The Azure AI Bot Service provides services that can be used to host conversational bots?",o:["True","False"],c:[0]},
+{t:"Azure AI Services",q:"True or False: Bots built by using the Azure AI Bot Service can communicate with Microsoft Teams users?",o:["True","False"],c:[0]},
+{t:"Azure AI Services",q:"Which AI workload is used to: An automated chatbot to answer questions about refunds and exchanges - which AI workload??",o:["Azure AI Language","Azure AI Translator","Knowledge mining","Azure OpenAI"],c:[2]},
+{t:"Azure AI Services",q:"Which AI workload is used to: Determining whether a photo contains a person - which AI workload??",o:["Azure AI Vision","Computer vision","Azure Bot Service","Azure Cognitive Search"],c:[1]},
+{t:"Azure AI Services",q:"Which AI workload is used to: Determining whether a review is positive or negative - which AI workload??",o:["Azure AI Language","Natural language processing","Azure AI Vision","Azure Bot Service"],c:[1]},
+{t:"Generative AI",q:"True or False: You can fine-tune some Azure OpenAI models by using your own data?",o:["True","False"],c:[0]},
+{t:"Generative AI",q:"True or False: Pretrained generative AI models are a component of Azure OpenAI?",o:["True","False"],c:[0]},
+{t:"Generative AI",q:"True or False: To build a solution that complies with Microsoft responsible AI principles, you must build and train your own model?",o:["True","False"],c:[1]},
+{t:"Azure AI Services",q:"Which AI workload is used to: Generate a caption from a given image?",o:["Custom Vision","Azure AI Language","Document Intelligence","Computer vision"],c:[3]},
+{t:"Azure AI Services",q:"Which AI workload is used to: Generate an image from a given caption?",o:["Azure OpenAI","Azure Bot Service","Generative AI","Azure Machine Learning"],c:[2]},
+{t:"Azure AI Services",q:"Which AI workload is used to: Generate a 200-word summary from a 2,000-word article?",o:["Azure Cognitive Search","Azure AI Translator","Azure Machine Learning","Text analytics"],c:[3]},
+{t:"Computer Vision",q:"True or False: Object detection can identify the location of a damaged product in an image?",o:["True","False"],c:[0]},
+{t:"Computer Vision",q:"True or False: Object detection can identify multiple instances of a damaged product in an image?",o:["True","False"],c:[0]},
+{t:"Computer Vision",q:"True or False: Object detection can identify multiple types of damaged products in an image?",o:["True","False"],c:[1]},
+{t:"Natural Language Processing",q:"True or False: Monitoring online service reviews for swearing or profanity is an example of natural language processing?",o:["True","False"],c:[0]},
+{t:"Natural Language Processing",q:"True or False: Identifying brand logos in an image is an example of natural language processing?",o:["True","False"],c:[1]},
+{t:"Natural Language Processing",q:"True or False: Monitoring public news sites for negative mentions of a product is an example of natural language processing?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: You train a regression model by using unlabeled data?",o:["True","False"],c:[1]},
+{t:"Machine Learning",q:"True or False: The classification technique is used to predict sequential numerical values over time?",o:["True","False"],c:[1]},
+{t:"Machine Learning",q:"True or False: Grouping items by their common characteristics is an example of clustering?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: You have an Azure Machine Learning model that predicts product quality. The model has a training dataset. Mass (kg) is a feature?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: Quality Test is a label?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: Temperature (C) is a label?",o:["True","False"],c:[1]},
+{t:"Azure AI Services",q:"True or False: You can communicate with a bot by using a voice-activated virtual assistant?",o:["True","False"],c:[0]},
+{t:"Azure AI Services",q:"True or False: You can communicate with a bot by using Microsoft Teams?",o:["True","False"],c:[0]},
+{t:"Azure AI Services",q:"True or False: You can communicate with a bot by using a webchat interface?",o:["True","False"],c:[0]},
+{t:"Natural Language Processing",q:"Which AI workload is used to: Detect the genre of a work of fiction.?",o:["classifying","Key phrase extraction","Sentiment analysis","Azure AI Speech"],c:[0]},
+{t:"Natural Language Processing",q:"Which AI workload is used to: Create a list of bullet points based on text input.?",o:["Azure Bot Service","Azure AI Speech","Text Analytics","Summarizing"],c:[3]},
+{t:"Natural Language Processing",q:"Which AI workload is used to: Create advertising slogons from a product description. - What NLP tasks are these??",o:["Azure AI Speech","Generating","Key phrase extraction","Language Understanding (LUIS)"],c:[1]},
+{t:"Machine Learning",q:"Which AI workload is used to: Assign categories to passengers based on demographic data.?",o:["Supervised learning","AutoML","Classification","Reinforcement learning"],c:[2]},
+{t:"Machine Learning",q:"Which AI workload is used to: Predict the amount of consumed fuel based on flight distance.?",o:["Regression","Supervised learning","Classification","AutoML"],c:[0]},
+{t:"Machine Learning",q:"Which AI workload is used to: Predict whether a passenger will miss their flight based on demographic data. - Which ML types??",o:["Feature engineering","Transfer learning","Supervised learning","Classification"],c:[3]},
+{t:"Machine Learning",q:"True or False: For a regression model, labels must be numeric?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: For a clustering model, labels must be provided?",o:["True","False"],c:[1]},
+{t:"Machine Learning",q:"True or False: For a classification model, labels must be numeric?",o:["True","False"],c:[1]},
+{t:"Natural Language Processing",q:"True or False: A webchat bot can interact with users visiting a website?",o:["True","False"],c:[0]},
+{t:"Natural Language Processing",q:"True or False: Automatically generating captions for pre-recorded videos is an example of natural language processing?",o:["True","False"],c:[0]},
+{t:"Natural Language Processing",q:"True or False: A smart device in the home that responds to questions such as 'What will the weather be like today?' is an example of natural language processing?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: Automated ML can automatically infer the training data from the use case provided?",o:["True","False"],c:[1]},
+{t:"Machine Learning",q:"True or False: Automated ML works by running multiple training iterations scored and ranked by the metrics you specify?",o:["True","False"],c:[0]},
+{t:"Machine Learning",q:"True or False: Automated ML enables you to specify a dataset and will automatically understand which label to predict?",o:["True","False"],c:[1]},
+{t:"Machine Learning",q:"Which AI workload is used to: Predict how many minutes late a flight will arrive based on the amount of snowfall at an airport.?",o:["Transfer learning","Regression","AutoML","Feature engineering"],c:[1]},
+{t:"Machine Learning",q:"Which AI workload is used to: Segment customers into a defined number of different groups to support a marketing department.?",o:["Azure Machine Learning","Deep learning","Classification","Clustering"],c:[3]},
+{t:"Machine Learning",q:"Which AI workload is used to: Predict whether a student will complete a university course. - Which ML types??",o:["Supervised learning","Classification","Azure Machine Learning","Feature engineering"],c:[1]},
+{t:"Responsible AI",q:"Which AI workload is used to: The decision-making process must be recorded so that staff can identify the reasoning behind a particular quote.?",o:["Accountability","Reliability and safety","Transparency","Inclusiveness"],c:[2]},
+{t:"Responsible AI",q:"Which AI workload is used to: A customer's personal information must be visible only to staff who are involved in the decision-making process.?",o:["Reliability and safety","Fairness","Transparency","Privacy and security"],c:[3]},
+{t:"Responsible AI",q:"Which AI workload is used to: The system must be accessible to customers who use screen readers or other assistive technology. - Which responsible AI principles??",o:["Fairness","Reliability and safety","Inclusiveness","Privacy and security"],c:[2]},
+{t:"Azure AI Services",q:"True or False: A smart device in the home that responds to questions such as 'When is my next appointment?' is an example of conversational AI?",o:["True","False"],c:[0]},
+{t:"Azure AI Services",q:"True or False: An interactive webchat feature on a company website can be implemented by using Azure Bot Service?",o:["True","False"],c:[0]},
+{t:"Azure AI Services",q:"True or False: Automatically generating captions for pre-recorded videos is an example of conversational AI?",o:["True","False"],c:[1]},
+{t:"Computer Vision",q:"True or False: When creating an object detection model in the Azure AI Custom Vision service, you must choose a classification type of either Multilabel or Multiclass?",o:["True","False"],c:[1]},
+{t:"Computer Vision",q:"True or False: You can create an object detection model in the Azure AI Custom Vision service to find the location of items within an image?",o:["True","False"],c:[0]},
+{t:"Computer Vision",q:"True or False: When creating an object detection model in the Azure AI Custom Vision service, you can select from a set of predefined domains?",o:["True","False"],c:[0]}
+];
+
+// ─── STATE ────────────────────────────────────────────────────
+let quiz=[], cur=0, ans=[], mode='practice', secs=0, tmr=null, submitted=false;
+const LT=['A','B','C','D','E','F'];
+const CAT_CLASS={'Responsible AI':'cat-rai','Machine Learning':'cat-ml','Computer Vision':'cat-cv','Natural Language Processing':'cat-nlp','Azure AI Services':'cat-ais','Generative AI':'cat-gen'};
+
+// ─── EXPLANATION MAP ──────────────────────────────────────────
+// [keyword_in_answer_or_question, explanation_text]
+const EXPLAIN_MAP = [
+  // Machine Learning
+  ['regression','Regression dự đoán giá trị số liên tục (giá, khoảng cách, số lượng...). Dùng khi output là một con số cụ thể.'],
+  ['classification','Classification phân loại dữ liệu vào các nhãn/lớp định sẵn (có/không, đúng/sai, loại A/B/C...).'],
+  ['clustering','Clustering (phân cụm) nhóm dữ liệu tương tự mà không cần nhãn định trước — đây là học không giám sát (unsupervised learning).'],
+  ['features','Feature (đặc trưng) là biến đầu vào dùng để đưa ra dự đoán. Label là giá trị đầu ra cần dự đoán.'],
+  ['labels','Label là giá trị đầu ra cần dự đoán. Feature là các biến đầu vào được dùng để dự đoán label đó.'],
+  ['split data','Split Data chia dataset thành tập train và tập validation/test — giúp đánh giá mô hình trên dữ liệu chưa thấy bao giờ.'],
+  ['training','Mô hình được train trên tập huấn luyện; đánh giá trên tập kiểm tra (chưa dùng lúc train) để đo độ chính xác thực sự.'],
+  ['coefficient of determination','R² đo mức độ khớp của mô hình hồi quy với dữ liệu. Giá trị gần 1 = mô hình giải thích tốt biến động của dữ liệu.'],
+  ['root mean squared','RMSE đo sai số trung bình bình phương của mô hình hồi quy — giá trị càng thấp, mô hình càng chính xác.'],
+  ['mean absolute error','MAE đo sai số tuyệt đối trung bình — một trong các chỉ số đánh giá mô hình regression.'],
+  ['true positive rate','True Positive Rate (Recall) = số dự đoán đúng / tổng số dương thực tế — chỉ số đánh giá classification.'],
+  ['f1 score','F1 Score là trung bình điều hòa của Precision và Recall — dùng khi cần cân bằng cả hai chỉ số này.'],
+  ['area under','AUC (Area Under the ROC Curve) đo hiệu suất tổng thể của mô hình phân loại — giá trị 1.0 là hoàn hảo.'],
+  ['automat','AutoML tự động thử nghiệm nhiều thuật toán và tham số, xếp hạng theo metric bạn chọn để tìm mô hình tốt nhất.'],
+  ['designer','Azure ML Designer là giao diện kéo-thả (drag-and-drop) để xây dựng pipeline ML trực quan, không cần nhiều code.'],
+  ['compute resource','Phải tạo Compute Resource (cụm tính toán) trước khi chạy pipeline trong Azure ML Designer.'],
+  ['register the model','Register Model trong Azure ML lưu phiên bản mô hình và metadata — cho phép theo dõi lịch sử và triển khai.'],
+  ['rest endpoint','Sau khi publish inference pipeline cần REST endpoint (URL) và authentication key để gọi web service.'],
+  ['authentication key','Cần REST endpoint và authentication key để truy cập Azure ML web service từ ứng dụng.'],
+  ['false negative','Tăng threshold giảm False Positive nhưng tăng False Negative — phải chọn ngưỡng phù hợp với bài toán.'],
+  ['false positive','Giảm False Positive bằng cách điều chỉnh threshold về phía False Negative — đánh đổi giữa hai loại lỗi.'],
+  ['anomaly detection','Anomaly Detection phát hiện điểm dị thường trong dữ liệu theo thời gian — thường dùng ML để phân tích chuỗi.'],
+  ['load the dataset','Bước đầu tiên khi xây dựng mô hình ML là tải dữ liệu (Load Dataset) trước khi làm sạch hay train.'],
+  // Computer Vision
+  ['optical character recognition','OCR (Optical Character Recognition) nhận dạng và trích xuất văn bản từ ảnh, tài liệu, biển hiệu.'],
+  [') ocr','OCR (Optical Character Recognition) nhận dạng và trích xuất văn bản từ ảnh, tài liệu, biển hiệu.'],
+  ['object detection','Object Detection xác định vị trí (bounding box) và loại của nhiều đối tượng trong cùng một ảnh.'],
+  ['image classification','Image Classification phân loại toàn bộ ảnh vào một nhãn/nhóm duy nhất, không xác định vị trí cụ thể.'],
+  ['facial recognition','Facial Recognition nhận dạng danh tính cụ thể của người từ ảnh/video (ai là người này).'],
+  ['face detection','Face Detection phát hiện sự tồn tại và vị trí khuôn mặt trong ảnh, có thể phân tích biểu cảm, tuổi, v.v.'],
+  ['semantic segmentation','Semantic Segmentation gán nhãn cho từng pixel trong ảnh theo loại đối tượng — chi tiết hơn object detection.'],
+  ['custom vision','Custom Vision cho phép train mô hình phân loại ảnh hoặc phát hiện đối tượng bằng chính ảnh của bạn.'],
+  ['describe the image','Computer Vision có thể tự động tạo mô tả (caption) cho ảnh bằng tính năng Describe/Caption image.'],
+  ['form recognizer','Form Recognizer (Document Intelligence) trích xuất dữ liệu có cấu trúc từ biểu mẫu, hóa đơn, biên lai.'],
+  ['document intelligence','Document Intelligence (Form Recognizer) trích xuất dữ liệu có cấu trúc từ biểu mẫu, hóa đơn, hợp đồng.'],
+  // NLP
+  ['sentiment analysis','Sentiment Analysis xác định cảm xúc của văn bản: tích cực, tiêu cực hay trung lập.'],
+  ['entity recognition','Named Entity Recognition (NER) nhận diện các thực thể như người, địa điểm, tổ chức trong văn bản.'],
+  ['key phrase extraction','Key Phrase Extraction xác định các từ khóa và chủ đề chính trong văn bản — dùng để tóm tắt nội dung.'],
+  ['language detection','Language Detection xác định ngôn ngữ của đoạn văn bản đầu vào.'],
+  ['translation','Azure Translator dịch văn bản giữa các ngôn ngữ một cách tự động.'],
+  ['translator','Azure Translator chuyển đổi văn bản giữa các ngôn ngữ — khác Speech Translator (dịch giọng nói).'],
+  ['speech recognition','Speech Recognition (Speech-to-Text) chuyển đổi âm thanh giọng nói thành văn bản.'],
+  ['speech-to-text','Speech-to-Text chuyển âm thanh giọng nói thành văn bản — dùng cho phụ đề, ghi chú cuộc họp...'],
+  ['speech synthesis','Speech Synthesis (Text-to-Speech) chuyển văn bản thành giọng nói âm thanh.'],
+  ['text-to-speech','Text-to-Speech chuyển văn bản thành giọng nói — dùng trong trợ lý ảo, audiobook, thông báo...'],
+  ['language understanding','Language Understanding (LUIS) phân tích intent (mục đích) và entity trong câu nói/văn bản tự nhiên.'],
+  ['luis','LUIS phân tích intent và entity. Intent = điều người dùng muốn làm; Entity = thông tin cụ thể trong câu.'],
+  ['an intent','Intent là hành động/mục đích mà người dùng muốn thực hiện. Utterance là câu nói cụ thể thể hiện intent đó.'],
+  ['an utterance','Utterance là câu nói/văn bản cụ thể của người dùng. LUIS dùng utterance để nhận diện intent và entity.'],
+  ['qna maker','QnA Maker tạo knowledge base từ tài liệu FAQ, website để chatbot tự động trả lời câu hỏi thường gặp.'],
+  ['active learning','Active Learning trong QnA Maker dùng phản hồi thực tế của người dùng để cải thiện độ chính xác theo thời gian.'],
+  ['chit-chat','Chit-chat thêm lời chào hỏi, phản hồi thân thiện và tự nhiên vào bot QnA Maker.'],
+  ['bot service','Azure Bot Service giúp xây dựng và triển khai chatbot qua nhiều kênh: Teams, web, email, Cortana, Alexa...'],
+  ['azure bot','Azure Bot Service kết nối chatbot với nhiều kênh giao tiếp: Microsoft Teams, web, điện thoại, email...'],
+  ['speech service','Azure AI Speech cung cấp Speech-to-Text, Text-to-Speech và nhận dạng giọng nói thời gian thực.'],
+  ['named entity','Named Entity Recognition nhận diện thực thể (người, địa điểm, tổ chức) — dùng để trích xuất thông tin có cấu trúc.'],
+  // Generative AI
+  ['dall-e','DALL-E là mô hình sinh ảnh từ mô tả văn bản của OpenAI. Tích hợp vào Azure qua Azure OpenAI Service.'],
+  ['codex','Codex là mô hình của OpenAI chuyên về sinh code — được dùng trong GitHub Copilot để gợi ý lập trình.'],
+  ['github copilot','GitHub Copilot dùng mô hình Codex (OpenAI) để gợi ý code trong VS Code và JetBrains IDE.'],
+  ['whisper','Whisper là mô hình nhận dạng giọng nói (speech-to-text) của OpenAI — không phải GPT hay DALL-E.'],
+  ['temperature','Temperature điều chỉnh mức độ ngẫu nhiên của output. Thấp (≈0) = xác định hơn; Cao (≈1) = sáng tạo/đa dạng hơn.'],
+  ['top p','Top P (Nucleus Sampling) kiểm soát độ đa dạng token. Giá trị cao → đa dạng hơn; thấp → tập trung hơn.'],
+  ['fine tun','Fine-tuning điều chỉnh mô hình pre-trained bằng dữ liệu riêng để tối ưu cho tác vụ hoặc lĩnh vực cụ thể.'],
+  ['grounding data','Grounding cung cấp dữ liệu ngữ cảnh thực tế cho mô hình AI để tăng độ chính xác và giảm hallucination.'],
+  ['grounding','Grounding thêm dữ liệu ngữ cảnh vào prompt để AI trả lời dựa trên thông tin thực tế, không phải suy đoán.'],
+  ['prompt engineering','Prompt Engineering thiết kế câu lệnh (prompt) một cách chiến lược để định hướng và tối ưu hóa phản hồi AI.'],
+  ['few-shot','Few-shot Learning cung cấp vài ví dụ mẫu trong prompt giúp AI hiểu đúng format và pattern mong muốn.'],
+  ['chain-of-thought','Chain-of-Thought prompting yêu cầu AI lý luận từng bước — giúp tăng độ chính xác trên bài toán phức tạp.'],
+  ['tokenization','Tokenization là bước đầu tiên của transformer: chia văn bản thành các token (từ/từ phụ).'],
+  ['embedding calculation','Embedding chuyển token thành vector số trong không gian nhiều chiều để mô hình xử lý quan hệ ngữ nghĩa.'],
+  ['next token','LLM hoạt động bằng cách dự đoán token tiếp theo dựa trên toàn bộ context trước đó.'],
+  ['system prompt','System Prompt đặt vai trò, hướng dẫn và ràng buộc cho mô hình AI trước khi người dùng nhập câu hỏi.'],
+  // Responsible AI
+  ['fairness','Fairness (Công bằng): AI không được tạo ra sự phân biệt hoặc thiên vị đối với bất kỳ nhóm người nào dựa trên đặc điểm được bảo vệ.'],
+  ['transparency','Transparency (Minh bạch): AI phải giải thích được quyết định của mình để người dùng và developer hiểu cách nó hoạt động.'],
+  ['accountability','Accountability (Trách nhiệm): Con người — không phải AI — phải chịu trách nhiệm về các quyết định do hệ thống AI đưa ra.'],
+  ['inclusiveness','Inclusiveness (Bao trùm): AI phải có thể sử dụng được với mọi người, kể cả người khuyết tật về thị giác, thính giác hay thể chất.'],
+  ['reliability and safety','Reliability & Safety: AI phải hoạt động nhất quán, đúng như thiết kế và an toàn ngay cả trong các tình huống ngoài dự kiến.'],
+  ['privacy and security','Privacy & Security: AI chỉ được thu thập và xử lý dữ liệu cần thiết, bảo vệ thông tin cá nhân người dùng đúng quy định.'],
+  // Azure services
+  ['knowledge mining','Knowledge Mining trích xuất thông tin có giá trị từ lượng lớn dữ liệu phi cấu trúc (tài liệu, ảnh, email...).'],
+  ['cognitive search','Azure Cognitive Search (AI Search) kết hợp full-text search với AI enrichment để tìm kiếm thông minh hơn.'],
+  ['azure openai','Azure OpenAI Service cung cấp các mô hình GPT, DALL-E, Codex, Embeddings của OpenAI qua Azure.'],
+  ['rest api','Azure OpenAI có thể truy cập qua REST API hoặc Azure SDK (Python, .NET, JavaScript...).'],
+];
+
+function getExplanation(q) {
+  const correctText = q.c.map(i => q.o[i]).join(' ').toLowerCase();
+  const qtext = q.q.toLowerCase();
+  const combined = correctText + ' ' + qtext;
+  for (const [kw, exp] of EXPLAIN_MAP) {
+    if (combined.includes(kw.toLowerCase())) return exp;
+  }
+  return null;
+}
+
+function goHome(){
+  show('startScreen');hide('quizScreen');hide('scoreScreen');
+  document.getElementById('totalCount').textContent=Q.length;
+}
+function show(id){document.getElementById(id).classList.remove('hidden')}
+function hide(id){document.getElementById(id).classList.add('hidden')}
+
+function startQuiz(){
+  const n=parseInt(document.getElementById('qCount').value)||999;
+  mode=document.getElementById('mode').value;
+  const shuf=document.getElementById('shuffle').value==='1';
+  let pool=[...Q];
+  if(shuf) pool.sort(()=>Math.random()-.5);
+  quiz=pool.slice(0,Math.min(n,pool.length));
+  cur=0; ans=quiz.map(()=>[]); secs=0; submitted=false;
+  hide('startScreen');show('quizScreen');hide('scoreScreen');
+  clearInterval(tmr);
+  tmr=setInterval(()=>{
+    secs++;
+    const el=document.getElementById('timer');
+    el.textContent=`${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
+    if(secs>1800) el.classList.add('warn');
+  },1000);
+  renderQ();
+}
+
+function renderQ(){
+  submitted=false;
+  const q=quiz[cur], total=quiz.length;
+  document.getElementById('progBar').style.width=(cur/total*100)+'%';
+  document.getElementById('progTxt').textContent=`Câu ${cur+1} / ${total}`;
+  document.getElementById('qNum').textContent=`CÂU ${cur+1}`;
+  const topicEl=document.getElementById('qTopic');
+  topicEl.textContent=q.t;
+  topicEl.className='topic-tag '+(CAT_CLASS[q.t]||'cat-def');
+  document.getElementById('qText').textContent=q.q;
+  const mh=document.getElementById('multiHint');
+  q.c.length>1?mh.classList.remove('hidden'):mh.classList.add('hidden');
+  const container=document.getElementById('opts');
+  container.innerHTML='';
+  q.o.forEach((o,i)=>{
+    const d=document.createElement('div');
+    d.className='opt'+(ans[cur].includes(i)?' sel':'');
+    d.id='o'+i;
+    d.innerHTML=`<div class="opt-lt" id="lt${i}">${LT[i]}</div><div class="opt-txt">${o}</div>`;
+    d.onclick=()=>pick(i);
+    container.appendChild(d);
+  });
+  document.getElementById('feedback').style.display='none';
+  const bc=document.getElementById('btnCheck'), bn=document.getElementById('btnNext');
+  bc.classList.remove('hidden'); bn.classList.add('hidden');
+  bc.textContent=mode==='exam'?'Câu tiếp →':'Kiểm tra';
+  document.getElementById('btnPrev').style.visibility=cur===0?'hidden':'visible';
+}
+
+function pick(i){
+  if(submitted&&mode==='practice') return;
+  const q=quiz[cur];
+  if(q.c.length>1){
+    const p=ans[cur].indexOf(i);
+    p===-1?ans[cur].push(i):ans[cur].splice(p,1);
+  } else { ans[cur]=[i]; }
+  q.o.forEach((_,j)=>{
+    const d=document.getElementById('o'+j);
+    d.className='opt'+(ans[cur].includes(j)?' sel':'');
+  });
+}
+
+function checkAnswer(){
+  if(mode==='exam'){nextQ();return;}
+  const q=quiz[cur], sel=ans[cur];
+  if(!sel.length){alert('Vui lòng chọn ít nhất một đáp án.');return;}
+  submitted=true;
+  const isOk=arEq(sel,q.c);
+  q.o.forEach((_,i)=>{
+    const d=document.getElementById('o'+i);
+    const isSel=sel.includes(i), isCorr=q.c.includes(i);
+    d.className='opt'+(isSel&&isCorr?' ok':isSel&&!isCorr?' bad':!isSel&&isCorr?' hint':'');
+  });
+  const fb=document.getElementById('feedback');
+  const correctStr=q.c.map(i=>LT[i]+'. '+q.o[i]).join(', ');
+  fb.className='feedback '+(isOk?'ok':'bad');
+  if(isOk){
+    fb.innerHTML=`<b>✓ Chính xác!</b>Đáp án: ${correctStr}`;
+  } else {
+    const exp=getExplanation(q);
+    fb.innerHTML=`<b>✗ Chưa đúng!</b>Đáp án đúng: ${correctStr}${exp?`<div class="fb-explain">${exp}</div>`:''}`;
+  }
+  fb.style.display='block';
+  document.getElementById('btnCheck').classList.add('hidden');
+  const bn=document.getElementById('btnNext');
+  bn.classList.remove('hidden');
+  bn.textContent=cur===quiz.length-1?'Xem kết quả ✓':'Câu tiếp →';
+}
+
+function nextQ(){
+  if(cur<quiz.length-1){cur++;renderQ();}
+  else finishQuiz();
+}
+function prevQ(){if(cur>0){cur--;renderQ();}}
+
+function finishQuiz(){
+  clearInterval(tmr);
+  let ok=0;
+  quiz.forEach((q,i)=>{if(arEq(ans[i],q.c))ok++;});
+  const total=quiz.length, pct=Math.round(ok/total*100), pass=pct>=70;
+  hide('quizScreen');show('scoreScreen');
+  document.getElementById('reviewWrap').innerHTML='';
+  const circ=document.getElementById('scoreCircle');
+  circ.className='score-circle '+(pass?'pass':'fail');
+  document.getElementById('scorePct').textContent=pct+'%';
+  document.getElementById('scorePass').textContent=pass?'PASS':'FAIL';
+  document.getElementById('scoreTitle').textContent=pass?'🎉 Chúc mừng!':'Cần ôn tập thêm';
+  document.getElementById('scoreSub').textContent=`Bạn trả lời đúng ${ok}/${total} câu. ${pass?'Bạn đã đạt ngưỡng đậu 70%!':'Ngưỡng đậu là 70%. Hãy ôn tập và thử lại!'}`;
+  document.getElementById('scCorrect').textContent=ok;
+  document.getElementById('scWrong').textContent=total-ok;
+  document.getElementById('scTime').textContent=`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
+}
+
+function showReview(){
+  const rw=document.getElementById('reviewWrap');
+  if(rw.innerHTML){rw.innerHTML='';return;}
+  let html='';
+  quiz.forEach((q,i)=>{
+    const a=ans[i]||[], ok=arEq(a,q.c);
+    const cStr=q.c.map(j=>LT[j]+'. '+q.o[j]).join(' / ');
+    const aStr=a.length?a.map(j=>LT[j]+'. '+q.o[j]).join(' / '):'Không trả lời';
+    const exp=!ok?getExplanation(q):null;
+    html+=`<div class="rev-item ${ok?'ok':'bad'}">
+      <span class="rev-badge ${ok?'badge-ok':'badge-bad'}">${ok?'✓ Đúng':'✗ Sai'}</span>
+      <div class="rev-q">Câu ${i+1}: ${q.q.length>150?q.q.slice(0,150)+'…':q.q}</div>
+      <div class="rev-a">Bạn chọn: <span>${aStr}</span></div>
+      ${!ok?`<div class="rev-a">Đáp án đúng: <span style="color:#107c10">${cStr}</span></div>`:''}
+      ${exp?`<div class="fb-explain" style="margin-top:7px;padding-top:7px;border-top:1px solid rgba(0,0,0,.1);font-size:12.5px;color:#444;display:flex;gap:6px"><span>💡</span><span>${exp}</span></div>`:''}
+    </div>`;
+  });
+  rw.innerHTML=html;
+  rw.scrollIntoView({behavior:'smooth'});
+}
+
+function arEq(a,b){
+  if(a.length!==b.length) return false;
+  const sa=[...a].sort((x,y)=>x-y), sb=[...b].sort((x,y)=>x-y);
+  return sa.every((v,i)=>v===sb[i]);
+}
+
+goHome();
+</script>
+</body>
+</html>
