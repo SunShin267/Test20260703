@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tạo trang số ngẫu nhiên</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Bebas+Neue&family=Poppins:wght@400;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1f2430;
+    --paper:#fbfaf7;
+    --line:#e3e0d8;
+    --accent:#3b6e64;
+    --accent-soft:#e7f0ed;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Poppins', system-ui, sans-serif;
+    background:#eef0ec;
+    color:var(--ink);
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* ---------- CONTROL PANEL ---------- */
+  .panel{
+    width:300px;
+    flex-shrink:0;
+    background:var(--paper);
+    border-right:1px solid var(--line);
+    padding:28px 24px;
+    height:100vh;
+    overflow-y:auto;
+    position:sticky;
+    top:0;
+  }
+  .panel h1{
+    font-size:19px;
+    margin:0 0 4px;
+    letter-spacing:.2px;
+  }
+  .panel .sub{
+    font-size:12.5px;
+    color:#767a72;
+    margin:0 0 22px;
+    line-height:1.5;
+  }
+  .field{
+    margin-bottom:18px;
+  }
+  .field label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:#5b5f57;
+    margin-bottom:7px;
+  }
+  .field input[type=number],
+  .field select{
+    width:100%;
+    padding:9px 10px;
+    border-radius:8px;
+    border:1px solid #d7d4ca;
+    background:#fff;
+    font-family:inherit;
+    font-size:14px;
+    color:var(--ink);
+  }
+  .field input[type=color]{
+    width:100%;
+    height:38px;
+    border-radius:8px;
+    border:1px solid #d7d4ca;
+    padding:2px;
+    background:#fff;
+    cursor:pointer;
+  }
+  .range-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .range-row input[type=range]{
+    flex:1;
+    accent-color:var(--accent);
+  }
+  .range-row span{
+    font-size:13px;
+    font-variant-numeric:tabular-nums;
+    width:38px;
+    text-align:right;
+    color:#5b5f57;
+  }
+  .layout-toggle{
+    display:flex;
+    gap:8px;
+  }
+  .layout-toggle button{
+    flex:1;
+    padding:8px 6px;
+    border-radius:8px;
+    border:1px solid #d7d4ca;
+    background:#fff;
+    font-size:12.5px;
+    cursor:pointer;
+    color:#5b5f57;
+  }
+  .layout-toggle button.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  .btn{
+    width:100%;
+    padding:12px 10px;
+    border-radius:9px;
+    border:none;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:4px;
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:#fff;
+  }
+  .btn-primary:hover{ filter:brightness(1.06); }
+  .btn-ghost{
+    background:var(--accent-soft);
+    color:var(--accent);
+    margin-top:10px;
+  }
+  .btn-ghost:hover{ filter:brightness(0.98); }
+  .divider{
+    height:1px;
+    background:var(--line);
+    margin:22px 0;
+  }
+  .hint{
+    font-size:11.5px;
+    color:#8a8d84;
+    line-height:1.5;
+    margin-top:6px;
+  }
+
+  /* ---------- PREVIEW / STAGE ---------- */
+  .stage{
+    flex:1;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:40px 30px;
+    overflow:auto;
+  }
+  .page{
+    width:210mm;
+    height:297mm;
+    background:#fff;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+    position:relative;
+    flex-shrink:0;
+    overflow:hidden;
+    border-radius:2px;
+  }
+  .page-title{
+    position:absolute;
+    top:10mm;
+    left:0; right:0;
+    text-align:center;
+    font-family:'Poppins', sans-serif;
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:#c9c9c9;
+  }
+  .num-item{
+    position:absolute;
+    line-height:1;
+    user-select:none;
+    white-space:nowrap;
+    transform:translate(-50%,-50%);
+  }
+
+  /* ---------- PRINT ---------- */
+  @media print{
+    body{ background:#fff; }
+    .panel{ display:none; }
+    .stage{
+      padding:0;
+      display:block;
+      overflow:visible;
+    }
+    .page{
+      box-shadow:none;
+      border-radius:0;
+      width:210mm;
+      height:297mm;
+      margin:0;
+    }
+    .page-title{ color:#ddd; }
+    @page{
+      size:A4;
+      margin:0;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ CONTROL PANEL ============ -->
+  <div class="panel">
+    <h1>Trang số ngẫu nhiên</h1>
+    <p class="sub">Nhập một số, các số từ 1 đến số đó sẽ được rải ngẫu nhiên trên trang A4 để in ra dùng cho trò chơi, bốc thăm, hoạt động lớp học...</p>
+
+    <div class="field">
+      <label for="maxNum">Số lớn nhất</label>
+      <input type="number" id="maxNum" min="1" max="500" value="20">
+    </div>
+
+    <div class="field">
+      <label>Kiểu bố trí</label>
+      <div class="layout-toggle">
+        <button type="button" class="layout-btn active" data-mode="scatter">Rải ngẫu nhiên</button>
+        <button type="button" class="layout-btn" data-mode="grid">Lưới xáo trộn</button>
+      </div>
+      <p class="hint">"Rải ngẫu nhiên" đặt số tự do trên trang. "Lưới xáo trộn" chia ô đều rồi xáo vị trí số — gọn hơn khi số lượng lớn.</p>
+    </div>
+
+    <div class="field">
+      <label for="colorPick">Màu chữ số</label>
+      <input type="color" id="colorPick" value="#1f2430">
+    </div>
+
+    <div class="field">
+      <label for="fontPick">Font chữ</label>
+      <select id="fontPick">
+        <option value="'Poppins', sans-serif">Poppins</option>
+        <option value="'Fredoka', sans-serif" selected>Fredoka (tròn, vui)</option>
+        <option value="'Bebas Neue', sans-serif">Bebas Neue (cao, gọn)</option>
+        <option value="'Caveat', cursive">Caveat (viết tay)</option>
+        <option value="Georgia, serif">Georgia (serif)</option>
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="'Courier New', monospace">Courier New</option>
+        <option value="Impact, sans-serif">Impact</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="sizeMin">Cỡ chữ nhỏ nhất (px)</label>
+      <div class="range-row">
+        <input type="range" id="sizeMin" min="10" max="150" value="28">
+        <span id="sizeMinVal">28</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="sizeMax">Cỡ chữ lớn nhất (px)</label>
+      <div class="range-row">
+        <input type="range" id="sizeMax" min="10" max="150" value="28">
+        <span id="sizeMaxVal">28</span>
+      </div>
+      <p class="hint">Đặt hai giá trị khác nhau để mỗi số có cỡ ngẫu nhiên trong khoảng đó. Đặt bằng nhau để tất cả cùng cỡ.</p>
+    </div>
+
+    <div class="field">
+      <label><input type="checkbox" id="showTitle" style="width:auto;margin-right:6px;">Hiện dòng ghi chú nhỏ trên đầu trang</label>
+    </div>
+
+    <button class="btn btn-primary" id="generateBtn">🎲 Tạo trang mới</button>
+    <button class="btn btn-ghost" id="printBtn">🖨️ Xem trước &amp; In</button>
+
+    <div class="divider"></div>
+    <p class="hint">Mẹo: nhấn "Tạo trang mới" nhiều lần để có các cách rải khác nhau với cùng cài đặt. Khi in, hãy chọn khổ giấy <b>A4</b> và tắt "Đầu trang/chân trang" trong hộp thoại in để có kết quả đẹp nhất.</p>
+  </div>
+
+  <!-- ============ STAGE / PAGE ============ -->
+  <div class="stage">
+    <div class="page" id="page">
+      <div class="page-title" id="pageTitle" style="display:none;">1 — <span id="titleMax">20</span></div>
+    </div>
+  </div>
+
+<script>
+  const page = document.getElementById('page');
+  const pageTitle = document.getElementById('pageTitle');
+  const maxNumInput = document.getElementById('maxNum');
+  const colorPick = document.getElementById('colorPick');
+  const fontPick = document.getElementById('fontPick');
+  const sizeMin = document.getElementById('sizeMin');
+  const sizeMax = document.getElementById('sizeMax');
+  const sizeMinVal = document.getElementById('sizeMinVal');
+  const sizeMaxVal = document.getElementById('sizeMaxVal');
+  const showTitle = document.getElementById('showTitle');
+  const titleMax = document.getElementById('titleMax');
+  const generateBtn = document.getElementById('generateBtn');
+  const printBtn = document.getElementById('printBtn');
+  const layoutBtns = document.querySelectorAll('.layout-btn');
+
+  let layoutMode = 'scatter';
+
+  layoutBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      layoutBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      layoutMode = btn.dataset.mode;
+      render();
+    });
+  });
+
+  sizeMin.addEventListener('input', ()=>{ sizeMinVal.textContent = sizeMin.value; });
+  sizeMax.addEventListener('input', ()=>{ sizeMaxVal.textContent = sizeMax.value; });
+  showTitle.addEventListener('change', ()=>{ pageTitle.style.display = showTitle.checked ? 'block' : 'none'; });
+  [colorPick, fontPick, sizeMin, sizeMax, maxNumInput].forEach(el=>{
+    el.addEventListener('change', render);
+  });
+
+  function shuffle(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function estimateWidth(numStr, fontPx){
+    // rough average glyph width factor for digits in most fonts
+    return numStr.length * fontPx * 0.62 + 6;
+  }
+
+  function render(){
+    const n = Math.max(1, Math.min(500, parseInt(maxNumInput.value) || 1));
+    maxNumInput.value = n;
+    titleMax.textContent = n;
+
+    const color = colorPick.value;
+    const font = fontPick.value;
+    const minS = Math.min(parseInt(sizeMin.value), parseInt(sizeMax.value));
+    const maxS = Math.max(parseInt(sizeMin.value), parseInt(sizeMax.value));
+
+    // clear previous numbers (keep title node)
+    [...page.querySelectorAll('.num-item')].forEach(el => el.remove());
+
+    // page usable area in px (A4 at 96dpi ~ 794 x 1123), leave margins
+    const pageW = 794, pageH = 1123;
+    const marginX = 30, marginY = showTitle.checked ? 55 : 30;
+    const usableW = pageW - marginX * 2;
+    const usableH = pageH - marginY - 30;
+
+    const numbers = shuffle(Array.from({length:n}, (_,i)=> i + 1));
+
+    if(layoutMode === 'grid'){
+      // shuffled grid: compute rows/cols to fit n cells
+      const cols = Math.ceil(Math.sqrt(n * (usableW / usableH)));
+      const rows = Math.ceil(n / cols);
+      const cellW = usableW / cols;
+      const cellH = usableH / rows;
+      const cells = shuffle(Array.from({length: rows * cols}, (_,i)=> i)).slice(0, n);
+
+      numbers.forEach((num, idx)=>{
+        const cell = cells[idx];
+        const cx = cell % cols;
+        const cy = Math.floor(cell / cols);
+        const jitterX = (Math.random() - 0.5) * cellW * 0.25;
+        const jitterY = (Math.random() - 0.5) * cellH * 0.25;
+        const x = marginX + cellW * (cx + 0.5) + jitterX;
+        const y = marginY + cellH * (cy + 0.5) + jitterY;
+        const fontSize = minS === maxS ? minS : Math.round(minS + Math.random() * (maxS - minS));
+        placeNumber(num, x, y, fontSize, color, font);
+      });
+    } else {
+      // free scatter with collision avoidance
+      const placed = [];
+      numbers.forEach(num=>{
+        const fontSize = minS === maxS ? minS : Math.round(minS + Math.random() * (maxS - minS));
+        const w = estimateWidth(String(num), fontSize);
+        const h = fontSize * 1.15;
+        let x, y, tries = 0, ok = false;
+        while(tries < 250){
+          x = marginX + w/2 + Math.random() * (usableW - w);
+          y = marginY + h/2 + Math.random() * (usableH - h);
+          ok = placed.every(p => {
+            const dx = Math.abs(p.x - x) - (p.w + w) / 2;
+            const dy = Math.abs(p.y - y) - (p.h + h) / 2;
+            return dx > -2 || dy > -2;
+          });
+          tries++;
+          if(ok) break;
+        }
+        placed.push({x, y, w, h});
+        placeNumber(num, x, y, fontSize, color, font);
+      });
+    }
+  }
+
+  function placeNumber(num, x, y, fontSize, color, font){
+    const el = document.createElement('div');
+    el.className = 'num-item';
+    el.textContent = num;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.fontSize = fontSize + 'px';
+    el.style.color = color;
+    el.style.fontFamily = font;
+    page.appendChild(el);
+  }
+
+  generateBtn.addEventListener('click', render);
+  printBtn.addEventListener('click', ()=>{ window.print(); });
+
+  // initial render
+  render();
+</script>
+</body>
+</html>
