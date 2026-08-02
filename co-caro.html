@@ -86,6 +86,42 @@
     font-size: 0.95rem;
     letter-spacing: 0.02em;
   }
+  .game-header{
+    max-width: 1100px;
+    margin: 0 auto 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    padding: 0 18px;
+    color: var(--cream);
+  }
+  .game-header h1{
+    margin: 0;
+    font-size: clamp(2rem, 3vw, 2.8rem);
+  }
+  .game-header .sub{
+    margin: 8px 0 0;
+    color: var(--muted);
+    max-width: 540px;
+  }
+  .back-btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(255,255,255,0.05);
+    color: var(--cream);
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform .16s ease, background .16s ease;
+  }
+  .back-btn:hover{
+    transform: translateY(-1px);
+    background: rgba(255,255,255,0.1);
+  }
 
   .layout{
     display:grid;
@@ -471,7 +507,13 @@
       <span>SunShinSon</span>
     </div>
     <p class="sub">Xếp đủ 5 quân liên tiếp để thắng — chơi ngay trên trình duyệt, không cần mạng.</p>
-  </header>
+  <div class="game-header">
+    <div>
+      <h1>CỜ CA-RÔ</h1>
+      <p class="sub">Xếp đủ 5 quân liên tiếp để thắng — chơi ngay trên trình duyệt, không cần mạng.</p>
+    </div>
+    <a class="back-btn" href="index.html">← Về Game Hub</a>
+  </div>
 
   <div class="layout">
     <aside class="panel">

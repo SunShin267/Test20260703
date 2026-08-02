@@ -33,11 +33,21 @@
       padding: 34px;
       box-shadow: 0 24px 80px rgba(0,0,0,0.28);
     }
-    .brand {
+    .page-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .page-header .brand {
       display: flex;
       align-items: center;
       gap: 14px;
-      margin-bottom: 18px;
+      margin: 0;
     }
     .brand-mark {
       width: 48px;
@@ -52,6 +62,21 @@
     }
     h1 {
       font-size: clamp(2rem, 3vw, 2.8rem);
+      margin: 0;
+    }
+    .header-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .header-meta .tagline {
+      color: var(--accent);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .header-meta p {
       margin: 0;
     }
     p.lead {
@@ -132,12 +157,15 @@
 </head>
 <body>
   <main class="page">
-    <div class="brand">
-      <div class="brand-mark">G</div>
-      <div>
-        <h1>Game Hub</h1>
-        <p class="lead">Trang quản lý game để điều hướng đến các trò chơi hiện có. Chọn một game bên dưới để mở trang tương ứng.</p>
+    <div class="page-header">
+      <div class="brand">
+        <div class="brand-mark">G</div>
+        <div class="header-meta">
+          <h1>Game Hub</h1>
+          <span class="tagline">Tổng hợp game trong repo</span>
+        </div>
       </div>
+      <p class="lead">Trang quản lý game để điều hướng đến các trò chơi hiện có. Chọn một game bên dưới để mở trang tương ứng.</p>
     </div>
 
     <div class="games">
@@ -148,7 +176,6 @@
         </div>
         <div class="actions">
           <a class="btn" href="random-number-page.html">Mở game</a>
-          <a class="btn btn-secondary" href="#">Chi tiết</a>
         </div>
       </article>
 
@@ -159,7 +186,16 @@
         </div>
         <div class="actions">
           <a class="btn" href="co-caro.html">Mở game</a>
-          <a class="btn btn-secondary" href="#">Chi tiết</a>
+        </div>
+      </article>
+
+      <article class="game-card">
+        <div>
+          <h2>Cờ Vua</h2>
+          <p>Trang game cờ vua để bạn thử giao diện bàn cờ và luật cơ bản. Nhấn mở để sang trang cờ vua.</p>
+        </div>
+        <div class="actions">
+          <a class="btn" href="co-vua.html">Mở game</a>
         </div>
       </article>
     </div>
