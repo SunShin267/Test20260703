@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Hub</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #111b33;
+      --text: #e9eff8;
+      --muted: #95a3c4;
+      --accent: #56ccf2;
+      --accent-dark: #2a8ec7;
+      --border: rgba(255,255,255,0.08);
+      font-family: Inter, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1f3258, #07101f 55%);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .page {
+      width: min(100%, 920px);
+      background: rgba(12, 20, 38, 0.94);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 34px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), #273c6a);
+      display: grid;
+      place-items: center;
+      color: #07263d;
+      font-weight: 800;
+      letter-spacing: -0.08em;
+    }
+    h1 {
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      margin: 0;
+    }
+    p.lead {
+      margin: 14px 0 24px;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 720px;
+    }
+    .games {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+    .game-card {
+      background: #122042;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 200px;
+    }
+    .game-card h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+    .game-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      flex: 1;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      color: #fff;
+      background: var(--accent);
+      transition: transform .18s ease, background .18s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      background: var(--accent-dark);
+    }
+    .btn-secondary {
+      background: transparent;
+      border-color: rgba(255,255,255,0.12);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.06);
+    }
+    .footer {
+      margin-top: 26px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div>
+        <h1>Game Hub</h1>
+        <p class="lead">Trang quản lý game để điều hướng đến các trò chơi hiện có. Chọn một game bên dưới để mở trang tương ứng.</p>
+      </div>
+    </div>
+
+    <div class="games">
+      <article class="game-card">
+        <div>
+          <h2>Random Number</h2>
+          <p>Trang game tạo số ngẫu nhiên. Bạn có thể chơi và thử đoán số được tạo ra từ hệ thống.</p>
+        </div>
+        <div class="actions">
+          <a class="btn" href="random-number-page.html">Mở game</a>
+          <a class="btn btn-secondary" href="#">Chi tiết</a>
+        </div>
+      </article>
+
+      <article class="game-card">
+        <div>
+          <h2>Cờ Caro</h2>
+          <p>Trang game cờ caro giúp bạn chơi cờ trên máy. Nhấn mở để chuyển sang trang cờ caro.</p>
+        </div>
+        <div class="actions">
+          <a class="btn" href="co-caro.html">Mở game</a>
+          <a class="btn btn-secondary" href="#">Chi tiết</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="footer">
+      <span>Quản lý tất cả game của bạn tại một nơi.</span>
+      <a href="https://github.com/SunShin267/Test20260703">Xem repository</a>
+    </div>
+  </main>
+</body>
+</html>

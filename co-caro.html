@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cờ Ca-rô</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --bg:#1b1712;
+    --bg-2:#221c15;
+    --board-color:#6b4226;
+    --grid-line: #ffffff;
+    --cream:#ede4d3;
+    --muted:#a89880;
+    --gold:#c79a4b;
+    --seal:#b23a2e;
+    --ink:#211d19;
+    --panel-bg: rgba(34,28,21,0.85);
+    --danger:#b23a2e;
+    --radius: 14px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background:
+      radial-gradient(circle at 20% -10%, rgba(199,154,75,0.08), transparent 45%),
+      radial-gradient(circle at 90% 110%, rgba(178,58,46,0.07), transparent 45%),
+      var(--bg);
+    color: var(--cream);
+    font-family: 'Be Vietnam Pro', 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  .wrap{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  header{
+    text-align:center;
+    margin-bottom: 30px;
+  }
+
+  .stamp{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 10px 34px;
+    border: 2.5px solid var(--seal);
+    border-radius: 10px;
+    position:relative;
+    transform: rotate(-1.2deg);
+    box-shadow: 0 0 0 1px rgba(178,58,46,0.25) inset;
+  }
+  .stamp::before{
+    content:"";
+    position:absolute; inset:5px;
+    border:1px solid rgba(178,58,46,0.5);
+    border-radius:7px;
+    pointer-events:none;
+  }
+  .stamp h1{
+    font-family:'Playfair Display', serif;
+    font-weight:900;
+    font-size: clamp(2rem, 6vw, 3.1rem);
+    letter-spacing: 0.06em;
+    margin:0;
+    color: var(--seal);
+    text-shadow: 0 1px 0 rgba(0,0,0,0.3);
+  }
+  .stamp span{
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 4px;
+    font-weight:600;
+  }
+  header p.sub{
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items:start;
+  }
+  @media (max-width: 820px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--panel-bg);
+    border: 1px solid rgba(199,154,75,0.25);
+    border-radius: var(--radius);
+    padding: 20px;
+    backdrop-filter: blur(2px);
+  }
+  .panel h2{
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 10px;
+    font-weight: 700;
+  }
+  .group{ margin-bottom: 22px; }
+  .group:last-child{ margin-bottom: 0; }
+
+  .toggle-row, .size-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 8px;
+  }
+  .opt-btn{
+    flex: 1 1 auto;
+    min-width: 64px;
+    background: rgba(238,228,208,0.06);
+    border: 1px solid rgba(238,228,208,0.18);
+    color: var(--cream);
+    padding: 9px 10px;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor:pointer;
+    transition: all .15s ease;
+  }
+  .opt-btn:hover{ border-color: var(--gold); }
+  .opt-btn.active{
+    background: linear-gradient(135deg, var(--seal), #8f2c22);
+    border-color: var(--seal);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(178,58,46,0.35);
+  }
+
+  .color-row{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 10px;
+  }
+  .color-field{
+    flex:1;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    gap: 6px;
+  }
+  .color-field label{
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .color-field input[type=color]{
+    width: 48px; height: 36px;
+    border:none; border-radius: 8px;
+    background:none; cursor:pointer;
+    padding:0;
+  }
+
+  .hint{
+    font-size: 0.76rem;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height:1.4;
+  }
+
+  .btn-primary{
+    width:100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--gold), #a97e34);
+    color: #201a10;
+    font-weight: 800;
+    font-size: 0.92rem;
+    letter-spacing: 0.03em;
+    cursor:pointer;
+    transition: transform .1s ease, box-shadow .15s ease;
+    box-shadow: 0 4px 14px rgba(199,154,75,0.25);
+  }
+  .btn-primary:hover{ transform: translateY(-1px); }
+  .btn-primary:active{ transform: translateY(0); }
+
+  .board-area{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .name-row{
+    display:flex;
+    gap: 10px;
+  }
+  .name-field{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap: 5px;
+  }
+  .name-field label{
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .name-field input[type=text]{
+    background: rgba(238,228,208,0.06);
+    border: 1px solid rgba(238,228,208,0.2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 0.85rem;
+    width:100%;
+  }
+  .name-field input[type=text]:focus{ outline:none; border-color: var(--gold); }
+  .name-field input[type=text]:disabled{ opacity: 0.45; cursor: not-allowed; }
+
+  .scoreboard{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .score-card{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    background: rgba(238,228,208,0.06);
+    border: 1px solid rgba(238,228,208,0.18);
+    padding: 8px 14px;
+    border-radius: 10px;
+    min-width: 130px;
+  }
+  .score-card .dot{
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    flex-shrink:0;
+    box-shadow: 0 0 0 2px rgba(238,228,208,0.15);
+  }
+  .score-card.x .dot{ background: var(--x-color); }
+  .score-card.o .dot{ background: var(--o-color); }
+  .score-name{
+    font-size: 0.85rem;
+    font-weight:600;
+    color: var(--cream);
+    max-width: 100px;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
+  }
+  .score-value{
+    font-family:'Playfair Display', serif;
+    font-weight:900;
+    font-size: 1.3rem;
+    color: var(--gold);
+    margin-left:auto;
+  }
+  .score-vs{ color: var(--muted); font-weight:700; }
+  .reset-score-btn{
+    background:none;
+    border: 1px solid rgba(238,228,208,0.25);
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight:600;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor:pointer;
+    transition: all .15s ease;
+  }
+  .reset-score-btn:hover{ border-color: var(--seal); color: var(--cream); }
+
+  #status{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom: 16px;
+    font-weight:700;
+    font-size: 1.05rem;
+    min-height: 32px;
+  }
+  #status .swatch{
+    width:20px; height:20px;
+    border-radius:5px;
+    box-shadow: 0 0 0 2px rgba(238,228,208,0.2);
+    flex-shrink:0;
+  }
+
+  .board-scroll{
+    width:100%;
+    max-width: 760px;
+    overflow: auto;
+    display:flex;
+    justify-content:center;
+    padding: 4px 0 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .zoom-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .zoom-btn{
+    width:34px; height:34px;
+    border-radius: 8px;
+    border: 1px solid rgba(238,228,208,0.22);
+    background: rgba(238,228,208,0.06);
+    color: var(--cream);
+    font-size: 1.15rem;
+    font-weight:700;
+    line-height:1;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .zoom-btn:hover{ border-color: var(--gold); background: rgba(199,154,75,0.12); }
+  .zoom-value{
+    font-size: 0.82rem;
+    color: var(--muted);
+    min-width: 52px;
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+  }
+  .zoom-value:hover{ color: var(--gold); }
+
+  .board-wrap{
+    position:relative;
+    flex-shrink:0;
+    transform-origin: top center;
+    transition: transform .15s ease;
+    width: min(88vw, 620px);
+    aspect-ratio: 1/1;
+    border-radius: 10px;
+    background: var(--board-color);
+    box-shadow:
+      0 10px 30px rgba(0,0,0,0.45),
+      inset 0 0 0 1px rgba(0,0,0,0.4),
+      inset 0 0 40px rgba(0,0,0,0.35);
+    padding: 10px;
+  }
+
+  #board{
+    position:relative;
+    display:grid;
+    width:100%;
+    height:100%;
+    border-radius: 4px;
+    overflow:hidden;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.55);
+    background-color: rgba(0,0,0,0.08);
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1.5px, transparent 1.5px),
+      linear-gradient(to bottom, var(--grid-line) 1.5px, transparent 1.5px);
+    background-size: calc(100% / var(--size)) calc(100% / var(--size));
+  }
+
+  .cell{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .cell:hover::after{
+    content:"";
+    position:absolute; inset: 6%;
+    border-radius: 50%;
+    background: rgba(238,228,208,0.16);
+    box-shadow: 0 0 0 1.5px rgba(238,228,208,0.3) inset;
+  }
+  .cell.filled{ cursor:default; }
+  .cell.filled:hover::after{ display:none; }
+
+  .mark{
+    position:relative;
+    width: 68%;
+    height: 68%;
+    animation: pop .18s ease;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+  }
+  @keyframes pop{
+    from{ transform: scale(0.4); opacity:0; }
+    to{ transform: scale(1); opacity:1; }
+  }
+  .mark.x::before, .mark.x::after{
+    content:"";
+    position:absolute;
+    top:50%; left:50%;
+    width: 100%;
+    height: 17%;
+    background: var(--x-color, var(--seal));
+    border-radius: 50px;
+    transform-origin: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .mark.x::before{ transform: translate(-50%,-50%) rotate(45deg); }
+  .mark.x::after{ transform: translate(-50%,-50%) rotate(-45deg); }
+
+  .mark.o{
+    width:66%; height:66%;
+    border-radius:50%;
+    border: solid var(--o-color, var(--ink));
+    border-width: 15%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 0 8px rgba(0,0,0,0.25);
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.06), transparent 60%);
+  }
+
+  .cell.win{
+    z-index: 2;
+    animation: winPulse 0.85s ease-in-out infinite;
+  }
+  @keyframes winPulse{
+    0%, 100%{
+      background: radial-gradient(circle, rgba(255,214,80,0.18), transparent 70%);
+      box-shadow: inset 0 0 6px 1px rgba(255,214,80,0.15);
+    }
+    50%{
+      background: radial-gradient(circle, rgba(255,214,80,0.75), rgba(255,214,80,0.25) 65%, transparent 78%);
+      box-shadow: inset 0 0 22px 6px rgba(255,214,80,0.6);
+    }
+  }
+  .cell.win .mark{
+    animation: markGlow 0.85s ease-in-out infinite;
+  }
+  @keyframes markGlow{
+    0%, 100%{ filter: brightness(1.1) drop-shadow(0 0 2px rgba(255,214,80,0.3)); }
+    50%{ filter: brightness(1.75) drop-shadow(0 0 14px rgba(255,214,80,1)); }
+  }
+
+  .banner{
+    margin-top: 18px;
+    text-align:center;
+    font-family:'Playfair Display', serif;
+    font-weight:900;
+    font-size: 1.4rem;
+    color: var(--gold);
+    min-height: 1.6em;
+    opacity:0;
+    transform: translateY(6px);
+    transition: all .3s ease;
+  }
+  .banner.show{ opacity:1; transform: translateY(0); }
+
+  footer{
+    text-align:center;
+    color: var(--muted);
+    font-size: 0.75rem;
+    margin-top: 34px;
+    letter-spacing: 0.03em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="stamp">
+      <h1>CỜ CA-RÔ</h1>
+      <span>SunShinSon</span>
+    </div>
+    <p class="sub">Xếp đủ 5 quân liên tiếp để thắng — chơi ngay trên trình duyệt, không cần mạng.</p>
+  </header>
+
+  <div class="layout">
+    <aside class="panel">
+      <div class="group">
+        <h2>Chế độ chơi</h2>
+        <div class="toggle-row">
+          <button class="opt-btn active" data-mode="ai">Đấu với máy</button>
+          <button class="opt-btn" data-mode="human">Đấu với người</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Tên người chơi</h2>
+        <div class="name-row">
+          <div class="name-field">
+            <label>Quân X</label>
+            <input type="text" id="xNameInput" placeholder="Bạn" maxlength="16">
+          </div>
+          <div class="name-field">
+            <label>Quân O</label>
+            <input type="text" id="oNameInput" placeholder="Máy" maxlength="16" disabled>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Kích thước bàn cờ</h2>
+        <div class="size-row">
+          <button class="opt-btn" data-size="10">10×10</button>
+          <button class="opt-btn active" data-size="15">15×15</button>
+          <button class="opt-btn" data-size="18">18×18</button>
+          <button class="opt-btn" data-size="20">20×20</button>
+        </div>
+      </div>
+
+      <div class="group" id="colorGroup">
+        <h2>Tuỳ chỉnh màu sắc</h2>
+        <div class="color-row">
+          <div class="color-field">
+            <label>Nền bàn cờ</label>
+            <input type="color" id="boardColorInput" value="#6b4226">
+          </div>
+          <div class="color-field">
+            <label>Đường kẻ</label>
+            <input type="color" id="lineColorInput" value="#ffffff">
+          </div>
+          <div class="color-field">
+            <label>Quân X</label>
+            <input type="color" id="xColorInput" value="#ff0000">
+          </div>
+          <div class="color-field">
+            <label>Quân O</label>
+            <input type="color" id="oColorInput" value="#ffd400">
+          </div>
+        </div>
+        <p class="hint">Áp dụng cho cả hai chế độ chơi. X luôn đi trước — nên chọn màu khác nhau để dễ phân biệt.</p>
+      </div>
+
+      <div class="group">
+        <button class="btn-primary" id="newGameBtn">Bắt đầu ván mới</button>
+      </div>
+    </aside>
+
+    <main class="board-area">
+      <div class="scoreboard">
+        <div class="score-card x">
+          <span class="dot"></span>
+          <span class="score-name" id="scoreNameX">X</span>
+          <span class="score-value" id="scoreValueX">0</span>
+        </div>
+        <div class="score-vs">–</div>
+        <div class="score-card o">
+          <span class="dot"></span>
+          <span class="score-name" id="scoreNameO">O</span>
+          <span class="score-value" id="scoreValueO">0</span>
+        </div>
+        <button class="reset-score-btn" id="resetScoreBtn">Reset điểm</button>
+      </div>
+
+      <div id="status">
+        <div class="swatch" id="turnSwatch"></div>
+        <span id="turnText">Lượt của X</span>
+      </div>
+
+      <div class="zoom-row">
+        <button class="zoom-btn" id="zoomOutBtn" aria-label="Thu nhỏ">−</button>
+        <span class="zoom-value" id="zoomValue" title="Bấm để đặt lại 100%">100%</span>
+        <button class="zoom-btn" id="zoomInBtn" aria-label="Phóng to">+</button>
+      </div>
+
+      <div class="board-scroll">
+        <div class="board-wrap" id="boardWrap">
+          <div id="board"></div>
+        </div>
+      </div>
+
+      <div class="banner" id="banner"></div>
+    </main>
+  </div>
+
+  <footer>Chơi được ngoại tuyến sau khi tải trang lần đầu.</footer>
+</div>
+
+<script>
+(function(){
+  const boardEl = document.getElementById('board');
+  const statusText = document.getElementById('turnText');
+  const turnSwatch = document.getElementById('turnSwatch');
+  const banner = document.getElementById('banner');
+  const colorGroup = document.getElementById('colorGroup');
+  const xColorInput = document.getElementById('xColorInput');
+  const oColorInput = document.getElementById('oColorInput');
+  const boardColorInput = document.getElementById('boardColorInput');
+  const lineColorInput = document.getElementById('lineColorInput');
+  const newGameBtn = document.getElementById('newGameBtn');
+  const boardWrapEl = document.getElementById('boardWrap');
+  const zoomInBtn = document.getElementById('zoomInBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  const zoomValueEl = document.getElementById('zoomValue');
+  const xNameInput = document.getElementById('xNameInput');
+  const oNameInput = document.getElementById('oNameInput');
+  const scoreNameX = document.getElementById('scoreNameX');
+  const scoreNameO = document.getElementById('scoreNameO');
+  const scoreValueX = document.getElementById('scoreValueX');
+  const scoreValueO = document.getElementById('scoreValueO');
+  const resetScoreBtn = document.getElementById('resetScoreBtn');
+
+  const DIRECTIONS = [[0,1],[1,0],[1,1],[1,-1]];
+  const WIN_LEN = 5;
+
+  let mode = 'ai';       // 'ai' | 'human'
+  let size = 15;
+  let board = [];
+  let current = 1;       // 1 = X, 2 = O
+  let gameOver = false;
+  let aiThinking = false;
+  let xColor = '#ff0000';
+  let oColor = '#ffd400';
+  const AI_PLAYER = 2;
+  const HUMAN_PLAYER = 1;
+  let scoreX = 0;
+  let scoreO = 0;
+
+  function getName(player){
+    if(player === 1){
+      const v = xNameInput.value.trim();
+      return v || (mode === 'ai' ? 'Bạn' : 'Người chơi X');
+    }
+    if(mode === 'ai') return 'Máy';
+    const v = oNameInput.value.trim();
+    return v || 'Người chơi O';
+  }
+
+  function updateScoreDisplay(){
+    scoreNameX.textContent = getName(1);
+    scoreNameO.textContent = getName(2);
+    scoreValueX.textContent = scoreX;
+    scoreValueO.textContent = scoreO;
+  }
+
+  function syncNameFieldsForMode(){
+    if(mode === 'ai'){
+      oNameInput.value = '';
+      oNameInput.disabled = true;
+      oNameInput.placeholder = 'Máy';
+      xNameInput.placeholder = 'Bạn';
+    } else {
+      oNameInput.disabled = false;
+      oNameInput.placeholder = 'Người chơi O';
+      xNameInput.placeholder = 'Người chơi X';
+    }
+    updateScoreDisplay();
+  }
+
+  xNameInput.addEventListener('input', ()=>{
+    updateScoreDisplay();
+    if(!gameOver) updateStatus();
+  });
+  oNameInput.addEventListener('input', ()=>{
+    updateScoreDisplay();
+    if(!gameOver) updateStatus();
+  });
+  resetScoreBtn.addEventListener('click', ()=>{
+    scoreX = 0;
+    scoreO = 0;
+    updateScoreDisplay();
+  });
+
+  // ---------- zoom controls ----------
+  const ZOOM_MIN = 0.6, ZOOM_MAX = 2, ZOOM_STEP = 0.1;
+  let zoom = 1;
+
+  function applyZoom(){
+    boardWrapEl.style.transform = `scale(${zoom.toFixed(2)})`;
+    zoomValueEl.textContent = Math.round(zoom * 100) + '%';
+  }
+  zoomInBtn.addEventListener('click', ()=>{
+    zoom = Math.min(ZOOM_MAX, +(zoom + ZOOM_STEP).toFixed(2));
+    applyZoom();
+  });
+  zoomOutBtn.addEventListener('click', ()=>{
+    zoom = Math.max(ZOOM_MIN, +(zoom - ZOOM_STEP).toFixed(2));
+    applyZoom();
+  });
+  zoomValueEl.addEventListener('click', ()=>{
+    zoom = 1;
+    applyZoom();
+  });
+
+  // ---------- mode / size / color controls ----------
+  document.querySelectorAll('[data-mode]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-mode]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      mode = btn.dataset.mode;
+      syncNameFieldsForMode();
+    });
+  });
+
+  document.querySelectorAll('[data-size]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-size]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      size = parseInt(btn.dataset.size, 10);
+    });
+  });
+
+  newGameBtn.addEventListener('click', startGame);
+
+  function startGame(){
+    xColor = xColorInput.value;
+    oColor = oColorInput.value;
+    const boardColor = boardColorInput.value;
+    const lineColor = lineColorInput.value;
+
+    boardEl.style.setProperty('--x-color', xColor);
+    boardEl.style.setProperty('--o-color', oColor);
+    document.documentElement.style.setProperty('--x-color', xColor);
+    document.documentElement.style.setProperty('--o-color', oColor);
+    document.documentElement.style.setProperty('--board-color', boardColor);
+    document.documentElement.style.setProperty('--grid-line', lineColor);
+
+    board = new Array(size*size).fill(0);
+    current = 1;
+    gameOver = false;
+    aiThinking = false;
+    banner.classList.remove('show');
+    banner.textContent = '';
+
+    renderBoard();
+    updateStatus();
+    updateScoreDisplay();
+  }
+
+  function idx(r,c){ return r*size+c; }
+  function inBounds(r,c){ return r>=0 && r<size && c>=0 && c<size; }
+
+  function renderBoard(){
+    boardEl.innerHTML = '';
+    boardEl.style.setProperty('--size', size);
+    boardEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    boardEl.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+    for(let r=0;r<size;r++){
+      for(let c=0;c<size;c++){
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        cell.addEventListener('click', onCellClick);
+        boardEl.appendChild(cell);
+      }
+    }
+  }
+
+  function cellEl(r,c){
+    return boardEl.children[idx(r,c)];
+  }
+
+  function onCellClick(e){
+    if(gameOver || aiThinking) return;
+    const r = parseInt(e.currentTarget.dataset.r, 10);
+    const c = parseInt(e.currentTarget.dataset.c, 10);
+    if(board[idx(r,c)] !== 0) return;
+
+    placeStone(r,c,current);
+
+    if(checkGameEndAfter(r,c,current)) return;
+
+    // switch turn
+    current = current === 1 ? 2 : 1;
+    updateStatus();
+
+    if(mode === 'ai' && current === AI_PLAYER && !gameOver){
+      aiThinking = true;
+      setTimeout(()=>{
+        const move = computeAiMove();
+        if(move){
+          const [ar,ac] = move;
+          placeStone(ar, ac, AI_PLAYER);
+          if(!checkGameEndAfter(ar, ac, AI_PLAYER)){
+            current = HUMAN_PLAYER;
+            updateStatus();
+          }
+        }
+        aiThinking = false;
+      }, 380);
+    }
+  }
+
+  function placeStone(r,c,player){
+    board[idx(r,c)] = player;
+    const el = cellEl(r,c);
+    el.classList.add('filled');
+    const mark = document.createElement('div');
+    mark.className = 'mark ' + (player === 1 ? 'x' : 'o');
+    el.appendChild(mark);
+  }
+
+  function updateStatus(){
+    if(gameOver) return;
+    const isX = current === 1;
+    statusText.textContent = `Lượt của ${getName(current)}`;
+    turnSwatch.style.background = isX ? xColor : oColor;
+  }
+
+  // ---------- win detection ----------
+  function checkGameEndAfter(r,c,player){
+    const line = getWinningLine(r,c,player);
+    if(line){
+      gameOver = true;
+      line.forEach(([rr,cc])=> cellEl(rr,cc).classList.add('win'));
+      const label = getName(player);
+      if(player === 1) scoreX++; else scoreO++;
+      updateScoreDisplay();
+      showBanner(`${label} thắng!`);
+      return true;
+    }
+    if(board.every(v => v !== 0)){
+      gameOver = true;
+      showBanner('Hòa cờ!');
+      return true;
+    }
+    return false;
+  }
+
+  function getWinningLine(r,c,player){
+    for(const [dr,dc] of DIRECTIONS){
+      let cells = [[r,c]];
+      let rr=r+dr, cc=c+dc;
+      while(inBounds(rr,cc) && board[idx(rr,cc)] === player){ cells.push([rr,cc]); rr+=dr; cc+=dc; }
+      let br=r-dr, bc=c-dc;
+      while(inBounds(br,bc) && board[idx(br,bc)] === player){ cells.unshift([br,bc]); br-=dr; bc-=dc; }
+      if(cells.length >= WIN_LEN) return cells.slice(0, WIN_LEN + (cells.length - WIN_LEN));
+    }
+    return null;
+  }
+
+  function showBanner(text){
+    banner.textContent = text;
+    requestAnimationFrame(()=> banner.classList.add('show'));
+  }
+
+  // ---------- simple heuristic AI ----------
+  function getCandidateCells(){
+    const has = board.some(v=>v!==0);
+    if(!has){
+      const mid = Math.floor(size/2);
+      return [[mid,mid]];
+    }
+    const set = new Set();
+    const radius = 2;
+    for(let r=0;r<size;r++){
+      for(let c=0;c<size;c++){
+        if(board[idx(r,c)] === 0) continue;
+        for(let dr=-radius; dr<=radius; dr++){
+          for(let dc=-radius; dc<=radius; dc++){
+            const rr=r+dr, cc=c+dc;
+            if(inBounds(rr,cc) && board[idx(rr,cc)] === 0){
+              set.add(rr+','+cc);
+            }
+          }
+        }
+      }
+    }
+    return Array.from(set).map(s=>s.split(',').map(Number));
+  }
+
+  function patternScore(count, openEnds){
+    if(count >= 5) return 1000000;
+    if(count === 4) return openEnds === 2 ? 100000 : (openEnds === 1 ? 10000 : 0);
+    if(count === 3) return openEnds === 2 ? 5000 : (openEnds === 1 ? 500 : 0);
+    if(count === 2) return openEnds === 2 ? 200 : (openEnds === 1 ? 50 : 0);
+    if(count === 1) return openEnds === 2 ? 10 : (openEnds === 1 ? 5 : 0);
+    return 0;
+  }
+
+  function evaluatePoint(r,c,player){
+    let total = 0;
+    for(const [dr,dc] of DIRECTIONS){
+      let count = 1;
+      let openEnds = 0;
+      let rr=r+dr, cc=c+dc;
+      while(inBounds(rr,cc) && board[idx(rr,cc)] === player){ count++; rr+=dr; cc+=dc; }
+      if(inBounds(rr,cc) && board[idx(rr,cc)] === 0) openEnds++;
+      let br=r-dr, bc=c-dc;
+      while(inBounds(br,bc) && board[idx(br,bc)] === player){ count++; br-=dr; bc-=dc; }
+      if(inBounds(br,bc) && board[idx(br,bc)] === 0) openEnds++;
+      total += patternScore(count, openEnds);
+    }
+    return total;
+  }
+
+  function computeAiMove(){
+    const candidates = getCandidateCells();
+    let best = -Infinity;
+    let bestCells = [];
+    for(const [r,c] of candidates){
+      board[idx(r,c)] = AI_PLAYER;
+      const offense = evaluatePoint(r,c,AI_PLAYER);
+      board[idx(r,c)] = HUMAN_PLAYER;
+      const defense = evaluatePoint(r,c,HUMAN_PLAYER);
+      board[idx(r,c)] = 0;
+
+      const score = offense >= 1000000 ? offense : Math.max(offense, defense * 1.05);
+      if(score > best){ best = score; bestCells = [[r,c]]; }
+      else if(score === best){ bestCells.push([r,c]); }
+    }
+    if(bestCells.length === 0) return null;
+    return bestCells[Math.floor(Math.random()*bestCells.length)];
+  }
+
+  // ---------- init ----------
+  syncNameFieldsForMode();
+  startGame();
+})();
+</script>
+</body>
+</html>
