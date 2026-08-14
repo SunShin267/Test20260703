@@ -105,13 +105,26 @@ export interface MathTopic {
   generatorId: string
 }
 
+export interface ProgressDay {
+  date: string
+  sessions: number
+  questions: number
+  correct: number
+}
+
+export interface TopicProgress {
+  attempts: number
+  correct: number
+  accuracy: number
+}
+
 export interface ProgressSummary {
   profileId: string
   totalSessions: number
   totalQuestions: number
   accuracy: number
-  weekly: Array<{ date: string; sessions: number; questions: number; correct: number }>
-  byTopic: Record<string, { attempts: number; correct: number; accuracy: number }>
+  weekly: ProgressDay[]
+  byTopic: Record<string, TopicProgress>
   strongestTopicId: string | null
   weakestTopicId: string | null
 }

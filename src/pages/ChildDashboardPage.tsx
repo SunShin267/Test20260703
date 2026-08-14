@@ -6,10 +6,15 @@ import { PracticeSetupDialog } from '../features/practice/PracticeSetupDialog'
 import { PracticeService } from '../features/practice/practiceService'
 import { TopicGrid } from '../features/practice/TopicGrid'
 import { topicsForGrade } from '../features/practice/topicCatalog'
+import { ProgressSummaryCards } from '../features/progress/ProgressSummaryCards'
+import { recommendTopic, summarizeProgress } from '../features/progress/progressService'
+import { calculateStreak, localCalendarDate } from '../features/progress/streakService'
+import { WeeklyActivity } from '../features/progress/WeeklyActivity'
 import { ProfileForm } from '../features/profiles/ProfileForm'
 import { ProfileService } from '../features/profiles/profileService'
 import { ProfileSwitcher } from '../features/profiles/ProfileSwitcher'
-import type { Difficulty, MathTopic } from '../shared/model/types'
+import { scoreSession } from '../features/practice/scoring'
+import type { Difficulty, MathTopic, PracticeSession } from '../shared/model/types'
 
 type SessionCount = 5 | 10 | 15
 
@@ -46,6 +51,20 @@ export function ChildDashboardPage() {
   }
 
   const draft = practiceService.resumeDraft(activeProfile.id)
+  const topics = topicsForGrade(activeProfile.grade)
+  const today = localCalendarDate(new Date())!
+  const summary = summarizeProgress(activeProfile.id, data.sessions, today)
+  const completedSessions = data.sessions.filter(session =>
+    session.profileId === activeProfile.id && session.status === 'completed')
+  const streak = calculateStreak(
+    completedSessions.flatMap(session => session.completedAt ? [session.completedAt] : []),
+    today,
+  )
+  const recentSession = [...completedSessions]
+    .sort((left, right) => completedTimestamp(right).localeCompare(completedTimestamp(left)))[0] ?? null
+  const recentScore = recentSession ? scoreSession(recentSession).scorePercent : null
+  const weeklySessions = summary.weekly.reduce((total, day) => total + day.sessions, 0)
+  const recommendation = recommendTopic(summary, topics)
   const startPractice = (difficulty: Difficulty, count: SessionCount) => {
     if (!selectedTopic) return
     const session = practiceService.createSession(activeProfile.id, selectedTopic.id, difficulty, count)
@@ -61,13 +80,21 @@ export function ChildDashboardPage() {
         <p>Hôm nay mình cùng chinh phục một bài Toán nhé.</p>
       </header>
       <ProfileSwitcher activeId={activeProfile.id} onSelect={id => { profileService.select(id); refresh() }} profiles={data.profiles} />
+      <ProgressSummaryCards recommendation={recommendation} recentScore={recentScore} streak={streak} summary={summary} />
       <section aria-label="Mục tiêu tuần" className="weekly-goal">
         <h2>Mục tiêu tuần</h2>
-        <p><strong>Mục tiêu tuần: {data.parentSettings.weeklySessionGoal} buổi</strong></p>
+        {data.parentSettings.weeklySessionGoal > 0
+          ? <p><strong>Mục tiêu tuần: {weeklySessions}/{data.parentSettings.weeklySessionGoal} buổi</strong></p>
+          : <p><strong>{weeklySessions} buổi đã hoàn thành trong 7 ngày qua</strong></p>}
       </section>
       {draft && <p><Link to={`/hoc-cung-con/app?session=${draft.id}`}>Tiếp tục bài đang làm</Link></p>}
-      <TopicGrid onSelect={setSelectedTopic} topics={topicsForGrade(activeProfile.grade)} />
+      <WeeklyActivity days={summary.weekly} />
+      <TopicGrid onSelect={setSelectedTopic} topics={topics} />
       {selectedTopic && <PracticeSetupDialog onClose={() => setSelectedTopic(null)} onStart={startPractice} topic={selectedTopic} />}
     </main>
   )
+}
+
+function completedTimestamp(session: PracticeSession): string {
+  return session.completedAt ?? session.updatedAt
 }
