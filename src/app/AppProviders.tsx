@@ -1,10 +1,14 @@
 import { createContext, useContext, type PropsWithChildren } from 'react'
 import type { AuthService } from '../features/auth/authService'
+import type { PinService } from '../features/parent/pinService'
+import type { ProfileService } from '../features/profiles/profileService'
 import type { AppRepository } from '../shared/storage/AppRepository'
 
 export interface AppServices {
   repository: AppRepository
   authService?: AuthService
+  profileService?: ProfileService
+  pinService?: PinService
 }
 
 const AppServicesContext = createContext<AppServices | null>(null)
