@@ -17,6 +17,9 @@
 - Mật khẩu và PIN phải được băm kèm salt trước khi lưu.
 - Mobile-first, dùng được bằng bàn phím, focus rõ, không dùng màu làm tín hiệu duy nhất và tôn trọng `prefers-reduced-motion`.
 - Các game HTML hiện tại phải giữ nguyên logic và tiếp tục truy cập được từ Game Hub.
+- Task 1 được phép tạo cấu hình Vite/Vitest trước vòng RED đầu tiên; ngoại lệ này chỉ áp dụng cho file cấu hình, không áp dụng cho code ứng dụng.
+- Khi xóa hồ sơ trẻ sau bước xác nhận, phải xóa toàn bộ phiên học thuộc hồ sơ đó để không tạo dữ liệu mồ côi.
+- Phạm vi bàn giao là code và bản build đã kiểm thử trong repo; không triển khai lên URL nếu không có yêu cầu riêng.
 - Mỗi task phải hoàn tất test liên quan và commit riêng trước khi sang task kế tiếp.
 
 ## File Map
@@ -81,31 +84,9 @@
 - Produces: route paths `/`, `/login`, `/hoc-cung-con`, `/hoc-cung-con/app`, `/hoc-cung-con/phu-huynh`.
 - Produces: static game URLs `/games/co-caro.html`, `/games/co-vua.html`, `/games/random-number-page.html`.
 
-- [ ] **Step 1: Write the failing router smoke test**
+- [ ] **Step 1: Create package/build configuration (approved setup exception)**
 
-```tsx
-// src/app/router.test.tsx
-import { render, screen } from '@testing-library/react'
-import { RouterProvider, createMemoryRouter } from 'react-router-dom'
-import { routes } from './router'
-
-it.each([
-  ['/', 'Game Hub'],
-  ['/login', 'Đăng nhập'],
-  ['/hoc-cung-con', 'Học cùng con'],
-])('renders %s', async (path, heading) => {
-  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />)
-  expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
-})
-```
-
-- [ ] **Step 2: Run the test and confirm it fails before scaffolding**
-
-Run: `pnpm vitest run src/app/router.test.tsx`
-
-Expected: FAIL because package configuration and `src/app/router.tsx` do not exist.
-
-- [ ] **Step 3: Create package/build configuration**
+Create `package.json`, `vite.config.ts`, `tsconfig.json`, `tsconfig.app.json`, `index.html` with `#root`, and `src/test/setup.ts`. Do not create application components or routes in this step.
 
 ```json
 {
@@ -139,9 +120,37 @@ Expected: FAIL because package configuration and `src/app/router.tsx` do not exi
 }
 ```
 
-`vite.config.ts` must enable the React plugin and Vitest `environment: 'jsdom'`, `setupFiles: './src/test/setup.ts'`.
+- [ ] **Step 2: Install dependencies**
 
-- [ ] **Step 4: Create minimal route components and bootstrap**
+Run: `pnpm install`
+
+Expected: lockfile created and Vitest command available.
+
+- [ ] **Step 3: Write the failing router smoke test**
+
+```tsx
+// src/app/router.test.tsx
+import { render, screen } from '@testing-library/react'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { routes } from './router'
+
+it.each([
+  ['/', 'Game Hub'],
+  ['/login', 'Đăng nhập'],
+  ['/hoc-cung-con', 'Học cùng con'],
+])('renders %s', async (path, heading) => {
+  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />)
+  expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
+})
+```
+
+- [ ] **Step 4: Run the test and confirm it fails for the missing router**
+
+Run: `pnpm vitest run src/app/router.test.tsx`
+
+Expected: FAIL because `src/app/router.tsx` does not exist.
+
+- [ ] **Step 5: Create minimal route components and bootstrap**
 
 ```tsx
 // src/app/router.tsx
@@ -160,17 +169,17 @@ export const routes: RouteObject[] = [
 
 `src/main.tsx` creates a browser router from `routes`, imports `tokens.css` and `global.css`, and renders into `#root`.
 
-- [ ] **Step 5: Move legacy pages and keep an old-link redirect**
+- [ ] **Step 6: Move legacy pages and keep an old-link redirect**
 
 Use `git mv` for the three game files. Replace `public/bai-tap-ai.html` content with a valid HTML redirect to `/hoc-cung-con` using both `<meta http-equiv="refresh">` and an accessible link.
 
-- [ ] **Step 6: Run smoke tests and production build**
+- [ ] **Step 7: Run smoke tests and production build**
 
-Run: `pnpm install && pnpm test && pnpm build`
+Run: `pnpm test && pnpm build`
 
 Expected: router tests PASS; Vite creates `dist/index.html` and copies all four public HTML files.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add package.json pnpm-lock.yaml vite.config.ts tsconfig*.json index.html src public
@@ -489,7 +498,7 @@ Expected: FAIL because services are missing.
 
 - [ ] **Step 3: Implement profile CRUD rules**
 
-`create` trims names, restricts `grade` to 1–5, generates `crypto.randomUUID()`, and automatically selects the first profile. `remove` also removes that profile’s draft sessions and selects the next remaining profile; it must reject removal of the last profile unless `allowEmpty` is explicitly true from the parent screen.
+`create` trims names, restricts `grade` to 1–5, generates `crypto.randomUUID()`, and automatically selects the first profile. `remove` also removes every session belonging to that profile and selects the next remaining profile; it must reject removal of the last profile unless `allowEmpty` is explicitly true from the parent screen.
 
 ```ts
 create(input: Pick<ChildProfile, 'name' | 'grade' | 'avatar'>): ChildProfile
