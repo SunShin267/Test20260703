@@ -29,6 +29,12 @@ const questionSchema = z.object({
   difficulty: z.enum(['easy', 'medium', 'hard']),
 })
 
+const customQuestionSchema = questionSchema.extend({
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  schemaVersion: z.literal(1),
+})
+
 const practiceSessionSchema = z.object({
   id: z.string().min(1),
   profileId: z.string().min(1),
@@ -77,6 +83,7 @@ export const appDataSchema = z.object({
   profiles: z.array(childProfileSchema),
   activeProfileId: z.string().min(1).nullable(),
   sessions: z.array(practiceSessionSchema),
+  customQuestions: z.array(customQuestionSchema).default([]),
   parentSettings: parentSettingsSchema,
   printSettings: printSettingsSchema,
 })
@@ -88,6 +95,7 @@ export function createDefaultAppData(): AppData {
     profiles: [],
     activeProfileId: null,
     sessions: [],
+    customQuestions: [],
     parentSettings: {
       pinSalt: null,
       pinHash: null,

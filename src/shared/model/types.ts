@@ -22,6 +22,18 @@ export interface Question {
   difficulty: Difficulty
 }
 
+export interface CustomQuestion extends Question {
+  createdAt: string
+  updatedAt: string
+  schemaVersion: 1
+}
+
+export interface QuestionBankQuery {
+  topicId?: string
+  grade?: Grade
+  difficulty?: Difficulty
+}
+
 export interface PracticeSession {
   id: string
   profileId: string
@@ -70,6 +82,7 @@ export interface AppData {
   profiles: ChildProfile[]
   activeProfileId: string | null
   sessions: PracticeSession[]
+  customQuestions: CustomQuestion[]
   parentSettings: ParentSettings
   printSettings: PrintSettings
 }

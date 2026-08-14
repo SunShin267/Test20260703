@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { PracticeService } from './practiceService'
 import { AppRepository } from '../../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../../shared/storage/MemoryStorageAdapter'
+import { QuestionBankService } from './questionBankService'
 
 const clock = (() => {
   let value = 0
@@ -73,6 +74,29 @@ describe('PracticeService', () => {
     expect(new Set(session.questions.map(question => question.prompt)).size).toBe(15)
     expect(new Set(session.questions.map(question => question.id)).size).toBe(15)
     expect(session.questions.every(question => question.grade === 1 && question.topicId === 'geometry')).toBe(true)
+  })
+
+  it('uses randomized matching custom questions before unique generated fill-ins', () => {
+    const repository = new AppRepository(new MemoryStorageAdapter())
+    repository.update(data => ({
+      ...data,
+      profiles: [{
+        id: 'profile-1', name: 'Bình', grade: 1, avatar: '🌱',
+        createdAt: '2026-08-15T00:00:00.000Z', updatedAt: '2026-08-15T00:00:00.000Z', schemaVersion: 1,
+      }],
+    }))
+    const questionBank = new QuestionBankService(repository)
+    questionBank.add({ topicId: 'add', prompt: 'Câu tùy chỉnh A', answer: '3', explanation: 'Giải thích A', grade: 1, difficulty: 'easy' })
+    questionBank.add({ topicId: 'add', prompt: 'Câu tùy chỉnh B', answer: '4', explanation: 'Giải thích B', grade: 1, difficulty: 'easy' })
+    questionBank.add({ topicId: 'add', prompt: 'Không đúng độ khó', answer: '5', explanation: 'Không dùng', grade: 1, difficulty: 'medium' })
+
+    const service = new PracticeService(repository, { random: () => 0, now: () => '2026-08-15T00:00:00.000Z' })
+    const session = service.createSession('profile-1', 'add', 'easy', 5)
+
+    expect(session.questions.slice(0, 2).map(question => question.prompt)).toEqual(['Câu tùy chỉnh B', 'Câu tùy chỉnh A'])
+    expect(session.questions).toHaveLength(5)
+    expect(new Set(session.questions.map(question => question.prompt)).size).toBe(5)
+    expect(session.questions.some(question => question.prompt === 'Không đúng độ khó')).toBe(false)
   })
 
   it('rejects a session count outside the supported choices', () => {

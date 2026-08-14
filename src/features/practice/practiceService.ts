@@ -1,6 +1,7 @@
 import type { Difficulty, PracticeSession, Question, SessionResult, SupportedGrade } from '../../shared/model/types'
 import type { AppRepository } from '../../shared/storage/AppRepository'
 import { generatorFor } from './generators/registry'
+import { QuestionBankService, type QuestionBank } from './questionBankService'
 import { scoreSession } from './scoring'
 import { TOPICS } from './topicCatalog'
 
@@ -10,18 +11,21 @@ export interface PracticeServiceOptions {
   random?: () => number
   now?: () => string
   createId?: () => string
+  questionBank?: QuestionBank
 }
 
 export class PracticeService {
   private readonly random: () => number
   private readonly now: () => string
   private readonly createId: () => string
+  private readonly questionBank: QuestionBank
   private sequence = 0
 
   constructor(private readonly app: AppRepository, options: PracticeServiceOptions = {}) {
     this.random = options.random ?? Math.random
     this.now = options.now ?? (() => new Date().toISOString())
     this.createId = options.createId ?? (() => `session-${this.now()}-${++this.sequence}`)
+    this.questionBank = options.questionBank ?? new QuestionBankService(app)
   }
 
   createSession(profileId: string, topicId: string, difficulty: Difficulty, count: SessionCount): PracticeSession {
@@ -36,7 +40,8 @@ export class PracticeService {
     }
 
     const generator = generatorFor(topic.generatorId)
-    const questions = this.uniqueQuestions(generator, topicId, difficulty, count, profile.grade)
+    const customQuestions = this.matchingCustomQuestions(topicId, difficulty, profile.grade, count)
+    const questions = this.uniqueQuestions(generator, topicId, difficulty, count, profile.grade, customQuestions)
     const timestamp = this.now()
     const session: PracticeSession = {
       id: this.createId(),
@@ -107,9 +112,10 @@ export class PracticeService {
     difficulty: Difficulty,
     count: SessionCount,
     grade: SupportedGrade,
+    initial: Question[] = [],
   ): Question[] {
-    const questions: Question[] = []
-    const prompts = new Set<string>()
+    const questions = [...initial]
+    const prompts = new Set(questions.map(question => question.prompt))
     let attempts = 0
 
     while (questions.length < count && attempts < count * 50) {
@@ -123,5 +129,35 @@ export class PracticeService {
 
     if (questions.length !== count) throw new Error('Không thể tạo đủ câu hỏi khác nhau')
     return questions
+  }
+
+  private matchingCustomQuestions(
+    topicId: string,
+    difficulty: Difficulty,
+    grade: SupportedGrade,
+    count: SessionCount,
+  ): Question[] {
+    const candidates = [...this.questionBank.list({ topicId, difficulty, grade })]
+    for (let index = candidates.length - 1; index > 0; index--) {
+      const swapIndex = Math.floor(this.random() * (index + 1))
+      ;[candidates[index], candidates[swapIndex]] = [candidates[swapIndex], candidates[index]]
+    }
+
+    const prompts = new Set<string>()
+    const selected: Question[] = []
+    for (const question of candidates) {
+      if (prompts.has(question.prompt) || selected.length === count) continue
+      prompts.add(question.prompt)
+      selected.push({
+        id: `custom-${question.id}-${selected.length + 1}`,
+        topicId: question.topicId,
+        prompt: question.prompt,
+        answer: question.answer,
+        explanation: question.explanation,
+        grade: question.grade,
+        difficulty: question.difficulty,
+      })
+    }
+    return selected
   }
 }

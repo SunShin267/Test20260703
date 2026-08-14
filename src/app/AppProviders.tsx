@@ -3,6 +3,7 @@ import type { AuthService } from '../features/auth/authService'
 import type { PinService } from '../features/parent/pinService'
 import type { ProfileService } from '../features/profiles/profileService'
 import type { PracticeService } from '../features/practice/practiceService'
+import type { QuestionBankService } from '../features/practice/questionBankService'
 import type { AppRepository } from '../shared/storage/AppRepository'
 
 export interface AppServices {
@@ -11,6 +12,7 @@ export interface AppServices {
   profileService?: ProfileService
   pinService?: PinService
   practiceService?: PracticeService
+  questionBankService?: QuestionBankService
 }
 
 const AppServicesContext = createContext<AppServices | null>(null)
