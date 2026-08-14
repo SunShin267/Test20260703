@@ -100,28 +100,14 @@
     margin: 0;
     font-size: clamp(2rem, 3vw, 2.8rem);
   }
+  .home-logo{display:inline-grid;place-items:center;width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#c79a4b,#b23a2e);color:#fff;text-decoration:none}
+  .home-logo svg{width:22px;height:22px}
   .game-header .sub{
     margin: 8px 0 0;
     color: var(--muted);
     max-width: 540px;
   }
-  .back-btn{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 18px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.16);
-    background: rgba(255,255,255,0.05);
-    color: var(--cream);
-    text-decoration: none;
-    font-weight: 700;
-    transition: transform .16s ease, background .16s ease;
-  }
-  .back-btn:hover{
-    transform: translateY(-1px);
-    background: rgba(255,255,255,0.1);
-  }
+  
 
   .layout{
     display:grid;
@@ -508,11 +494,14 @@
     </div>
     <p class="sub">Xếp đủ 5 quân liên tiếp để thắng — chơi ngay trên trình duyệt, không cần mạng.</p>
   <div class="game-header">
+    <a class="home-logo" href="index.html" aria-label="Game Hub">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 12v6a1 1 0 0 0 1 1h3v-6h2v6h4v-6h3a1 1 0 0 0 1-1V9L12 3 4 9v3z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
     <div>
       <h1>CỜ CA-RÔ</h1>
       <p class="sub">Xếp đủ 5 quân liên tiếp để thắng — chơi ngay trên trình duyệt, không cần mạng.</p>
     </div>
-    <a class="back-btn" href="index.html">← Về Game Hub</a>
+    
   </div>
 
   <div class="layout">
