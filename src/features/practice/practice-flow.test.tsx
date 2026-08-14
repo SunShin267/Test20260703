@@ -83,11 +83,15 @@ it('passes a selected hard ten-question setup into the persisted session', async
 
 it('loads the requested draft from a session query after a fresh router mount', async () => {
   const { repository, practiceService } = renderAuthenticatedApp('/hoc-cung-con/app')
-  const draft = practiceService.createSession('an', 'add', 'medium', 5)
+  const otherDraft = practiceService.createSession('an', 'subtract', 'easy', 5)
+  const targetDraft = practiceService.createSession('an', 'add', 'medium', 5)
+  practiceService.answer(otherDraft.id, otherDraft.questions[0].id, 'đáp án draft khác')
+  practiceService.answer(targetDraft.id, targetDraft.questions[0].id, 'đáp án draft mục tiêu')
   cleanup()
 
-  renderAuthenticatedApp(`/hoc-cung-con/app?session=${draft.id}`, repository)
+  renderAuthenticatedApp(`/hoc-cung-con/app?session=${targetDraft.id}`, repository)
 
   expect(await screen.findByRole('heading', { name: 'Bài luyện tập' })).toBeInTheDocument()
-  expect(screen.getByLabelText('Đáp án câu 1')).toHaveValue('')
+  expect(screen.getByText(targetDraft.questions[0].prompt)).toBeInTheDocument()
+  expect(screen.getByLabelText('Đáp án câu 1')).toHaveValue('đáp án draft mục tiêu')
 })
