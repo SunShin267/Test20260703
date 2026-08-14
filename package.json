@@ -1,0 +1,31 @@
+{
+  "name": "hoc-cung-con",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.21.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:pages": "tsc -b && vite build --base=/Test20260703/ && node scripts/prepare-pages.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "react-router-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "latest",
+    "@testing-library/jest-dom": "latest",
+    "@testing-library/react": "latest",
+    "@testing-library/user-event": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "jsdom": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest"
+  }
+}

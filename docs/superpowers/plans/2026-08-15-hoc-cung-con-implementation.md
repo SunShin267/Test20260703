@@ -17,6 +17,9 @@
 - Mật khẩu và PIN phải được băm kèm salt trước khi lưu.
 - Mobile-first, dùng được bằng bàn phím, focus rõ, không dùng màu làm tín hiệu duy nhất và tôn trọng `prefers-reduced-motion`.
 - Các game HTML hiện tại phải giữ nguyên logic và tiếp tục truy cập được từ Game Hub.
+- Task 1 được phép tạo cấu hình Vite/Vitest trước vòng RED đầu tiên; ngoại lệ này chỉ áp dụng cho file cấu hình, không áp dụng cho code ứng dụng.
+- Khi xóa hồ sơ trẻ sau bước xác nhận, phải xóa toàn bộ phiên học thuộc hồ sơ đó để không tạo dữ liệu mồ côi.
+- Phạm vi bàn giao là code và bản build đã kiểm thử trong repo; không triển khai lên URL nếu không có yêu cầu riêng.
 - Mỗi task phải hoàn tất test liên quan và commit riêng trước khi sang task kế tiếp.
 
 ## File Map
@@ -81,31 +84,9 @@
 - Produces: route paths `/`, `/login`, `/hoc-cung-con`, `/hoc-cung-con/app`, `/hoc-cung-con/phu-huynh`.
 - Produces: static game URLs `/games/co-caro.html`, `/games/co-vua.html`, `/games/random-number-page.html`.
 
-- [ ] **Step 1: Write the failing router smoke test**
+- [ ] **Step 1: Create package/build configuration (approved setup exception)**
 
-```tsx
-// src/app/router.test.tsx
-import { render, screen } from '@testing-library/react'
-import { RouterProvider, createMemoryRouter } from 'react-router-dom'
-import { routes } from './router'
-
-it.each([
-  ['/', 'Game Hub'],
-  ['/login', 'Đăng nhập'],
-  ['/hoc-cung-con', 'Học cùng con'],
-])('renders %s', async (path, heading) => {
-  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />)
-  expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
-})
-```
-
-- [ ] **Step 2: Run the test and confirm it fails before scaffolding**
-
-Run: `pnpm vitest run src/app/router.test.tsx`
-
-Expected: FAIL because package configuration and `src/app/router.tsx` do not exist.
-
-- [ ] **Step 3: Create package/build configuration**
+Create `package.json`, `vite.config.ts`, `tsconfig.json`, `tsconfig.app.json`, `index.html` with `#root`, and `src/test/setup.ts`. Do not create application components or routes in this step.
 
 ```json
 {
@@ -139,9 +120,37 @@ Expected: FAIL because package configuration and `src/app/router.tsx` do not exi
 }
 ```
 
-`vite.config.ts` must enable the React plugin and Vitest `environment: 'jsdom'`, `setupFiles: './src/test/setup.ts'`.
+- [ ] **Step 2: Install dependencies**
 
-- [ ] **Step 4: Create minimal route components and bootstrap**
+Run: `pnpm install`
+
+Expected: lockfile created and Vitest command available.
+
+- [ ] **Step 3: Write the failing router smoke test**
+
+```tsx
+// src/app/router.test.tsx
+import { render, screen } from '@testing-library/react'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
+import { routes } from './router'
+
+it.each([
+  ['/', 'Game Hub'],
+  ['/login', 'Đăng nhập'],
+  ['/hoc-cung-con', 'Học cùng con'],
+])('renders %s', async (path, heading) => {
+  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />)
+  expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
+})
+```
+
+- [ ] **Step 4: Run the test and confirm it fails for the missing router**
+
+Run: `pnpm vitest run src/app/router.test.tsx`
+
+Expected: FAIL because `src/app/router.tsx` does not exist.
+
+- [ ] **Step 5: Create minimal route components and bootstrap**
 
 ```tsx
 // src/app/router.tsx
@@ -160,17 +169,17 @@ export const routes: RouteObject[] = [
 
 `src/main.tsx` creates a browser router from `routes`, imports `tokens.css` and `global.css`, and renders into `#root`.
 
-- [ ] **Step 5: Move legacy pages and keep an old-link redirect**
+- [ ] **Step 6: Move legacy pages and keep an old-link redirect**
 
 Use `git mv` for the three game files. Replace `public/bai-tap-ai.html` content with a valid HTML redirect to `/hoc-cung-con` using both `<meta http-equiv="refresh">` and an accessible link.
 
-- [ ] **Step 6: Run smoke tests and production build**
+- [ ] **Step 7: Run smoke tests and production build**
 
-Run: `pnpm install && pnpm test && pnpm build`
+Run: `pnpm test && pnpm build`
 
 Expected: router tests PASS; Vite creates `dist/index.html` and copies all four public HTML files.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add package.json pnpm-lock.yaml vite.config.ts tsconfig*.json index.html src public
@@ -489,7 +498,7 @@ Expected: FAIL because services are missing.
 
 - [ ] **Step 3: Implement profile CRUD rules**
 
-`create` trims names, restricts `grade` to 1–5, generates `crypto.randomUUID()`, and automatically selects the first profile. `remove` also removes that profile’s draft sessions and selects the next remaining profile; it must reject removal of the last profile unless `allowEmpty` is explicitly true from the parent screen.
+`create` trims names, restricts `grade` to 1–5, generates `crypto.randomUUID()`, and automatically selects the first profile. `remove` also removes every session belonging to that profile and selects the next remaining profile; it must reject removal of the last profile unless `allowEmpty` is explicitly true from the parent screen.
 
 ```ts
 create(input: Pick<ChildProfile, 'name' | 'grade' | 'avatar'>): ChildProfile
@@ -626,6 +635,55 @@ Expected: catalog, grade bounds, integer division, registry extension and scorin
 ```bash
 git add src/features/practice src/shared/model/types.ts
 git commit -m "feat: add extensible math topic engine"
+```
+
+---
+
+### Task 5A: Ngân hàng câu hỏi mở rộng và câu hỏi tùy chỉnh cục bộ
+
+**Files:**
+- Modify: `src/shared/model/types.ts`
+- Modify: `src/shared/storage/appDataSchema.ts`
+- Create: `src/features/practice/questionBankService.ts`
+- Create: `src/features/practice/questionBankService.test.ts`
+- Modify: `src/features/practice/practiceService.ts`
+- Modify: `src/features/practice/practiceService.test.ts`
+- Modify: `src/app/AppProviders.tsx`
+
+**Interfaces:**
+- Produces: `CustomQuestion`, `QuestionBankQuery` và `QuestionBankService.list/add/update/remove`.
+- Consumes: câu hỏi tùy chỉnh phù hợp lớp, chủ đề và độ khó trong `PracticeService.createSession`, sau đó dùng generator để bù đủ số câu.
+- Extension seam: implementation local có thể được thay bằng API mà không sửa component hoặc logic phiên học.
+
+- [ ] **Step 1: Viết test thất bại cho lưu trữ và validation**
+
+Test câu hỏi mới bắt buộc có đề bài, đáp án, giải thích, lớp 1–12, topic đã đăng ký và độ khó hợp lệ; add/update/remove phải persist qua `AppRepository`. Test dữ liệu schema v1 hiện có chưa có `customQuestions` được đọc an toàn thành mảng rỗng, không reset dữ liệu gia đình.
+
+- [ ] **Step 2: Chạy test và xác nhận RED**
+
+Run: `pnpm vitest run src/features/practice/questionBankService.test.ts src/shared/storage`
+
+Expected: FAIL vì model, schema và service chưa tồn tại.
+
+- [ ] **Step 3: Thêm contract ngân hàng câu hỏi**
+
+`CustomQuestion` có `id`, `topicId`, `prompt`, `answer`, `explanation`, `grade`, `difficulty`, `createdAt`, `updatedAt`, `schemaVersion`. `QuestionBankService` chỉ phụ thuộc `AppRepository`; danh sách hỗ trợ lọc theo topic/lớp/độ khó và trả bản sao ổn định.
+
+- [ ] **Step 4: Tích hợp với PracticeService**
+
+Khi tạo phiên, chọn các câu hỏi tùy chỉnh phù hợp trước theo thứ tự được random hóa bằng dependency `random`, loại prompt trùng; generator hiện tại bù phần còn lại và vẫn bảo đảm toàn phiên có câu hỏi duy nhất. Việc không có câu hỏi tùy chỉnh phải giữ nguyên hành vi Task 5.
+
+- [ ] **Step 5: Chạy focused, full tests và build**
+
+Run: `pnpm vitest run src/features/practice src/shared/storage && pnpm test && pnpm build`
+
+Expected: CRUD, migration tương thích, mixed custom/generated session và toàn bộ regression PASS.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/shared src/features/practice src/app/AppProviders.tsx
+git commit -m "feat: add extensible local question bank"
 ```
 
 ---
@@ -795,12 +853,13 @@ git commit -m "feat: add progress and streak insights"
 - Create: `src/features/parent/ProfileManagement.tsx`
 - Create: `src/features/parent/WeeklyGoalForm.tsx`
 - Create: `src/features/parent/HistoryTable.tsx`
+- Create: `src/features/parent/QuestionBankManagement.tsx`
 - Create: `src/features/parent/ParentDashboardPage.test.tsx`
 - Modify: `src/app/router.tsx`
 
 **Interfaces:**
 - Consumes: `PinService`, `ProfileService`, `summarizeProgress`, `AppRepository`.
-- Produces: protected parent route with profile CRUD, goals, history and reset confirmation.
+- Produces: protected parent route with profile CRUD, goals, history, local custom-question CRUD and reset confirmation.
 
 - [ ] **Step 1: Write failing parent flow test**
 
@@ -840,6 +899,8 @@ After `PinGate`, render profile selector, weekly totals, strongest/weakest topic
 
 Reuse `ProfileForm` for create/edit. Weekly goals accept sessions 1–14 and questions 5–200. Profile deletion requires a dialog naming the child. “Đặt lại toàn bộ dữ liệu” requires typing `XÓA DỮ LIỆU`, then calls `AppRepository.reset()` and signs out.
 
+Thêm mục “Ngân hàng câu hỏi” sau PIN gate. Phụ huynh có thể lọc theo lớp/chủ đề/độ khó, thêm, sửa và xóa câu hỏi tùy chỉnh. Form dùng select từ `TOPICS`, hiển thị validation tiếng Việt, yêu cầu xác nhận khi xóa và nêu rõ dữ liệu chỉ lưu trên thiết bị. Không cho sửa/xóa các mẫu generator dựng sẵn.
+
 ```ts
 const goalSchema = z.object({ sessions: z.number().int().min(1).max(14), questions: z.number().int().min(5).max(200) })
 const canReset = confirmation === 'XÓA DỮ LIỆU'
@@ -850,7 +911,7 @@ const resetAll = () => { if (!canReset) return; repository.reset(); auth.signOut
 
 Run: `pnpm vitest run src/features/parent src/features/profiles`
 
-Expected: PIN gate, reports, goal validation, profile confirmation and reset tests PASS.
+Expected: PIN gate, reports, goal validation, profile confirmation, question-bank CRUD and reset tests PASS.
 
 - [ ] **Step 6: Commit**
 
