@@ -9,5 +9,82 @@ body {
 }
 
 main {
-  padding: 2rem;
+  margin: 0 auto;
+  max-width: 48rem;
+  padding: 1rem;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid #0f766e;
+  outline-offset: 3px;
+}
+
+fieldset,
+.question-card,
+.weekly-goal,
+.result-panel,
+.dialog {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  padding: 1rem;
+}
+
+.topic-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.topic-card,
+.button-row button,
+main > button,
+.dialog > .button-row button {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.question-card input {
+  display: block;
+  margin-top: 0.25rem;
+  min-height: 2.75rem;
+  width: 100%;
+}
+
+.answer-correct {
+  color: #166534;
+}
+
+.answer-incorrect {
+  color: #9f1239;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

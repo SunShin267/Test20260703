@@ -2,6 +2,7 @@ import { useNavigate, type RouteObject } from 'react-router-dom'
 import { AuthProvider, useAuth } from '../features/auth/AuthProvider'
 import { LoginPage } from '../features/auth/LoginPage'
 import { ProtectedRoute } from '../features/auth/ProtectedRoute'
+import { ChildDashboardPage } from '../pages/ChildDashboardPage'
 
 const RouteStub = ({ title }: { title: string }) => (
   <main>
@@ -29,10 +30,18 @@ const protectedRoute = (title: string) => (
   </AuthProvider>
 )
 
+const childRoute = (
+  <AuthProvider>
+    <ProtectedRoute>
+      <ChildDashboardPage />
+    </ProtectedRoute>
+  </AuthProvider>
+)
+
 export const routes: RouteObject[] = [
   { path: '/', element: protectedRoute('Game Hub') },
   { path: '/login', element: <AuthProvider><LoginPage /></AuthProvider> },
   { path: '/hoc-cung-con', element: <RouteStub title="Học cùng con" /> },
-  { path: '/hoc-cung-con/app', element: protectedRoute('Góc học tập') },
+  { path: '/hoc-cung-con/app', element: childRoute },
   { path: '/hoc-cung-con/phu-huynh', element: protectedRoute('Dành cho phụ huynh') },
 ]
