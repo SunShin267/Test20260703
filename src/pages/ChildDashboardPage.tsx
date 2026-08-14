@@ -46,7 +46,6 @@ export function ChildDashboardPage() {
   }
 
   const draft = practiceService.resumeDraft(activeProfile.id)
-  const completedCount = data.sessions.filter(session => session.profileId === activeProfile.id && session.status === 'completed').length
   const startPractice = (difficulty: Difficulty, count: SessionCount) => {
     if (!selectedTopic) return
     const session = practiceService.createSession(activeProfile.id, selectedTopic.id, difficulty, count)
@@ -64,7 +63,7 @@ export function ChildDashboardPage() {
       <ProfileSwitcher activeId={activeProfile.id} onSelect={id => { profileService.select(id); refresh() }} profiles={data.profiles} />
       <section aria-label="Mục tiêu tuần" className="weekly-goal">
         <h2>Mục tiêu tuần</h2>
-        <p><strong>{completedCount}/{data.parentSettings.weeklySessionGoal} buổi</strong></p>
+        <p><strong>Mục tiêu tuần: {data.parentSettings.weeklySessionGoal} buổi</strong></p>
       </section>
       {draft && <p><Link to={`/hoc-cung-con/app?session=${draft.id}`}>Tiếp tục bài đang làm</Link></p>}
       <TopicGrid onSelect={setSelectedTopic} topics={topicsForGrade(activeProfile.grade)} />
@@ -72,4 +71,3 @@ export function ChildDashboardPage() {
     </main>
   )
 }
-

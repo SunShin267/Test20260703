@@ -1,4 +1,5 @@
 import { cleanup, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { expect, it } from 'vitest'
 import { AppProviders } from '../app/AppProviders'
@@ -45,6 +46,35 @@ it('filters available topics by the active child grade and exposes the weekly go
   expect(screen.getByRole('button', { name: 'Phép cộng' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Phép nhân' })).not.toBeInTheDocument()
   expect(screen.getByLabelText('Mục tiêu tuần')).toHaveTextContent('3 buổi')
+})
+
+it('does not present all-time completed sessions as weekly progress', () => {
+  const { repository, practiceService } = renderDashboard()
+  for (let index = 0; index < 3; index++) {
+    const session = practiceService.createSession('an', 'add', 'easy', 5)
+    practiceService.complete(session.id)
+  }
+  cleanup()
+  renderDashboard(true, repository)
+
+  expect(screen.getByLabelText('Mục tiêu tuần')).toHaveTextContent('Mục tiêu tuần: 3 buổi')
+  expect(screen.getByLabelText('Mục tiêu tuần')).not.toHaveTextContent('3/3')
+})
+
+it('switches profile and refreshes topics for the selected grade', async () => {
+  const user = userEvent.setup()
+  const { repository } = renderDashboard()
+  repository.update(data => ({
+    ...data,
+    profiles: [...data.profiles, { id: 'binh', name: 'Bình', grade: 2, avatar: '🚀', createdAt: '', updatedAt: '', schemaVersion: 1 }],
+  }))
+  cleanup()
+  renderDashboard(true, repository)
+
+  await user.click(screen.getByRole('button', { name: /Bình/ }))
+
+  expect(screen.getByRole('heading', { name: /Chào Bình/ })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Phép nhân' })).toBeInTheDocument()
 })
 
 it('offers the latest draft for the active child after a reload', () => {

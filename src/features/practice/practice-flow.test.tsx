@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { cleanup, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { expect, it } from 'vitest'
@@ -26,10 +26,10 @@ function seededAuthenticatedFamily(): AppData {
   }
 }
 
-function renderAuthenticatedApp(path: string) {
+function renderAuthenticatedApp(path: string, suppliedRepository?: AppRepository) {
   const storage = new MemoryStorageAdapter()
-  const repository = new AppRepository(storage)
-  repository.update(() => seededAuthenticatedFamily())
+  const repository = suppliedRepository ?? new AppRepository(storage)
+  if (!suppliedRepository) repository.update(() => seededAuthenticatedFamily())
   const session = new SessionRepository(storage)
   session.set('gia-dinh-an')
   const authService = new AuthService(repository, session)
@@ -43,7 +43,7 @@ function renderAuthenticatedApp(path: string) {
     </AppProviders>,
   )
 
-  return { repository, router }
+  return { repository, router, practiceService }
 }
 
 it('creates, autosaves and completes a five-question session', async () => {
@@ -66,4 +66,28 @@ it('creates, autosaves and completes a five-question session', async () => {
 
   expect(await screen.findByText(/câu đúng/)).toBeInTheDocument()
   expect(repository.load().sessions[0].status).toBe('completed')
+})
+
+it('passes a selected hard ten-question setup into the persisted session', async () => {
+  const user = userEvent.setup()
+  const { repository } = renderAuthenticatedApp('/hoc-cung-con/app')
+
+  await user.click(await screen.findByRole('button', { name: 'Phép cộng' }))
+  await user.click(screen.getByLabelText('Khó'))
+  await user.click(screen.getByRole('button', { name: '10 câu' }))
+  await user.click(screen.getByRole('button', { name: 'Bắt đầu làm bài' }))
+
+  expect(repository.load().sessions[0].questions).toHaveLength(10)
+  expect(repository.load().sessions[0].questions.every(question => question.difficulty === 'hard')).toBe(true)
+})
+
+it('loads the requested draft from a session query after a fresh router mount', async () => {
+  const { repository, practiceService } = renderAuthenticatedApp('/hoc-cung-con/app')
+  const draft = practiceService.createSession('an', 'add', 'medium', 5)
+  cleanup()
+
+  renderAuthenticatedApp(`/hoc-cung-con/app?session=${draft.id}`, repository)
+
+  expect(await screen.findByRole('heading', { name: 'Bài luyện tập' })).toBeInTheDocument()
+  expect(screen.getByLabelText('Đáp án câu 1')).toHaveValue('')
 })
