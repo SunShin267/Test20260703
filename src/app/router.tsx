@@ -1,32 +1,16 @@
-import { useNavigate, type RouteObject } from 'react-router-dom'
-import { AuthProvider, useAuth } from '../features/auth/AuthProvider'
+import { type RouteObject } from 'react-router-dom'
+import { AuthProvider } from '../features/auth/AuthProvider'
 import { LoginPage } from '../features/auth/LoginPage'
 import { ProtectedRoute } from '../features/auth/ProtectedRoute'
 import { ChildDashboardPage } from '../pages/ChildDashboardPage'
 import { ParentDashboardPage } from '../pages/ParentDashboardPage'
+import { LandingPage } from '../pages/LandingPage'
+import { GameHubPage } from '../pages/GameHubPage'
 
-const RouteStub = ({ title }: { title: string }) => (
-  <main>
-    <h1>{title}</h1>
-  </main>
-)
-
-const ProtectedPage = ({ title }: { title: string }) => {
-  const navigate = useNavigate()
-  const { signOut } = useAuth()
-
-  return (
-    <main>
-      <h1>{title}</h1>
-      <button type="button" onClick={() => { signOut(); navigate('/login', { replace: true }) }}>Đăng xuất</button>
-    </main>
-  )
-}
-
-const protectedRoute = (title: string) => (
+const hubRoute = (
   <AuthProvider>
     <ProtectedRoute>
-      <ProtectedPage title={title} />
+      <GameHubPage />
     </ProtectedRoute>
   </AuthProvider>
 )
@@ -48,9 +32,9 @@ const parentRoute = (
 )
 
 export const routes: RouteObject[] = [
-  { path: '/', element: protectedRoute('Game Hub') },
+  { path: '/', element: hubRoute },
   { path: '/login', element: <AuthProvider><LoginPage /></AuthProvider> },
-  { path: '/hoc-cung-con', element: <RouteStub title="Học cùng con" /> },
+  { path: '/hoc-cung-con', element: <LandingPage /> },
   { path: '/hoc-cung-con/app', element: childRoute },
   { path: '/hoc-cung-con/phu-huynh', element: parentRoute },
 ]

@@ -3,7 +3,7 @@ import { renderApp } from '../test/renderApp'
 
 it.each([
   ['/login', 'Đăng nhập'],
-  ['/hoc-cung-con', 'Học cùng con'],
+  ['/hoc-cung-con', '5 phút mỗi ngày, con vững Toán cả năm'],
 ])('renders %s', async (path, heading) => {
   renderApp(path)
 
