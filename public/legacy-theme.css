@@ -1,0 +1,144 @@
+:root {
+  --legacy-navy: #17243d;
+  --legacy-cream: #fffaf0;
+  --legacy-coral: #ff725e;
+  --legacy-coral-dark: #dc5546;
+  --legacy-sky: #4e87e8;
+  --legacy-focus: #ffd166;
+  --legacy-line: #dce3ef;
+  --legacy-shadow: 0 8px 20px rgb(23 36 61 / 12%);
+}
+
+.legacy-app-header {
+  align-items: center;
+  background: var(--legacy-cream);
+  border-bottom: 1px solid var(--legacy-line);
+  box-shadow: var(--legacy-shadow);
+  color: var(--legacy-navy);
+  display: flex;
+  font-family: Inter, ui-rounded, "Nunito Sans", system-ui, sans-serif;
+  gap: 1rem;
+  justify-content: space-between;
+  margin: 0 0 1.5rem;
+  min-height: 4.25rem;
+  padding: .7rem max(1rem, calc((100vw - 70rem) / 2));
+  text-align: left;
+}
+
+.legacy-app-header.game-header {
+  background: var(--legacy-cream);
+  color: var(--legacy-navy);
+  margin: 0 0 1.5rem;
+  min-height: 4.25rem;
+  padding: .7rem max(1rem, calc((100vw - 70rem) / 2));
+}
+
+.legacy-app-header.game-header h1 {
+  color: var(--legacy-navy);
+  font-family: inherit;
+  font-size: 1rem;
+  letter-spacing: -.01em;
+}
+
+.legacy-app-header.game-header .sub {
+  color: #526079;
+  font-size: .82rem;
+  margin: .2rem 0 0;
+}
+
+.legacy-app-title {
+  font-size: .9rem;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  overflow-wrap: anywhere;
+}
+
+.legacy-home-link {
+  align-items: center;
+  color: var(--legacy-navy);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: .92rem;
+  font-weight: 850;
+  gap: .35rem;
+  text-decoration: none;
+  text-underline-offset: .2em;
+}
+
+.legacy-app-header .home-logo.legacy-home-link {
+  background: none;
+  border-radius: 0;
+  color: var(--legacy-navy);
+  height: auto;
+  width: auto;
+}
+
+.legacy-app-header .home-logo.legacy-home-link svg {
+  height: 1.1em;
+  width: 1.1em;
+}
+
+.legacy-home-link::before {
+  color: var(--legacy-coral);
+  content: '←';
+  font-size: 1.1em;
+}
+
+.legacy-home-link:hover {
+  color: var(--legacy-coral-dark);
+  text-decoration: underline;
+}
+
+.legacy-home-link:focus-visible,
+.legacy-app-header :focus-visible {
+  outline: 3px solid var(--legacy-focus);
+  outline-offset: 3px;
+}
+
+body:has(> .legacy-app-header--stacked) {
+  flex-wrap: wrap;
+}
+
+.legacy-app-header--stacked {
+  flex-basis: 100%;
+  width: 100%;
+}
+
+@media (max-width: 420px) {
+  body:has(> .legacy-app-header--stacked) {
+    display: block;
+  }
+
+  body:has(> .legacy-app-header--stacked) .panel {
+    height: auto;
+    position: static;
+    width: 100%;
+  }
+
+  body:has(> .legacy-app-header--stacked) .stage {
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .legacy-app-header {
+    gap: .6rem;
+    margin-bottom: 1rem;
+    min-height: 3.75rem;
+    padding: .6rem .75rem;
+  }
+
+  .legacy-app-header.game-header {
+    margin-bottom: 1rem;
+    min-height: 3.75rem;
+    padding: .6rem .75rem;
+  }
+
+  .legacy-home-link,
+  .legacy-app-title {
+    font-size: .82rem;
+  }
+
+  .legacy-app-header + .wrap .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
