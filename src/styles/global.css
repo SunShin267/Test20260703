@@ -16,7 +16,8 @@ main {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -27,6 +28,7 @@ button {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
+textarea:focus-visible,
 a:focus-visible {
   outline: 3px solid #0f766e;
   outline-offset: 3px;
@@ -77,6 +79,57 @@ main > button,
 
 .answer-incorrect {
   color: #9f1239;
+}
+
+label {
+  display: block;
+  margin: 0.75rem 0;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  margin-top: 0.25rem;
+  max-width: 100%;
+  min-height: 2.5rem;
+  width: 100%;
+}
+
+textarea {
+  min-height: 5rem;
+}
+
+.filter-row {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+.history-scroll {
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  min-width: 32rem;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid #cbd5e1;
+  padding: 0.5rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.visually-hidden {
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
 }
 
 @media (prefers-reduced-motion: reduce) {

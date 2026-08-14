@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from '../features/auth/AuthProvider'
 import { LoginPage } from '../features/auth/LoginPage'
 import { ProtectedRoute } from '../features/auth/ProtectedRoute'
 import { ChildDashboardPage } from '../pages/ChildDashboardPage'
+import { ParentDashboardPage } from '../pages/ParentDashboardPage'
 
 const RouteStub = ({ title }: { title: string }) => (
   <main>
@@ -38,10 +39,18 @@ const childRoute = (
   </AuthProvider>
 )
 
+const parentRoute = (
+  <AuthProvider>
+    <ProtectedRoute>
+      <ParentDashboardPage />
+    </ProtectedRoute>
+  </AuthProvider>
+)
+
 export const routes: RouteObject[] = [
   { path: '/', element: protectedRoute('Game Hub') },
   { path: '/login', element: <AuthProvider><LoginPage /></AuthProvider> },
   { path: '/hoc-cung-con', element: <RouteStub title="Học cùng con" /> },
   { path: '/hoc-cung-con/app', element: childRoute },
-  { path: '/hoc-cung-con/phu-huynh', element: protectedRoute('Dành cho phụ huynh') },
+  { path: '/hoc-cung-con/phu-huynh', element: parentRoute },
 ]

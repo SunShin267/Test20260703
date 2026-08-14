@@ -3,9 +3,10 @@ import type { PinService } from './pinService'
 
 interface PinGateProps extends PropsWithChildren {
   pinService: PinService
+  submitLabel?: string
 }
 
-export function PinGate({ pinService, children }: PinGateProps) {
+export function PinGate({ pinService, submitLabel = 'Xác nhận', children }: PinGateProps) {
   const initialLock = pinService.getLockState()
   const [verified, setVerified] = useState(false)
   const [pin, setPin] = useState('')
@@ -60,7 +61,7 @@ export function PinGate({ pinService, children }: PinGateProps) {
           value={pin}
         />
       </label>
-      <button disabled={lockedUntil !== null} type="submit">Xác nhận</button>
+      <button disabled={lockedUntil !== null} type="submit">{submitLabel}</button>
       <p aria-live="polite" role="status">{message}</p>
     </form>
   )
