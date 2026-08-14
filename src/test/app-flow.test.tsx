@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { act } from 'react'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
 import { AppProviders } from '../app/AppProviders'
 import { routes } from '../app/router'
 import { AuthService } from '../features/auth/authService'
@@ -66,17 +66,46 @@ it('lets a family register, learn with two children, review progress, print, man
   expect(repository.load().sessions[0].status).toBe('completed')
 
   await act(async () => { await router.navigate('/hoc-cung-con/phu-huynh') })
+  expect(screen.queryByRole('button', { name: 'In kèm đáp án' })).not.toBeInTheDocument()
   await user.type(await screen.findByLabelText('Mã PIN phụ huynh'), '1234')
   await user.click(screen.getByRole('button', { name: 'Mở khóa' }))
   expect(await screen.findByText('Tiến bộ tuần này')).toBeInTheDocument()
   expect(screen.getByLabelText('Lịch sử bài luyện')).toHaveTextContent('Phép cộng')
   expect(screen.getByRole('button', { name: 'In phiếu trắng' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'In kèm đáp án' })).toBeInTheDocument()
+  const originalPrint = window.print
+  const originalRequestAnimationFrame = window.requestAnimationFrame
+  const originalCancelAnimationFrame = window.cancelAnimationFrame
+  const print = vi.fn()
+  const frames: FrameRequestCallback[] = []
+  Object.defineProperty(window, 'print', { configurable: true, value: print })
+  Object.defineProperty(window, 'requestAnimationFrame', { configurable: true, value: vi.fn((callback: FrameRequestCallback) => { frames.push(callback); return frames.length }) })
+  Object.defineProperty(window, 'cancelAnimationFrame', { configurable: true, value: vi.fn() })
+  try {
+    await user.click(screen.getByRole('button', { name: 'In phiếu trắng' }))
+    expect(screen.getByRole('heading', { name: 'Học cùng con' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Đáp án' })).not.toBeInTheDocument()
+    expect(print).not.toHaveBeenCalled()
+    expect(frames).toHaveLength(1)
+    act(() => { frames.shift()?.(0) })
+    expect(print).toHaveBeenCalledTimes(1)
+
+    await user.click(screen.getByRole('button', { name: 'In kèm đáp án' }))
+    expect(screen.getByRole('heading', { name: 'Đáp án' })).toBeInTheDocument()
+    expect(frames).toHaveLength(1)
+    act(() => { frames.shift()?.(1) })
+    expect(print).toHaveBeenCalledTimes(2)
+  } finally {
+    Object.defineProperty(window, 'print', { configurable: true, value: originalPrint })
+    Object.defineProperty(window, 'requestAnimationFrame', { configurable: true, value: originalRequestAnimationFrame })
+    Object.defineProperty(window, 'cancelAnimationFrame', { configurable: true, value: originalCancelAnimationFrame })
+  }
   await user.click(screen.getByRole('button', { name: 'Thêm câu hỏi' }))
-  await user.type(screen.getByLabelText('Đề bài'), '2 + 2 = ?')
-  await user.type(screen.getByLabelText('Đáp án'), '4')
-  await user.type(screen.getByLabelText('Giải thích'), 'Cộng hai với hai.')
-  await user.click(screen.getByRole('button', { name: 'Lưu câu hỏi' }))
+  const questionEditor = screen.getByRole('dialog', { name: 'Thêm câu hỏi' })
+  await user.type(within(questionEditor).getByLabelText('Đề bài'), '2 + 2 = ?')
+  await user.type(within(questionEditor).getByLabelText('Đáp án'), '4')
+  await user.type(within(questionEditor).getByLabelText('Giải thích'), 'Cộng hai với hai.')
+  await user.click(within(questionEditor).getByRole('button', { name: 'Lưu câu hỏi' }))
   expect(screen.getByText('2 + 2 = ?')).toBeInTheDocument()
 
   await act(async () => { await router.navigate('/') })
