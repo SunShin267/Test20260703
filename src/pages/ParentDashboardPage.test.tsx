@@ -53,6 +53,21 @@ it('requires PIN before showing reports and updates a weekly goal', async () => 
   expect(repository.load().parentSettings.weeklySessionGoal).toBe(5)
 })
 
+it('offers blank and answer-key printing for the selected child only after PIN verification', async () => {
+  const user = userEvent.setup()
+  await renderParentDashboard(repository => {
+    const an = new ProfileService(repository).create({ name: 'An', grade: 3, avatar: '🌱' })
+    repository.update(data => ({ ...data, sessions: [completedSession('an-1', an.id, 'add', '2026-08-15')] }))
+  })
+
+  expect(screen.queryByRole('button', { name: 'In kèm đáp án' })).not.toBeInTheDocument()
+  await user.type(screen.getByLabelText('Mã PIN phụ huynh'), '1234')
+  await user.click(screen.getByRole('button', { name: 'Mở khóa' }))
+
+  expect(await screen.findByRole('button', { name: 'In phiếu trắng' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'In kèm đáp án' })).toBeInTheDocument()
+})
+
 it('requires the exact reset phrase before deleting local data and signing out', async () => {
   const user = userEvent.setup()
   const repository = await renderParentDashboard()

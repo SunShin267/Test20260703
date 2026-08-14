@@ -18,7 +18,8 @@ export function PracticePage({ sessionId, onBack }: PracticePageProps) {
   const [result, setResult] = useState<SessionResult | null>(() => session?.status === 'completed' ? practiceService.complete(session.id) : null)
 
   if (!session) return <main><h1>Không tìm thấy bài đang làm</h1><button onClick={onBack} type="button">Về góc học tập</button></main>
-  if (result) return <main><ResultPanel onBack={onBack} result={result} session={session} /></main>
+  const profile = repository.load().profiles.find(candidate => candidate.id === session.profileId)
+  if (result) return <main><ResultPanel onBack={onBack} profile={profile} result={result} session={session} /></main>
 
   const saveAnswer = (questionId: string, value: string) => setSession(practiceService.answer(sessionId, questionId, value))
   const questions = mode === 'worksheet' ? session.questions : [session.questions[currentIndex]]
@@ -49,4 +50,3 @@ export function PracticePage({ sessionId, onBack }: PracticePageProps) {
 function findSession(repository: ReturnType<typeof useAppServices>['repository'], sessionId: string): PracticeSession | null {
   return repository.load().sessions.find(session => session.id === sessionId) ?? null
 }
-

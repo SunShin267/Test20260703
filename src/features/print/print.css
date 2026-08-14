@@ -1,0 +1,75 @@
+@page {
+  size: A4;
+  margin: 16mm;
+}
+
+.print-root {
+  display: none;
+}
+
+.print-sheet {
+  color: #000;
+  font-family: Arial, sans-serif;
+  line-height: 1.45;
+}
+
+.print-sheet header {
+  border-bottom: 1px solid currentcolor;
+  margin-bottom: 1.25rem;
+  padding-bottom: .75rem;
+}
+
+.print-sheet h1,
+.print-sheet h2 {
+  margin: 0 0 .5rem;
+}
+
+.print-sheet header p,
+.print-sheet li > p {
+  margin: .35rem 0;
+}
+
+.print-sheet ol {
+  padding-left: 1.5rem;
+}
+
+.print-sheet li {
+  margin-bottom: 1.25rem;
+}
+
+.answer-line {
+  border-bottom: 1px solid currentcolor;
+  display: block;
+  height: 2rem;
+  margin-top: .75rem;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-root,
+  .print-root * {
+    visibility: visible;
+  }
+
+  .print-root {
+    display: block;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+  }
+
+  .print-sheet li {
+    break-inside: avoid;
+  }
+
+  .answer-key {
+    break-before: page;
+  }
+}

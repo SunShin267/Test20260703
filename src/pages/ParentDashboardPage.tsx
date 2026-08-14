@@ -9,6 +9,7 @@ import { PinService } from '../features/parent/pinService'
 import { ProfileManagement } from '../features/parent/ProfileManagement'
 import { QuestionBankManagement } from '../features/parent/QuestionBankManagement'
 import { WeeklyGoalForm } from '../features/parent/WeeklyGoalForm'
+import { PrintActions } from '../features/print/PrintActions'
 import { QuestionBankService } from '../features/practice/questionBankService'
 import { summarizeProgress } from '../features/progress/progressService'
 import { WeeklyActivity } from '../features/progress/WeeklyActivity'
@@ -30,6 +31,7 @@ export function ParentDashboardPage() {
   const selectedProfile = data.profiles.find(profile => profile.id === data.activeProfileId) ?? data.profiles[0] ?? null
   const summary = selectedProfile ? summarizeProgress(selectedProfile.id, data.sessions) : null
   const completedSessions = selectedProfile ? data.sessions.filter(session => session.profileId === selectedProfile.id && session.status === 'completed') : []
+  const latestCompletedSession = completedSessions.slice().sort((left, right) => Date.parse(right.completedAt ?? right.createdAt) - Date.parse(left.completedAt ?? left.createdAt))[0]
 
   function resetAll(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -47,6 +49,7 @@ export function ParentDashboardPage() {
         <ParentOverview summary={summary!} />
         <WeeklyActivity days={summary!.weekly} />
         <HistoryTable sessions={completedSessions} pageSize={10} />
+        {latestCompletedSession && <section aria-labelledby="print-heading"><h2 id="print-heading">In bài luyện gần nhất</h2><PrintActions parentVerified profile={selectedProfile} session={latestCompletedSession} /></section>}
       </> : <section aria-label="Tổng quan phụ huynh"><h2>Tiến bộ tuần này</h2><p>Chưa có hồ sơ để xem tiến độ.</p></section>}
       <WeeklyGoalForm repository={repository} onSaved={refresh} />
       <ProfileManagement activeId={data.activeProfileId} profiles={data.profiles} service={profileService} onChanged={refresh} />

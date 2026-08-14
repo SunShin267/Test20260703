@@ -54,3 +54,14 @@ it('shows explanations, text feedback, a badge and encouragement after submittin
   expect(screen.getAllByText(/Giải thích:/)).toHaveLength(5)
   expect(screen.getAllByText(/Đúng/)).toHaveLength(5)
 })
+
+it('offers a blank printable worksheet for the completed child session', async () => {
+  const user = userEvent.setup()
+  const { session } = renderPractice()
+
+  await user.click(screen.getByRole('button', { name: 'Nộp bài' }))
+
+  expect(await screen.findByRole('button', { name: 'In phiếu bài tập' })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'In kèm đáp án' })).not.toBeInTheDocument()
+  expect(screen.queryByText(session.questions[0].answer)).not.toBeInTheDocument()
+})

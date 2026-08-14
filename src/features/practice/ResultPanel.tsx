@@ -1,12 +1,14 @@
-import type { PracticeSession, SessionResult } from '../../shared/model/types'
+import type { ChildProfile, PracticeSession, SessionResult } from '../../shared/model/types'
+import { PrintActions } from '../print/PrintActions'
 
 interface ResultPanelProps {
   session: PracticeSession
   result: SessionResult
+  profile?: ChildProfile
   onBack: () => void
 }
 
-export function ResultPanel({ session, result, onBack }: ResultPanelProps) {
+export function ResultPanel({ session, result, profile, onBack }: ResultPanelProps) {
   const excellent = result.scorePercent >= 80
   const badge = excellent ? 'Sao chăm chỉ' : 'Người không bỏ cuộc'
   const encouragement = excellent ? 'Con làm rất tốt, hãy giữ nhịp học này nhé!' : 'Con đã cố gắng hết mình, cùng xem lại lời giải và thử tiếp nhé!'
@@ -26,8 +28,8 @@ export function ResultPanel({ session, result, onBack }: ResultPanelProps) {
           </li>
         })}
       </ol>
+      {profile && <PrintActions parentVerified={false} profile={profile} session={session} />}
       <button onClick={onBack} type="button">Về góc học tập</button>
     </section>
   )
 }
-
