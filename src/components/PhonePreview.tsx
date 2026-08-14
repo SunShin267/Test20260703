@@ -1,6 +1,6 @@
 export function PhonePreview() {
   return (
-    <div className="phone-preview" aria-label="Minh họa màn hình bài luyện Toán">
+    <div className="phone-preview" role="img" aria-label="Minh họa màn hình bài luyện Toán">
       <div className="phone-preview__speaker" aria-hidden="true" />
       <div className="phone-preview__screen">
         <div className="preview-topline">

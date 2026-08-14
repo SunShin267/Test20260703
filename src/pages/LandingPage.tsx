@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { AppHeader } from '../components/AppHeader'
 import { PhonePreview } from '../components/PhonePreview'
+import { TOPICS } from '../features/practice/topicCatalog'
 
 const steps = [
   ['01', 'Chọn chủ đề', 'Chọn phần Toán phù hợp với lớp và điều con đang muốn ôn.'],
@@ -16,6 +17,8 @@ const benefits = [
   ['▥', 'Cha mẹ nắm tiến độ', 'Theo dõi bài đã làm, chủ đề mạnh/yếu và mục tiêu tuần.'],
   ['◈', 'Riêng tư tại nhà', 'Dữ liệu của gia đình được lưu cục bộ trên thiết bị đang dùng.'],
 ]
+
+const topicCountLabel = TOPICS.length >= 18 ? `${TOPICS.length}+ chủ đề Toán` : `${TOPICS.length} chủ đề Toán`
 
 export function LandingPage() {
   return (
@@ -33,16 +36,16 @@ export function LandingPage() {
             </div>
             <p className="hero-note">Không cần cài đặt. Dữ liệu chỉ ở trên thiết bị của gia đình.</p>
           </div>
-          <div className="hero-art" aria-hidden="true">
-            <span className="shape shape--sun" />
-            <span className="shape shape--dot" />
-            <span className="shape shape--arc" />
+          <div className="hero-art">
+            <span className="shape shape--sun" aria-hidden="true" />
+            <span className="shape shape--dot" aria-hidden="true" />
+            <span className="shape shape--arc" aria-hidden="true" />
             <PhonePreview />
           </div>
         </section>
 
         <section className="proof-strip" aria-label="Phạm vi Học cùng con">
-          <div><strong>18 chủ đề Toán</strong><span>Từ số học đến hình học cơ bản</span></div>
+          <div><strong>{topicCountLabel}</strong><span>Từ số học đến hình học cơ bản</span></div>
           <div><strong>Lớp 1–5</strong><span>Nội dung theo đúng nhịp tiểu học</span></div>
           <div><strong>Luyện mọi lúc</strong><span>Một thiết bị, nhiều hồ sơ bé</span></div>
         </section>
