@@ -10,6 +10,8 @@ export interface PinVerification {
 }
 
 export class PinService {
+  private verificationQueue: Promise<void> = Promise.resolve()
+
   constructor(private readonly app: AppRepository) {}
 
   async setPin(pin: string): Promise<void> {
@@ -26,6 +28,12 @@ export class PinService {
 
   async verifyPin(pin: string, now = Date.now()): Promise<PinVerification> {
     validatePin(pin)
+    const verification = this.verificationQueue.then(() => this.verifyPinInOrder(pin, now))
+    this.verificationQueue = verification.then(() => undefined, () => undefined)
+    return verification
+  }
+
+  private async verifyPinInOrder(pin: string, now: number): Promise<PinVerification> {
     const settings = this.app.load().parentSettings
     if (settings.pinLockedUntil !== null && settings.pinLockedUntil > now) {
       return { ok: false, lockedUntil: settings.pinLockedUntil }

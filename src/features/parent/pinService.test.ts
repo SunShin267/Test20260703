@@ -16,6 +16,21 @@ describe('PinService', () => {
     expect(repository.load().parentSettings.pinHash).not.toBe('1234')
   })
 
+  it('locks after five concurrent failed verifications', async () => {
+    const repository = new AppRepository(new MemoryStorageAdapter())
+    const pinService = new PinService(repository)
+    const now = 1_760_000_000_000
+    await pinService.setPin('1234')
+
+    await Promise.all(Array.from({ length: 5 }, () => pinService.verifyPin('0000', now)))
+
+    expect(repository.load().parentSettings).toMatchObject({
+      failedPinAttempts: 5,
+      pinLockedUntil: now + 300_000,
+    })
+    await expect(pinService.verifyPin('1234', now)).resolves.toEqual({ ok: false, lockedUntil: now + 300_000 })
+  })
+
   it('resets failed attempts after a successful verification', async () => {
     const repository = new AppRepository(new MemoryStorageAdapter())
     const pinService = new PinService(repository)
