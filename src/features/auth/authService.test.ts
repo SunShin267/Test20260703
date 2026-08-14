@@ -45,4 +45,16 @@ describe('AuthService', () => {
     await expect(service.register('an', 'matkhau123')).rejects.toThrow('Thông tin đăng ký chưa hợp lệ')
     await expect(service.register('gia-dinh-an', 'ngan')).rejects.toThrow('Thông tin đăng ký chưa hợp lệ')
   })
+
+  it('rejects registration when a family account already exists', async () => {
+    const { repository, session, service } = createService()
+    await service.register('gia-dinh-an', 'matkhau123')
+    const existingAccount = repository.load().account
+    service.signOut()
+
+    await expect(service.register('nguoi-la', 'matkhau456')).rejects.toThrow('Tài khoản gia đình đã tồn tại')
+
+    expect(repository.load().account).toEqual(existingAccount)
+    expect(session.get()).toBeNull()
+  })
 })

@@ -1,7 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from 'react'
 import { useAppServices } from '../../app/AppProviders'
-import { AuthService } from './authService'
-import { SessionRepository } from './sessionRepository'
 
 interface AuthContextValue {
   authenticated: boolean
@@ -13,8 +11,8 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const { repository, storage } = useAppServices()
-  const service = useMemo(() => new AuthService(repository, new SessionRepository(storage)), [repository, storage])
+  const { authService: service } = useAppServices()
+  if (!service) throw new Error('AppProviders is missing authService')
   const [authenticated, setAuthenticated] = useState(() => service.isAuthenticated())
 
   const register = useCallback(async (username: string, password: string) => {

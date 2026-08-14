@@ -8,6 +8,7 @@ export class AuthService {
   async register(username: string, password: string): Promise<void> {
     const normalized = username.trim().toLowerCase()
     if (normalized.length < 3 || password.length < 8) throw new Error('Thông tin đăng ký chưa hợp lệ')
+    if (this.app.load().account) throw new Error('Tài khoản gia đình đã tồn tại')
 
     const passwordSalt = createSalt()
     const passwordHash = await hashSecret(password, passwordSalt)

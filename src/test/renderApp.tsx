@@ -2,6 +2,8 @@ import { render } from '@testing-library/react'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { AppProviders } from '../app/AppProviders'
 import { routes } from '../app/router'
+import { AuthService } from '../features/auth/authService'
+import { SessionRepository } from '../features/auth/sessionRepository'
 import type { AppData } from '../shared/model/types'
 import { AppRepository } from '../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../shared/storage/MemoryStorageAdapter'
@@ -15,7 +17,7 @@ export function renderApp(path: string, fixture: AppData = createAppFixture()) {
 
   return {
     ...render(
-      <AppProviders services={{ repository, storage: adapter }}>
+      <AppProviders services={{ repository, authService: new AuthService(repository, new SessionRepository(adapter)) }}>
         <RouterProvider router={router} />
       </AppProviders>,
     ),

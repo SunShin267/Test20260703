@@ -1,10 +1,10 @@
 import { createContext, useContext, type PropsWithChildren } from 'react'
+import type { AuthService } from '../features/auth/authService'
 import type { AppRepository } from '../shared/storage/AppRepository'
-import type { StorageAdapter } from '../shared/storage/StorageAdapter'
 
 export interface AppServices {
   repository: AppRepository
-  storage: StorageAdapter
+  authService?: AuthService
 }
 
 const AppServicesContext = createContext<AppServices | null>(null)
