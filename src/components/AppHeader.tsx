@@ -15,7 +15,10 @@ export function AppHeader({ accountName, onSignOut }: AppHeaderProps) {
           <span aria-hidden="true">✦</span>
           Học cùng con
         </Link>
-        <nav aria-label="Điều hướng Học cùng con">
+        <nav
+          aria-label="Điều hướng Học cùng con"
+          className={`app-header__nav app-header__nav--${signedIn ? 'authenticated' : 'public'}`}
+        >
           {signedIn ? (
             <>
               <Link to="/">Game Hub</Link>

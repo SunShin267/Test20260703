@@ -124,11 +124,14 @@ a { color: inherit; }
 .local-notice > span { color: #9a6200; font-size: 1.4rem; }.local-notice strong { color: var(--navy); font-size: .9rem; }.local-notice p { color: #5f5a4e; font-size: .84rem; line-height: 1.5; margin: .2rem 0 0; }
 
 @media (max-width: 559px) {
-  .app-header__inner { gap: .35rem; min-height: 4.25rem; padding-left: .75rem; padding-right: .75rem; }
-  .brand { font-size: .95rem; }
-  .app-header nav { gap: .15rem; }
+  .app-header__inner { align-items: stretch; flex-direction: column; gap: .5rem; min-height: 4.25rem; padding-left: .75rem; padding-right: .75rem; }
+  .brand { align-self: flex-start; font-size: .95rem; min-height: 2.75rem; }
+  .app-header nav { gap: .35rem; width: 100%; }
+  .app-header__nav--public { justify-content: flex-end; }
+  .app-header .app-header__nav--authenticated { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .app-header nav a[href="#cach-hoat-dong"] { display: none; }
   .app-header nav a:not(.button) { font-size: .78rem; padding: .35rem; }
+  .app-header nav a:not(.button), .header-sign-out, .button--small { align-items: center; display: inline-flex; justify-content: center; min-height: 2.75rem; min-width: 0; text-align: center; }
   .button--small { font-size: .82rem; padding: .42rem .65rem; }
 }
 
