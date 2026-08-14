@@ -64,11 +64,28 @@ const time: QuestionGenerator = {
 
 const geometry: QuestionGenerator = {
   generate(input) {
-    const sides = input.random() < 0.5 ? 3 : 4
-    const shape = sides === 3 ? 'tam giác' : 'hình vuông'
-    return makeQuestion(`geometry-${sides}`, 'geometry', `${shape} có bao nhiêu cạnh?`, String(sides), `${shape} có ${sides} cạnh.`, input)
+    const fact = geometryFacts[randomInt(input.random, 0, geometryFacts.length - 1)]
+    return makeQuestion(`geometry-${fact.id}`, 'geometry', fact.prompt, String(fact.answer), fact.explanation, input)
   },
 }
+
+const geometryFacts = [
+  { id: 'triangle-sides', prompt: 'Hình tam giác có bao nhiêu cạnh?', answer: 3, explanation: 'Hình tam giác có 3 cạnh.' },
+  { id: 'square-sides', prompt: 'Hình vuông có bao nhiêu cạnh?', answer: 4, explanation: 'Hình vuông có 4 cạnh.' },
+  { id: 'rectangle-sides', prompt: 'Hình chữ nhật có bao nhiêu cạnh?', answer: 4, explanation: 'Hình chữ nhật có 4 cạnh.' },
+  { id: 'rhombus-sides', prompt: 'Hình thoi có bao nhiêu cạnh?', answer: 4, explanation: 'Hình thoi có 4 cạnh.' },
+  { id: 'trapezoid-sides', prompt: 'Hình thang có bao nhiêu cạnh?', answer: 4, explanation: 'Hình thang có 4 cạnh.' },
+  { id: 'pentagon-sides', prompt: 'Hình ngũ giác có bao nhiêu cạnh?', answer: 5, explanation: 'Hình ngũ giác có 5 cạnh.' },
+  { id: 'hexagon-sides', prompt: 'Hình lục giác có bao nhiêu cạnh?', answer: 6, explanation: 'Hình lục giác có 6 cạnh.' },
+  { id: 'octagon-sides', prompt: 'Hình bát giác có bao nhiêu cạnh?', answer: 8, explanation: 'Hình bát giác có 8 cạnh.' },
+  { id: 'circle-corners', prompt: 'Hình tròn có bao nhiêu góc?', answer: 0, explanation: 'Hình tròn không có góc.' },
+  { id: 'cube-faces', prompt: 'Khối lập phương có bao nhiêu mặt?', answer: 6, explanation: 'Khối lập phương có 6 mặt.' },
+  { id: 'cuboid-faces', prompt: 'Hình hộp chữ nhật có bao nhiêu mặt?', answer: 6, explanation: 'Hình hộp chữ nhật có 6 mặt.' },
+  { id: 'triangular-pyramid-faces', prompt: 'Hình chóp tam giác có bao nhiêu mặt?', answer: 4, explanation: 'Hình chóp tam giác có 4 mặt.' },
+  { id: 'cylinder-bases', prompt: 'Hình trụ có bao nhiêu mặt đáy hình tròn?', answer: 2, explanation: 'Hình trụ có 2 mặt đáy hình tròn.' },
+  { id: 'cone-bases', prompt: 'Hình nón có bao nhiêu mặt đáy hình tròn?', answer: 1, explanation: 'Hình nón có 1 mặt đáy hình tròn.' },
+  { id: 'sphere-edges', prompt: 'Hình cầu có bao nhiêu cạnh?', answer: 0, explanation: 'Hình cầu không có cạnh.' },
+] as const
 
 const perimeterArea: QuestionGenerator = {
   generate(input) {

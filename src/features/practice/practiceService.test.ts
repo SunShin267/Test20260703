@@ -64,6 +64,17 @@ describe('PracticeService', () => {
     expect(repository.load().sessions).toEqual([session])
   })
 
+  it('creates 15 meaningful, uniquely identified geometry questions for a valid grade', () => {
+    const { service } = createService()
+
+    const session = service.createSession('profile-1', 'geometry', 'easy', 15)
+
+    expect(session.questions).toHaveLength(15)
+    expect(new Set(session.questions.map(question => question.prompt)).size).toBe(15)
+    expect(new Set(session.questions.map(question => question.id)).size).toBe(15)
+    expect(session.questions.every(question => question.grade === 1 && question.topicId === 'geometry')).toBe(true)
+  })
+
   it('rejects a session count outside the supported choices', () => {
     const { service } = createService()
 
