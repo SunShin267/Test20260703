@@ -15,7 +15,7 @@ export function renderApp(path: string, fixture: AppData = createAppFixture()) {
 
   return {
     ...render(
-      <AppProviders services={{ repository }}>
+      <AppProviders services={{ repository, storage: adapter }}>
         <RouterProvider router={router} />
       </AppProviders>,
     ),

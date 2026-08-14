@@ -1,13 +1,17 @@
-import { render, screen } from '@testing-library/react'
-import { RouterProvider, createMemoryRouter } from 'react-router-dom'
-import { routes } from './router'
+import { screen } from '@testing-library/react'
+import { renderApp } from '../test/renderApp'
 
 it.each([
-  ['/', 'Game Hub'],
   ['/login', 'Đăng nhập'],
   ['/hoc-cung-con', 'Học cùng con'],
 ])('renders %s', async (path, heading) => {
-  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />)
+  renderApp(path)
 
   expect(await screen.findByRole('heading', { name: heading })).toBeInTheDocument()
+})
+
+it('redirects protected routes to login without a local session', async () => {
+  renderApp('/hoc-cung-con/phu-huynh')
+
+  expect(await screen.findByRole('heading', { name: 'Đăng nhập' })).toBeInTheDocument()
 })
