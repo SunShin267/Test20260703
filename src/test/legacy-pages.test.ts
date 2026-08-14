@@ -21,10 +21,10 @@ it('ships the shared legacy theme asset', () => {
 it.each(games)('%s loads the shared theme and keeps its game entry point', (file, gameEntryPoint) => {
   const html = readFileSync(`public/games/${file}`, 'utf8')
 
-  expect(html).toContain('/legacy-theme.css')
+  expect(html).toContain('../legacy-theme.css')
   expect(html).toContain('legacy-app-header')
   expect(html).toContain('legacy-home-link')
-  expect(html).toContain('href="/"')
+  expect(html).toContain('href="../"')
   expect(html).toContain('Về Game Hub')
   expect(html).toContain(gameEntryPoint)
 })
@@ -33,8 +33,8 @@ it('keeps the former worksheet URL as an accessible Học cùng con redirect', (
   const html = readFileSync('public/bai-tap-ai.html', 'utf8')
 
   expect(html).toContain('http-equiv="refresh"')
-  expect(html).toContain('url=/hoc-cung-con')
-  expect(html).toContain('href="/hoc-cung-con"')
+  expect(html).toContain('url=./hoc-cung-con')
+  expect(html).toContain('href="./hoc-cung-con"')
 })
 
 it('marks the flex-based random-number page so the shared mobile theme can stack its header', () => {

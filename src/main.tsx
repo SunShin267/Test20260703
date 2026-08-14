@@ -27,7 +27,7 @@ const services = {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppProviders services={services}>
-      <RouterProvider router={createBrowserRouter(routes)} />
+      <RouterProvider router={createBrowserRouter(routes, { basename: import.meta.env.BASE_URL })} />
     </AppProviders>
   </StrictMode>,
 )

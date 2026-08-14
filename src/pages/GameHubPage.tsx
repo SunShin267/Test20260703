@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { AppHeader } from '../components/AppHeader'
 import { useAppServices } from '../app/AppProviders'
 import { useAuth } from '../features/auth/AuthProvider'
+import { sitePath } from '../shared/routing/sitePath'
 
 const hubItems = [
   { title: 'Học cùng con', icon: '✦', href: '/hoc-cung-con/app', description: 'Luyện Toán lớp 1–5 theo nhịp riêng của con.', accent: 'coral' },
@@ -34,7 +35,7 @@ export function GameHubPage() {
                 <span className="hub-card__icon" aria-hidden="true">{item.icon}</span>
                 <h3>{item.title}</h3>
                 <p>{item.description}</p>
-                <a href={item.href} className="hub-card__link" aria-label={`Mở ${item.title}`}>Mở <span aria-hidden="true">→</span></a>
+                <a href={sitePath(item.href)} className="hub-card__link" aria-label={`Mở ${item.title}`}>Mở <span aria-hidden="true">→</span></a>
               </li>
             ))}
           </ul>

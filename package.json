@@ -2,9 +2,11 @@
   "name": "hoc-cung-con",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:pages": "tsc -b && vite build --base=/Test20260703/ && node scripts/prepare-pages.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

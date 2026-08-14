@@ -1,5 +1,5 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAppServices } from '../app/AppProviders'
 import { useAuth } from '../features/auth/AuthProvider'
 import { HistoryTable } from '../features/parent/HistoryTable'
@@ -59,6 +59,6 @@ export function ParentDashboardPage() {
       <section aria-labelledby="data-heading"><h2 id="data-heading">Dữ liệu</h2><button type="button" onClick={() => { setResetOpen(true); setConfirmation('') }}>Đặt lại toàn bộ dữ liệu</button></section>
       {resetOpen && <AccessibleDialog initialFocusRef={resetConfirmationRef} onClose={() => setResetOpen(false)} title="Đặt lại toàn bộ dữ liệu"><p>Thao tác này sẽ xóa tài khoản, hồ sơ, bài luyện và câu hỏi tùy chỉnh trên thiết bị.</p><form onSubmit={resetAll}><label>Nhập XÓA DỮ LIỆU để xác nhận<input aria-label="Nhập XÓA DỮ LIỆU để xác nhận" ref={resetConfirmationRef} value={confirmation} onChange={event => setConfirmation(event.target.value)} /></label><button disabled={confirmation !== 'XÓA DỮ LIỆU'} type="submit">Xóa dữ liệu</button><button type="button" onClick={() => setResetOpen(false)}>Hủy</button></form></AccessibleDialog>}
     </PinGate>
-    <nav aria-label="Điều hướng phụ huynh"><a href="/hoc-cung-con/app">Về góc học tập</a></nav>
+    <nav aria-label="Điều hướng phụ huynh"><Link to="/hoc-cung-con/app">Về góc học tập</Link></nav>
   </main>
 }
