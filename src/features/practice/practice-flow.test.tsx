@@ -34,7 +34,11 @@ function renderAuthenticatedApp(path: string, suppliedRepository?: AppRepository
   session.set('gia-dinh-an')
   const authService = new AuthService(repository, session)
   const profileService = new ProfileService(repository)
-  const practiceService = new PracticeService(repository, { random: () => 0.3 })
+  let clockTick = 0
+  const practiceService = new PracticeService(repository, {
+    random: () => 0.3,
+    now: () => `2026-08-15T00:00:${String(clockTick++).padStart(2, '0')}.000Z`,
+  })
   const router = createMemoryRouter(routes, { initialEntries: [path] })
 
   render(
@@ -85,8 +89,11 @@ it('loads the requested draft from a session query after a fresh router mount', 
   const { repository, practiceService } = renderAuthenticatedApp('/hoc-cung-con/app')
   const otherDraft = practiceService.createSession('an', 'subtract', 'easy', 5)
   const targetDraft = practiceService.createSession('an', 'add', 'medium', 5)
-  practiceService.answer(otherDraft.id, otherDraft.questions[0].id, 'đáp án draft khác')
   practiceService.answer(targetDraft.id, targetDraft.questions[0].id, 'đáp án draft mục tiêu')
+  practiceService.answer(otherDraft.id, otherDraft.questions[0].id, 'đáp án draft khác')
+  const drafts = repository.load().sessions
+  expect(drafts.map(draft => draft.id)).toEqual([otherDraft.id, targetDraft.id])
+  expect(practiceService.resumeDraft('an')?.id).toBe(otherDraft.id)
   cleanup()
 
   renderAuthenticatedApp(`/hoc-cung-con/app?session=${targetDraft.id}`, repository)
