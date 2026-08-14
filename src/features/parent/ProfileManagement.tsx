@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { AccessibleDialog } from '../../shared/ui/AccessibleDialog'
 import { ProfileForm } from '../profiles/ProfileForm'
 import type { ProfileInput, ProfileService } from '../profiles/profileService'
 import type { ChildProfile } from '../../shared/model/types'
@@ -8,6 +9,8 @@ export function ProfileManagement({ profiles, activeId, service, onChanged }: { 
   const [creating, setCreating] = useState(false)
   const [deleting, setDeleting] = useState<ChildProfile | null>(null)
   const [error, setError] = useState('')
+  const profileNameRef = useRef<HTMLInputElement>(null)
+  const confirmDeleteRef = useRef<HTMLButtonElement>(null)
 
   function save(input: ProfileInput) {
     try {
@@ -31,14 +34,12 @@ export function ProfileManagement({ profiles, activeId, service, onChanged }: { 
       <div className="button-row"><button type="button" onClick={() => { service.select(profile.id); onChanged() }}>Chọn {profile.name}</button><button type="button" onClick={() => { setEditing(profile); setCreating(false) }}>Sửa {profile.name}</button><button type="button" onClick={() => setDeleting(profile)}>Xóa {profile.name}</button></div>
     </li>)}</ul>
     <button type="button" onClick={() => { setCreating(true); setEditing(null) }}>Thêm hồ sơ</button>
-    {(creating || editing) && <div aria-label={editing ? 'Sửa hồ sơ' : 'Thêm hồ sơ'} className="dialog" role="dialog" aria-modal="true">
-      <h3>{editing ? `Sửa hồ sơ ${editing.name}` : 'Thêm hồ sơ'}</h3>
-      <ProfileForm initialValue={editing ? { name: editing.name, grade: editing.grade, avatar: editing.avatar } : undefined} onSubmit={save} />
+    {(creating || editing) && <AccessibleDialog initialFocusRef={profileNameRef} onClose={() => { setCreating(false); setEditing(null) }} title={editing ? `Sửa hồ sơ ${editing.name}` : 'Thêm hồ sơ'}>
+      <ProfileForm initialFocusRef={profileNameRef} initialValue={editing ? { name: editing.name, grade: editing.grade, avatar: editing.avatar } : undefined} onSubmit={save} />
       <button type="button" onClick={() => { setCreating(false); setEditing(null) }}>Hủy</button>
-    </div>}
-    {deleting && <div aria-label="Xóa hồ sơ" className="dialog" role="dialog" aria-modal="true">
-      <h3>Xóa hồ sơ {deleting.name}?</h3><p>Các bài luyện của {deleting.name} cũng sẽ bị xóa.</p>
-      <button type="button" onClick={remove}>Xác nhận xóa hồ sơ</button><button type="button" onClick={() => setDeleting(null)}>Hủy</button>
-    </div>}
+    </AccessibleDialog>}
+    {deleting && <AccessibleDialog initialFocusRef={confirmDeleteRef} onClose={() => setDeleting(null)} title={`Xóa hồ sơ ${deleting.name}?`}><p>Các bài luyện của {deleting.name} cũng sẽ bị xóa.</p>
+      <button ref={confirmDeleteRef} type="button" onClick={remove}>Xác nhận xóa hồ sơ</button><button type="button" onClick={() => setDeleting(null)}>Hủy</button>
+    </AccessibleDialog>}
   </section>
 }

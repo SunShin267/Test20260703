@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppServices } from '../app/AppProviders'
 import { useAuth } from '../features/auth/AuthProvider'
@@ -13,6 +13,7 @@ import { QuestionBankService } from '../features/practice/questionBankService'
 import { summarizeProgress } from '../features/progress/progressService'
 import { WeeklyActivity } from '../features/progress/WeeklyActivity'
 import { ProfileService } from '../features/profiles/profileService'
+import { AccessibleDialog } from '../shared/ui/AccessibleDialog'
 
 export function ParentDashboardPage() {
   const { repository, pinService: suppliedPinService, profileService: suppliedProfileService, questionBankService: suppliedQuestionBankService } = useAppServices()
@@ -24,6 +25,7 @@ export function ParentDashboardPage() {
   const [data, setData] = useState(() => repository.load())
   const [resetOpen, setResetOpen] = useState(false)
   const [confirmation, setConfirmation] = useState('')
+  const resetConfirmationRef = useRef<HTMLInputElement>(null)
   const refresh = () => setData(repository.load())
   const selectedProfile = data.profiles.find(profile => profile.id === data.activeProfileId) ?? data.profiles[0] ?? null
   const summary = selectedProfile ? summarizeProgress(selectedProfile.id, data.sessions) : null
@@ -50,7 +52,7 @@ export function ParentDashboardPage() {
       <ProfileManagement activeId={data.activeProfileId} profiles={data.profiles} service={profileService} onChanged={refresh} />
       <QuestionBankManagement service={questionBankService} />
       <section aria-labelledby="data-heading"><h2 id="data-heading">Dữ liệu</h2><button type="button" onClick={() => { setResetOpen(true); setConfirmation('') }}>Đặt lại toàn bộ dữ liệu</button></section>
-      {resetOpen && <div aria-label="Đặt lại toàn bộ dữ liệu" className="dialog" role="dialog" aria-modal="true"><h2>Đặt lại toàn bộ dữ liệu</h2><p>Thao tác này sẽ xóa tài khoản, hồ sơ, bài luyện và câu hỏi tùy chỉnh trên thiết bị.</p><form onSubmit={resetAll}><label>Nhập XÓA DỮ LIỆU để xác nhận<input aria-label="Nhập XÓA DỮ LIỆU để xác nhận" value={confirmation} onChange={event => setConfirmation(event.target.value)} /></label><button disabled={confirmation !== 'XÓA DỮ LIỆU'} type="submit">Xóa dữ liệu</button><button type="button" onClick={() => setResetOpen(false)}>Hủy</button></form></div>}
+      {resetOpen && <AccessibleDialog initialFocusRef={resetConfirmationRef} onClose={() => setResetOpen(false)} title="Đặt lại toàn bộ dữ liệu"><p>Thao tác này sẽ xóa tài khoản, hồ sơ, bài luyện và câu hỏi tùy chỉnh trên thiết bị.</p><form onSubmit={resetAll}><label>Nhập XÓA DỮ LIỆU để xác nhận<input aria-label="Nhập XÓA DỮ LIỆU để xác nhận" ref={resetConfirmationRef} value={confirmation} onChange={event => setConfirmation(event.target.value)} /></label><button disabled={confirmation !== 'XÓA DỮ LIỆU'} type="submit">Xóa dữ liệu</button><button type="button" onClick={() => setResetOpen(false)}>Hủy</button></form></AccessibleDialog>}
     </PinGate>
     <nav aria-label="Điều hướng phụ huynh"><a href="/hoc-cung-con/app">Về góc học tập</a></nav>
   </main>

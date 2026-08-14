@@ -1,14 +1,15 @@
-import { type FormEvent } from 'react'
+import { type FormEvent, type RefObject } from 'react'
 import type { ProfileInput } from './profileService'
 
 interface ProfileFormProps {
   initialValue?: ProfileInput
   onSubmit: (profile: ProfileInput) => void
+  initialFocusRef?: RefObject<HTMLInputElement | null>
 }
 
 const avatars = ['🌱', '🚀', '🌟', '🐼']
 
-export function ProfileForm({ initialValue, onSubmit }: ProfileFormProps) {
+export function ProfileForm({ initialValue, onSubmit, initialFocusRef }: ProfileFormProps) {
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
@@ -23,7 +24,7 @@ export function ProfileForm({ initialValue, onSubmit }: ProfileFormProps) {
     <form onSubmit={submit}>
       <label>
         Tên bé
-        <input defaultValue={initialValue?.name ?? ''} name="name" required />
+        <input defaultValue={initialValue?.name ?? ''} name="name" ref={initialFocusRef} required />
       </label>
       <label>
         Lớp
