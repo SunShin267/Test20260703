@@ -639,6 +639,55 @@ git commit -m "feat: add extensible math topic engine"
 
 ---
 
+### Task 5A: Ngân hàng câu hỏi mở rộng và câu hỏi tùy chỉnh cục bộ
+
+**Files:**
+- Modify: `src/shared/model/types.ts`
+- Modify: `src/shared/storage/appDataSchema.ts`
+- Create: `src/features/practice/questionBankService.ts`
+- Create: `src/features/practice/questionBankService.test.ts`
+- Modify: `src/features/practice/practiceService.ts`
+- Modify: `src/features/practice/practiceService.test.ts`
+- Modify: `src/app/AppProviders.tsx`
+
+**Interfaces:**
+- Produces: `CustomQuestion`, `QuestionBankQuery` và `QuestionBankService.list/add/update/remove`.
+- Consumes: câu hỏi tùy chỉnh phù hợp lớp, chủ đề và độ khó trong `PracticeService.createSession`, sau đó dùng generator để bù đủ số câu.
+- Extension seam: implementation local có thể được thay bằng API mà không sửa component hoặc logic phiên học.
+
+- [ ] **Step 1: Viết test thất bại cho lưu trữ và validation**
+
+Test câu hỏi mới bắt buộc có đề bài, đáp án, giải thích, lớp 1–12, topic đã đăng ký và độ khó hợp lệ; add/update/remove phải persist qua `AppRepository`. Test dữ liệu schema v1 hiện có chưa có `customQuestions` được đọc an toàn thành mảng rỗng, không reset dữ liệu gia đình.
+
+- [ ] **Step 2: Chạy test và xác nhận RED**
+
+Run: `pnpm vitest run src/features/practice/questionBankService.test.ts src/shared/storage`
+
+Expected: FAIL vì model, schema và service chưa tồn tại.
+
+- [ ] **Step 3: Thêm contract ngân hàng câu hỏi**
+
+`CustomQuestion` có `id`, `topicId`, `prompt`, `answer`, `explanation`, `grade`, `difficulty`, `createdAt`, `updatedAt`, `schemaVersion`. `QuestionBankService` chỉ phụ thuộc `AppRepository`; danh sách hỗ trợ lọc theo topic/lớp/độ khó và trả bản sao ổn định.
+
+- [ ] **Step 4: Tích hợp với PracticeService**
+
+Khi tạo phiên, chọn các câu hỏi tùy chỉnh phù hợp trước theo thứ tự được random hóa bằng dependency `random`, loại prompt trùng; generator hiện tại bù phần còn lại và vẫn bảo đảm toàn phiên có câu hỏi duy nhất. Việc không có câu hỏi tùy chỉnh phải giữ nguyên hành vi Task 5.
+
+- [ ] **Step 5: Chạy focused, full tests và build**
+
+Run: `pnpm vitest run src/features/practice src/shared/storage && pnpm test && pnpm build`
+
+Expected: CRUD, migration tương thích, mixed custom/generated session và toàn bộ regression PASS.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/shared src/features/practice src/app/AppProviders.tsx
+git commit -m "feat: add extensible local question bank"
+```
+
+---
+
 ### Task 6: Child dashboard, practice flow và autosave
 
 **Files:**
@@ -804,12 +853,13 @@ git commit -m "feat: add progress and streak insights"
 - Create: `src/features/parent/ProfileManagement.tsx`
 - Create: `src/features/parent/WeeklyGoalForm.tsx`
 - Create: `src/features/parent/HistoryTable.tsx`
+- Create: `src/features/parent/QuestionBankManagement.tsx`
 - Create: `src/features/parent/ParentDashboardPage.test.tsx`
 - Modify: `src/app/router.tsx`
 
 **Interfaces:**
 - Consumes: `PinService`, `ProfileService`, `summarizeProgress`, `AppRepository`.
-- Produces: protected parent route with profile CRUD, goals, history and reset confirmation.
+- Produces: protected parent route with profile CRUD, goals, history, local custom-question CRUD and reset confirmation.
 
 - [ ] **Step 1: Write failing parent flow test**
 
@@ -849,6 +899,8 @@ After `PinGate`, render profile selector, weekly totals, strongest/weakest topic
 
 Reuse `ProfileForm` for create/edit. Weekly goals accept sessions 1–14 and questions 5–200. Profile deletion requires a dialog naming the child. “Đặt lại toàn bộ dữ liệu” requires typing `XÓA DỮ LIỆU`, then calls `AppRepository.reset()` and signs out.
 
+Thêm mục “Ngân hàng câu hỏi” sau PIN gate. Phụ huynh có thể lọc theo lớp/chủ đề/độ khó, thêm, sửa và xóa câu hỏi tùy chỉnh. Form dùng select từ `TOPICS`, hiển thị validation tiếng Việt, yêu cầu xác nhận khi xóa và nêu rõ dữ liệu chỉ lưu trên thiết bị. Không cho sửa/xóa các mẫu generator dựng sẵn.
+
 ```ts
 const goalSchema = z.object({ sessions: z.number().int().min(1).max(14), questions: z.number().int().min(5).max(200) })
 const canReset = confirmation === 'XÓA DỮ LIỆU'
@@ -859,7 +911,7 @@ const resetAll = () => { if (!canReset) return; repository.reset(); auth.signOut
 
 Run: `pnpm vitest run src/features/parent src/features/profiles`
 
-Expected: PIN gate, reports, goal validation, profile confirmation and reset tests PASS.
+Expected: PIN gate, reports, goal validation, profile confirmation, question-bank CRUD and reset tests PASS.
 
 - [ ] **Step 6: Commit**
 
