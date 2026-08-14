@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type PropsWithChildren } from 'react'
+import { useEffect, useState, type FormEvent, type PropsWithChildren } from 'react'
 import type { PinService } from './pinService'
 
 interface PinGateProps extends PropsWithChildren {
@@ -11,6 +11,22 @@ export function PinGate({ pinService, children }: PinGateProps) {
   const [pin, setPin] = useState('')
   const [message, setMessage] = useState(initialLock.locked ? lockMessage(initialLock.lockedUntil!) : '')
   const [lockedUntil, setLockedUntil] = useState<number | null>(initialLock.lockedUntil)
+
+  useEffect(() => {
+    if (lockedUntil === null) return
+    const delay = lockedUntil - Date.now()
+    if (delay <= 0) {
+      setLockedUntil(null)
+      setMessage('Bạn có thể thử lại mã PIN.')
+      return
+    }
+
+    const timer = window.setTimeout(() => {
+      setLockedUntil(null)
+      setMessage('Bạn có thể thử lại mã PIN.')
+    }, delay)
+    return () => window.clearTimeout(timer)
+  }, [lockedUntil])
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -44,7 +60,7 @@ export function PinGate({ pinService, children }: PinGateProps) {
           value={pin}
         />
       </label>
-      <button disabled={lockedUntil !== null && lockedUntil > Date.now()} type="submit">Xác nhận</button>
+      <button disabled={lockedUntil !== null} type="submit">Xác nhận</button>
       <p aria-live="polite" role="status">{message}</p>
     </form>
   )
