@@ -9,6 +9,7 @@ import { AuthService } from '../features/auth/authService'
 import { SessionRepository } from '../features/auth/sessionRepository'
 import { PinService } from '../features/parent/pinService'
 import { PracticeService } from '../features/practice/practiceService'
+import { LocalQuestionBankService } from '../features/practice/questionBankService'
 import { ProfileService } from '../features/profiles/profileService'
 import { AppRepository } from '../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../shared/storage/MemoryStorageAdapter'
@@ -20,11 +21,12 @@ it('lets a family register, learn with two children, review progress, print, man
   const authService = new AuthService(repository, new SessionRepository(storage))
   const pinService = new PinService(repository)
   const profileService = new ProfileService(repository)
-  const practiceService = new PracticeService(repository, { random: () => 0.3 })
+  const questionBankService = new LocalQuestionBankService(repository)
+  const practiceService = new PracticeService(repository, { questionBank: questionBankService, random: () => 0.3 })
   const router = createMemoryRouter(routes, { initialEntries: ['/'] })
 
   render(
-    <AppProviders services={{ repository, authService, pinService, profileService, practiceService }}>
+    <AppProviders services={{ repository, authService, pinService, profileService, practiceService, questionBankService }}>
       <RouterProvider router={router} />
     </AppProviders>,
   )
@@ -40,10 +42,10 @@ it('lets a family register, learn with two children, review progress, print, man
   await user.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }))
   expect(await screen.findByRole('heading', { name: /Chào An/ })).toBeInTheDocument()
 
-  await pinService.setPin('1234')
-  await act(async () => { await router.navigate('/hoc-cung-con/phu-huynh') })
-  await user.type(await screen.findByLabelText('Mã PIN phụ huynh'), '1234')
-  await user.click(screen.getByRole('button', { name: 'Mở khóa' }))
+  await user.click(screen.getByRole('link', { name: 'Khu vực phụ huynh' }))
+  await user.type(await screen.findByLabelText('Mã PIN mới'), '1234')
+  await user.type(screen.getByLabelText('Xác nhận mã PIN mới'), '1234')
+  await user.click(screen.getByRole('button', { name: 'Tạo mã PIN' }))
   await user.click(await screen.findByRole('button', { name: 'Thêm hồ sơ' }))
   await user.type(screen.getByLabelText('Tên bé'), 'Bình')
   await user.selectOptions(screen.getByLabelText('Lớp'), '2')

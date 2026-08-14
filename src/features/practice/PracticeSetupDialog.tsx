@@ -15,6 +15,7 @@ const difficultyLabel: Record<Difficulty, string> = { easy: 'Dễ', medium: 'V�
 export function PracticeSetupDialog({ topic, onClose, onStart }: PracticeSetupDialogProps) {
   const [difficulty, setDifficulty] = useState<Difficulty>('easy')
   const [count, setCount] = useState<SessionCount>(5)
+  const [error, setError] = useState('')
   const initialFocusRef = useRef<HTMLInputElement>(null)
   return (
     <AccessibleDialog initialFocusRef={initialFocusRef} onClose={onClose} title={`Luyện ${topic.name}`}>
@@ -35,8 +36,13 @@ export function PracticeSetupDialog({ topic, onClose, onStart }: PracticeSetupDi
       </fieldset>
       <div className="button-row">
         <button onClick={onClose} type="button">Hủy</button>
-        <button onClick={() => onStart(difficulty, count)} type="button">Bắt đầu làm bài</button>
+        <button onClick={() => {
+          setError('')
+          try { onStart(difficulty, count) }
+          catch (reason) { setError(reason instanceof Error ? reason.message : 'Không thể tạo bài luyện lúc này') }
+        }} type="button">Bắt đầu làm bài</button>
       </div>
+      {error && <p role="alert">{error}</p>}
     </AccessibleDialog>
   )
 }

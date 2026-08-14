@@ -2,7 +2,7 @@ import type { CustomQuestion, Difficulty, Grade, QuestionBankQuery } from '../..
 import type { AppRepository } from '../../shared/storage/AppRepository'
 import { TOPICS } from './topicCatalog'
 
-export interface QuestionBank {
+export interface QuestionBankReader {
   list(query?: QuestionBankQuery): CustomQuestion[]
 }
 
@@ -11,7 +11,14 @@ export type CustomQuestionInput = Pick<
   'topicId' | 'prompt' | 'answer' | 'explanation' | 'grade' | 'difficulty'
 >
 
-export class QuestionBankService implements QuestionBank {
+/** Synchronous CRUD contract for local or API-backed question-bank adapters. */
+export interface QuestionBankService extends QuestionBankReader {
+  add(input: CustomQuestionInput): CustomQuestion
+  update(id: string, changes: Partial<CustomQuestionInput>): CustomQuestion
+  remove(id: string): void
+}
+
+export class LocalQuestionBankService implements QuestionBankService {
   constructor(private readonly app: AppRepository) {}
 
   list(query: QuestionBankQuery = {}): CustomQuestion[] {

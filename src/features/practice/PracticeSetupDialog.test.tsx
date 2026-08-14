@@ -39,3 +39,12 @@ it('closes on Escape and restores focus to the topic opener', async () => {
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   expect(opener).toHaveFocus()
 })
+
+it('announces a Vietnamese error when session creation fails', async () => {
+  const user = userEvent.setup()
+  render(<PracticeSetupDialog onClose={() => {}} onStart={() => { throw new Error('Không thể tạo đủ câu hỏi khác nhau') }} topic={addTopic} />)
+
+  await user.click(screen.getByRole('button', { name: 'Bắt đầu làm bài' }))
+
+  expect(screen.getByRole('alert')).toHaveTextContent('Không thể tạo đủ câu hỏi khác nhau')
+})

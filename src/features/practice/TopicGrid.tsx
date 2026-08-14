@@ -19,4 +19,3 @@ export function TopicGrid({ topics, onSelect }: TopicGridProps) {
     </section>
   )
 }
-

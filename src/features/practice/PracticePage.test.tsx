@@ -8,6 +8,7 @@ import { AppRepository } from '../../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../../shared/storage/MemoryStorageAdapter'
 import { PracticePage } from './PracticePage'
 import { PracticeService } from './practiceService'
+import { LocalQuestionBankService } from './questionBankService'
 
 function renderPractice() {
   const repository = new AppRepository(new MemoryStorageAdapter())
@@ -16,7 +17,7 @@ function renderPractice() {
     profiles: [{ id: 'an', name: 'An', grade: 1, avatar: '🌱', createdAt: '', updatedAt: '', schemaVersion: 1 }],
     activeProfileId: 'an',
   }))
-  const practiceService = new PracticeService(repository, { random: () => 0.3 })
+  const practiceService = new PracticeService(repository, { questionBank: new LocalQuestionBankService(repository), random: () => 0.3 })
   const session = practiceService.createSession('an', 'add', 'easy', 5)
 
   render(

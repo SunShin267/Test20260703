@@ -31,6 +31,21 @@ describe('PinService', () => {
     await expect(pinService.verifyPin('1234', now)).resolves.toEqual({ ok: false, lockedUntil: now + 300_000 })
   })
 
+  it('does not lose concurrent failures across service and repository instances', async () => {
+    const storage = new MemoryStorageAdapter()
+    const owner = new PinService(new AppRepository(storage))
+    const now = 1_760_000_000_000
+    await owner.setPin('1234')
+    const services = Array.from({ length: 5 }, () => new PinService(new AppRepository(storage)))
+
+    await Promise.all(services.map(service => service.verifyPin('0000', now)))
+
+    expect(new AppRepository(storage).load().parentSettings).toMatchObject({
+      failedPinAttempts: 5,
+      pinLockedUntil: now + 300_000,
+    })
+  })
+
   it('resets failed attempts after a successful verification', async () => {
     const repository = new AppRepository(new MemoryStorageAdapter())
     const pinService = new PinService(repository)
@@ -58,6 +73,17 @@ describe('PinService', () => {
     const pinService = new PinService(new AppRepository(new MemoryStorageAdapter()))
 
     await expect(pinService.setPin('123')).rejects.toThrow('Mã PIN phải gồm đúng 4 chữ số')
+  })
+
+  it('does not let a stale first-PIN setup overwrite credentials created elsewhere', async () => {
+    const storage = new MemoryStorageAdapter()
+    const firstTab = new PinService(new AppRepository(storage))
+    const staleTab = new PinService(new AppRepository(storage))
+
+    await firstTab.setPin('1234')
+
+    await expect(staleTab.setPin('5678')).rejects.toThrow('đã được thiết lập')
+    await expect(new PinService(new AppRepository(storage)).verifyPin('1234')).resolves.toMatchObject({ ok: true })
   })
 
   it('changes a PIN only when the current PIN is correct', async () => {

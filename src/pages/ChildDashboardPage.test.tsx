@@ -6,6 +6,7 @@ import { AppProviders } from '../app/AppProviders'
 import { AuthService } from '../features/auth/authService'
 import { SessionRepository } from '../features/auth/sessionRepository'
 import { PracticeService } from '../features/practice/practiceService'
+import { LocalQuestionBankService } from '../features/practice/questionBankService'
 import { ProfileService } from '../features/profiles/profileService'
 import { AppRepository } from '../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../shared/storage/MemoryStorageAdapter'
@@ -22,7 +23,7 @@ function renderDashboard(withProfile = true, suppliedRepository?: AppRepository)
     }))
   }
   const profileService = new ProfileService(repository)
-  const practiceService = new PracticeService(repository, { random: () => 0.3 })
+  const practiceService = new PracticeService(repository, { questionBank: new LocalQuestionBankService(repository), random: () => 0.3 })
 
   render(
     <AppProviders services={{ repository, authService: new AuthService(repository, new SessionRepository(storage)), profileService, practiceService }}>
@@ -46,6 +47,23 @@ it('filters available topics by the active child grade and exposes the weekly go
   expect(screen.getByRole('button', { name: 'Phép cộng' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Phép nhân' })).not.toBeInTheDocument()
   expect(screen.getByLabelText('Mục tiêu tuần')).toHaveTextContent('3 buổi')
+  expect(screen.getByRole('link', { name: 'Khu vực phụ huynh' })).toHaveAttribute('href', '/hoc-cung-con/phu-huynh')
+})
+
+it('shows the active legacy profile selected by unversioned migration', () => {
+  const storage = new MemoryStorageAdapter()
+  storage.set('hoc-cung-con:v1', JSON.stringify({
+    profiles: [
+      { id: 'an', name: 'An', grade: 1 },
+      { id: 'binh', name: 'Bình', grade: 2 },
+    ],
+    activeProfileId: 'binh',
+  }))
+
+  renderDashboard(true, new AppRepository(storage))
+
+  expect(screen.getByRole('heading', { name: /Chào Bình/ })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Phép nhân' })).toBeInTheDocument()
 })
 
 it('presents completed sessions from the current week against the weekly goal', () => {

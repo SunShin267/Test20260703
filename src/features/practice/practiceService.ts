@@ -1,31 +1,31 @@
 import type { Difficulty, PracticeSession, Question, SessionResult, SupportedGrade } from '../../shared/model/types'
 import type { AppRepository } from '../../shared/storage/AppRepository'
 import { generatorFor } from './generators/registry'
-import { QuestionBankService, type QuestionBank } from './questionBankService'
+import type { QuestionBankReader } from './questionBankService'
 import { scoreSession } from './scoring'
 import { TOPICS } from './topicCatalog'
 
 type SessionCount = 5 | 10 | 15
 
 export interface PracticeServiceOptions {
+  questionBank: QuestionBankReader
   random?: () => number
   now?: () => string
   createId?: () => string
-  questionBank?: QuestionBank
 }
 
 export class PracticeService {
   private readonly random: () => number
   private readonly now: () => string
   private readonly createId: () => string
-  private readonly questionBank: QuestionBank
+  private readonly questionBank: QuestionBankReader
   private sequence = 0
 
-  constructor(private readonly app: AppRepository, options: PracticeServiceOptions = {}) {
+  constructor(private readonly app: AppRepository, options: PracticeServiceOptions) {
     this.random = options.random ?? Math.random
     this.now = options.now ?? (() => new Date().toISOString())
     this.createId = options.createId ?? (() => `session-${this.now()}-${++this.sequence}`)
-    this.questionBank = options.questionBank ?? new QuestionBankService(app)
+    this.questionBank = options.questionBank
   }
 
   createSession(profileId: string, topicId: string, difficulty: Difficulty, count: SessionCount): PracticeSession {

@@ -2,13 +2,13 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { expect, it } from 'vitest'
 import { QuestionBankManagement } from './QuestionBankManagement'
-import { QuestionBankService } from '../practice/questionBankService'
+import { LocalQuestionBankService } from '../practice/questionBankService'
 import { AppRepository } from '../../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../../shared/storage/MemoryStorageAdapter'
 
 it('adds, filters, edits, and deletes a custom question through the parent UI', async () => {
   const user = userEvent.setup()
-  const service = new QuestionBankService(new AppRepository(new MemoryStorageAdapter()))
+  const service = new LocalQuestionBankService(new AppRepository(new MemoryStorageAdapter()))
   render(<QuestionBankManagement service={service} />)
 
   await user.click(screen.getByRole('button', { name: 'Thêm câu hỏi' }))

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppServices } from '../app/AppProviders'
 import { useAuth } from '../features/auth/AuthProvider'
 import { HistoryTable } from '../features/parent/HistoryTable'
+import { ChangePinForm } from '../features/parent/ChangePinForm'
 import { ParentOverview } from '../features/parent/ParentOverview'
 import { PinGate } from '../features/parent/PinGate'
 import { PinService } from '../features/parent/pinService'
@@ -10,7 +11,6 @@ import { ProfileManagement } from '../features/parent/ProfileManagement'
 import { QuestionBankManagement } from '../features/parent/QuestionBankManagement'
 import { WeeklyGoalForm } from '../features/parent/WeeklyGoalForm'
 import { PrintActions } from '../features/print/PrintActions'
-import { QuestionBankService } from '../features/practice/questionBankService'
 import { summarizeProgress } from '../features/progress/progressService'
 import { WeeklyActivity } from '../features/progress/WeeklyActivity'
 import { ProfileService } from '../features/profiles/profileService'
@@ -22,7 +22,8 @@ export function ParentDashboardPage() {
   const navigate = useNavigate()
   const pinService = suppliedPinService ?? new PinService(repository)
   const profileService = suppliedProfileService ?? new ProfileService(repository)
-  const questionBankService = suppliedQuestionBankService ?? new QuestionBankService(repository)
+  if (!suppliedQuestionBankService) throw new Error('AppProviders is missing questionBankService')
+  const questionBankService = suppliedQuestionBankService
   const [data, setData] = useState(() => repository.load())
   const [resetOpen, setResetOpen] = useState(false)
   const [confirmation, setConfirmation] = useState('')
@@ -52,6 +53,7 @@ export function ParentDashboardPage() {
         {latestCompletedSession && <section aria-labelledby="print-heading"><h2 id="print-heading">In bài luyện gần nhất</h2><PrintActions parentVerified profile={selectedProfile} session={latestCompletedSession} /></section>}
       </> : <section aria-label="Tổng quan phụ huynh"><h2>Tiến bộ tuần này</h2><p>Chưa có hồ sơ để xem tiến độ.</p></section>}
       <WeeklyGoalForm repository={repository} onSaved={refresh} />
+      <ChangePinForm pinService={pinService} />
       <ProfileManagement activeId={data.activeProfileId} profiles={data.profiles} service={profileService} onChanged={refresh} />
       <QuestionBankManagement service={questionBankService} />
       <section aria-labelledby="data-heading"><h2 id="data-heading">Dữ liệu</h2><button type="button" onClick={() => { setResetOpen(true); setConfirmation('') }}>Đặt lại toàn bộ dữ liệu</button></section>

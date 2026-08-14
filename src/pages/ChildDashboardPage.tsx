@@ -3,7 +3,6 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useAppServices } from '../app/AppProviders'
 import { PracticePage } from '../features/practice/PracticePage'
 import { PracticeSetupDialog } from '../features/practice/PracticeSetupDialog'
-import { PracticeService } from '../features/practice/practiceService'
 import { TopicGrid } from '../features/practice/TopicGrid'
 import { topicsForGrade } from '../features/practice/topicCatalog'
 import { ProgressSummaryCards } from '../features/progress/ProgressSummaryCards'
@@ -21,7 +20,8 @@ type SessionCount = 5 | 10 | 15
 export function ChildDashboardPage() {
   const { repository, profileService: suppliedProfileService, practiceService: suppliedPracticeService } = useAppServices()
   const profileService = suppliedProfileService ?? new ProfileService(repository)
-  const practiceService = suppliedPracticeService ?? new PracticeService(repository)
+  if (!suppliedPracticeService) throw new Error('AppProviders is missing practiceService')
+  const practiceService = suppliedPracticeService
   const [data, setData] = useState(() => repository.load())
   const [selectedTopic, setSelectedTopic] = useState<MathTopic | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
@@ -78,6 +78,7 @@ export function ChildDashboardPage() {
       <header>
         <h1>Chào {activeProfile.name}!</h1>
         <p>Hôm nay mình cùng chinh phục một bài Toán nhé.</p>
+        <nav aria-label="Điều hướng góc học tập"><Link to="/hoc-cung-con/phu-huynh">Khu vực phụ huynh</Link></nav>
       </header>
       <ProfileSwitcher activeId={activeProfile.id} onSelect={id => { profileService.select(id); refresh() }} profiles={data.profiles} />
       <ProgressSummaryCards recommendation={recommendation} recentScore={recentScore} streak={streak} summary={summary} />

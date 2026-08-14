@@ -56,8 +56,8 @@ const mass: QuestionGenerator = {
 
 const time: QuestionGenerator = {
   generate(input) {
-    const hour = randomInt(input.random, 1, 10)
-    const elapsed = randomInt(input.random, 1, Math.min(4, input.grade))
+    const hour = randomInt(input.random, 1, 12)
+    const elapsed = randomInt(input.random, 1, Math.max(2, Math.min(4, input.grade)))
     return makeQuestion(`time-${hour}-${elapsed}`, 'time', `Bắt đầu lúc ${hour} giờ. Sau ${elapsed} giờ là mấy giờ?`, String(hour + elapsed), `${hour} + ${elapsed} = ${hour + elapsed} giờ.`, input)
   },
 }

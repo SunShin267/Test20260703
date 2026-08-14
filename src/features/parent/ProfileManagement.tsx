@@ -22,7 +22,7 @@ export function ProfileManagement({ profiles, activeId, service, onChanged }: { 
 
   function remove() {
     if (!deleting) return
-    try { service.remove(deleting.id); setDeleting(null); setError(''); onChanged() }
+    try { service.remove(deleting.id, { allowEmpty: true }); setDeleting(null); setError(''); onChanged() }
     catch (reason) { setError(reason instanceof Error ? reason.message : 'Không thể xóa hồ sơ'); setDeleting(null) }
   }
 

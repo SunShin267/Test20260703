@@ -8,20 +8,21 @@ import { AuthService } from '../features/auth/authService'
 import { SessionRepository } from '../features/auth/sessionRepository'
 import { PinService } from '../features/parent/pinService'
 import { ProfileService } from '../features/profiles/profileService'
+import { LocalQuestionBankService } from '../features/practice/questionBankService'
 import { AppRepository } from '../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../shared/storage/MemoryStorageAdapter'
 
-async function renderParentDashboard(prepare?: (repository: AppRepository) => void) {
+async function renderParentDashboard(prepare?: (repository: AppRepository) => void, withPin = true) {
   const storage = new MemoryStorageAdapter()
   const repository = new AppRepository(storage)
   const authService = new AuthService(repository, new SessionRepository(storage))
   const pinService = new PinService(repository)
   await authService.register('family', 'matkhau1')
-  await pinService.setPin('1234')
+  if (withPin) await pinService.setPin('1234')
   prepare?.(repository)
 
   render(
-    <AppProviders services={{ repository, authService, pinService }}>
+    <AppProviders services={{ repository, authService, pinService, questionBankService: new LocalQuestionBankService(repository) }}>
       <RouterProvider router={createMemoryRouter(routes, { initialEntries: ['/hoc-cung-con/phu-huynh'] })} />
     </AppProviders>,
   )
@@ -51,6 +52,45 @@ it('requires PIN before showing reports and updates a weekly goal', async () => 
   await user.click(screen.getByRole('button', { name: 'Lưu mục tiêu' }))
 
   expect(repository.load().parentSettings.weeklySessionGoal).toBe(5)
+})
+
+it('lets a fresh family confirm its first PIN before opening the parent area', async () => {
+  const user = userEvent.setup()
+  const repository = await renderParentDashboard(undefined, false)
+
+  expect(screen.queryByText('Tiến bộ tuần này')).not.toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Tạo mã PIN phụ huynh' })).toBeInTheDocument()
+  await user.type(screen.getByLabelText('Mã PIN mới'), '1234')
+  await user.type(screen.getByLabelText('Xác nhận mã PIN mới'), '4321')
+  await user.click(screen.getByRole('button', { name: 'Tạo mã PIN' }))
+  expect(screen.getByRole('alert')).toHaveTextContent('Mã PIN xác nhận chưa khớp')
+
+  await user.clear(screen.getByLabelText('Xác nhận mã PIN mới'))
+  await user.type(screen.getByLabelText('Xác nhận mã PIN mới'), '1234')
+  await user.click(screen.getByRole('button', { name: 'Tạo mã PIN' }))
+
+  expect(await screen.findByText('Tiến bộ tuần này')).toBeInTheDocument()
+  expect(repository.load().parentSettings.pinHash).not.toBeNull()
+  await expect(new PinService(repository).verifyPin('1234')).resolves.toMatchObject({ ok: true })
+})
+
+it('changes the unlocked parent PIN only with the current PIN and matching confirmation', async () => {
+  const user = userEvent.setup()
+  const repository = await renderParentDashboard()
+  await user.type(screen.getByLabelText('Mã PIN phụ huynh'), '1234')
+  await user.click(screen.getByRole('button', { name: 'Mở khóa' }))
+
+  await user.type(await screen.findByLabelText('Mã PIN hiện tại'), '0000')
+  await user.type(screen.getByLabelText('Mã PIN mới'), '5678')
+  await user.type(screen.getByLabelText('Xác nhận mã PIN mới'), '5678')
+  await user.click(screen.getByRole('button', { name: 'Đổi mã PIN' }))
+  expect(screen.getByRole('alert')).toHaveTextContent('Mã PIN hiện tại không đúng')
+
+  await user.clear(screen.getByLabelText('Mã PIN hiện tại'))
+  await user.type(screen.getByLabelText('Mã PIN hiện tại'), '1234')
+  await user.click(screen.getByRole('button', { name: 'Đổi mã PIN' }))
+  expect(await screen.findByRole('status')).toHaveTextContent('Đã đổi mã PIN phụ huynh')
+  await expect(new PinService(repository).verifyPin('5678')).resolves.toMatchObject({ ok: true })
 })
 
 it('offers blank and answer-key printing for the selected child only after PIN verification', async () => {
@@ -149,11 +189,28 @@ it('selects, edits, and deletes a named profile with its session history', async
   await user.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }))
   expect(repository.load().profiles.find(profile => profile.name === 'Bình An')).toBeDefined()
 
-  await user.click(screen.getByRole('button', { name: 'Xóa An' }))
+  await user.click(await screen.findByRole('button', { name: 'Xóa An' }))
   expect(screen.getByRole('dialog', { name: /Xóa hồ sơ An/ })).toHaveTextContent('Các bài luyện của An cũng sẽ bị xóa.')
   await user.click(screen.getByRole('button', { name: 'Xác nhận xóa hồ sơ' }))
   expect(repository.load().profiles.map(profile => profile.name)).toEqual(['Bình An'])
   expect(repository.load().sessions.map(session => session.id)).toEqual(['binh-1'])
+})
+
+it('deletes the final confirmed profile with its sessions and shows the empty parent state', async () => {
+  const user = userEvent.setup()
+  const repository = await renderParentDashboard(repository => {
+    const an = new ProfileService(repository).create({ name: 'An', grade: 1, avatar: '🌱' })
+    repository.update(data => ({ ...data, sessions: [completedSession('an-1', an.id, 'add', '2026-08-15')] }))
+  })
+  await user.type(screen.getByLabelText('Mã PIN phụ huynh'), '1234')
+  await user.click(screen.getByRole('button', { name: 'Mở khóa' }))
+
+  await user.click(screen.getByRole('button', { name: 'Xóa An' }))
+  await user.click(screen.getByRole('button', { name: 'Xác nhận xóa hồ sơ' }))
+
+  expect(repository.load().profiles).toEqual([])
+  expect(repository.load().sessions).toEqual([])
+  expect(screen.getByText('Chưa có hồ sơ để xem tiến độ.')).toBeInTheDocument()
 })
 
 it('paginates the selected profile completed history truthfully', async () => {

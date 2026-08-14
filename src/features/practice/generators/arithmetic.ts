@@ -74,7 +74,7 @@ const divide: QuestionGenerator = {
 
 const numberSense: QuestionGenerator = {
   generate(input) {
-    const maximum = rangeFor(input)
+    const maximum = Math.max(20, rangeFor(input))
     const value = randomInt(input.random, 1, maximum)
     return question(`number-sense-${value}`, 'number-sense', `Số liền sau của ${value} là số nào?`, String(value + 1), `Số liền sau ${value} là ${value + 1}.`, input)
   },
@@ -82,7 +82,7 @@ const numberSense: QuestionGenerator = {
 
 const counting: QuestionGenerator = {
   generate(input) {
-    const value = randomInt(input.random, 1, Math.min(20, rangeFor(input)))
+    const value = randomInt(input.random, 1, Math.max(20, Math.min(100, rangeFor(input))))
     return question(`counting-${value}`, 'counting', `Đếm các ngôi sao: ${'★ '.repeat(value).trim()}. Có bao nhiêu ngôi sao?`, String(value), `Có ${value} ngôi sao.`, input)
   },
 }
@@ -108,7 +108,7 @@ const missingNumber: QuestionGenerator = {
 
 const patterns: QuestionGenerator = {
   generate(input) {
-    const start = randomInt(input.random, 1, Math.max(2, Math.floor(rangeFor(input) / 4)))
+    const start = randomInt(input.random, 1, Math.max(6, Math.floor(rangeFor(input) / 4)))
     const step = randomInt(input.random, 1, Math.max(2, input.grade + 2))
     return question(`pattern-${start}-${step}`, 'patterns', `Điền số còn thiếu: ${start}, ${start + step}, ${start + step * 2}, ?`, String(start + step * 3), `Mỗi lần tăng ${step}.`, input)
   },

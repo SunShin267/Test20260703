@@ -7,9 +7,11 @@ interface PinGateProps extends PropsWithChildren {
 }
 
 export function PinGate({ pinService, submitLabel = 'Xác nhận', children }: PinGateProps) {
+  const [setupRequired, setSetupRequired] = useState(() => !pinService.isPinSet())
   const initialLock = pinService.getLockState()
   const [verified, setVerified] = useState(false)
   const [pin, setPin] = useState('')
+  const [confirmation, setConfirmation] = useState('')
   const [message, setMessage] = useState(initialLock.locked ? lockMessage(initialLock.lockedUntil!) : '')
   const [lockedUntil, setLockedUntil] = useState<number | null>(initialLock.lockedUntil)
 
@@ -45,7 +47,49 @@ export function PinGate({ pinService, submitLabel = 'Xác nhận', children }: P
     }
   }
 
+  const setupPin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (pin !== confirmation) {
+      setMessage('Mã PIN xác nhận chưa khớp')
+      return
+    }
+    try {
+      await pinService.setPin(pin)
+      setSetupRequired(false)
+      setVerified(true)
+      setMessage('')
+    } catch (error) {
+      if (pinService.isPinSet()) {
+        setSetupRequired(false)
+        setPin('')
+        setConfirmation('')
+        setMessage('Mã PIN đã được thiết lập ở nơi khác. Vui lòng nhập mã PIN để mở khóa.')
+      } else {
+        setMessage(error instanceof Error ? error.message : 'Không thể tạo mã PIN phụ huynh')
+      }
+    }
+  }
+
   if (verified) return <>{children}</>
+
+  if (setupRequired) return (
+    <section aria-labelledby="pin-setup-heading">
+      <h2 id="pin-setup-heading">Tạo mã PIN phụ huynh</h2>
+      <p>Mã PIN gồm 4 chữ số và chỉ bảo vệ khu vực phụ huynh trên thiết bị này.</p>
+      <form onSubmit={setupPin}>
+        <label>
+          Mã PIN mới
+          <input aria-label="Mã PIN mới" autoFocus inputMode="numeric" maxLength={4} onChange={event => setPin(event.target.value)} pattern="[0-9]{4}" type="password" value={pin} />
+        </label>
+        <label>
+          Xác nhận mã PIN mới
+          <input aria-label="Xác nhận mã PIN mới" inputMode="numeric" maxLength={4} onChange={event => setConfirmation(event.target.value)} pattern="[0-9]{4}" type="password" value={confirmation} />
+        </label>
+        <button type="submit">Tạo mã PIN</button>
+        {message && <p role="alert">{message}</p>}
+      </form>
+    </section>
+  )
 
   return (
     <form onSubmit={submit}>

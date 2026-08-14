@@ -23,4 +23,3 @@ export function QuestionCard({ question, index, value, onAnswer, feedback }: Que
     </article>
   )
 }
-

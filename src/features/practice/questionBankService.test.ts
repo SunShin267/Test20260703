@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { AppRepository } from '../../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../../shared/storage/MemoryStorageAdapter'
-import { QuestionBankService } from './questionBankService'
+import { LocalQuestionBankService, type QuestionBankService } from './questionBankService'
 
 const question = {
   topicId: 'add',
@@ -13,9 +13,11 @@ const question = {
 }
 
 describe('QuestionBankService', () => {
+  const asPublicService = (service: QuestionBankService): QuestionBankService => service
+
   it('persists added questions and returns detached filtered copies', () => {
     const repository = new AppRepository(new MemoryStorageAdapter())
-    const service = new QuestionBankService(repository)
+    const service = asPublicService(new LocalQuestionBankService(repository))
 
     const added = service.add(question)
     const listed = service.list({ topicId: 'add', grade: 1, difficulty: 'easy' })
@@ -28,7 +30,7 @@ describe('QuestionBankService', () => {
 
   it('updates and removes a persisted custom question', () => {
     const repository = new AppRepository(new MemoryStorageAdapter())
-    const service = new QuestionBankService(repository)
+    const service = new LocalQuestionBankService(repository)
     const added = service.add(question)
 
     const updated = service.update(added.id, { difficulty: 'medium', answer: '  năm  ' })
@@ -43,11 +45,11 @@ describe('QuestionBankService', () => {
     const now = vi.spyOn(Date, 'now').mockReturnValue(1_762_000_000_000)
 
     try {
-      const first = new QuestionBankService(repository).add(question)
-      const second = new QuestionBankService(repository).add({ ...question, prompt: '4 + 5 = ?', answer: '9' })
+      const first = new LocalQuestionBankService(repository).add(question)
+      const second = new LocalQuestionBankService(repository).add({ ...question, prompt: '4 + 5 = ?', answer: '9' })
 
       expect(second.id).not.toBe(first.id)
-      new QuestionBankService(repository).remove(second.id)
+      new LocalQuestionBankService(repository).remove(second.id)
       expect(repository.load().customQuestions).toEqual([first])
     } finally {
       now.mockRestore()
@@ -63,7 +65,7 @@ describe('QuestionBankService', () => {
     [{ ...question, grade: 0 }],
     [{ ...question, difficulty: 'advanced' }],
   ])('rejects an invalid question: %o', invalid => {
-    const service = new QuestionBankService(new AppRepository(new MemoryStorageAdapter()))
+    const service = new LocalQuestionBankService(new AppRepository(new MemoryStorageAdapter()))
 
     expect(() => service.add(invalid as never)).toThrow()
   })

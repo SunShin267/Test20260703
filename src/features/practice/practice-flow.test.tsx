@@ -10,6 +10,7 @@ import { ProfileService } from '../profiles/profileService'
 import { AppRepository } from '../../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../../shared/storage/MemoryStorageAdapter'
 import { PracticeService } from './practiceService'
+import { LocalQuestionBankService } from './questionBankService'
 import type { AppData } from '../../shared/model/types'
 import { render } from '@testing-library/react'
 
@@ -36,6 +37,7 @@ function renderAuthenticatedApp(path: string, suppliedRepository?: AppRepository
   const profileService = new ProfileService(repository)
   let clockTick = 0
   const practiceService = new PracticeService(repository, {
+    questionBank: new LocalQuestionBankService(repository),
     random: () => 0.3,
     now: () => `2026-08-15T00:00:${String(clockTick++).padStart(2, '0')}.000Z`,
   })

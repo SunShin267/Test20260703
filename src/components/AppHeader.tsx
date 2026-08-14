@@ -20,6 +20,7 @@ export function AppHeader({ accountName, onSignOut }: AppHeaderProps) {
             <>
               <Link to="/">Game Hub</Link>
               <Link to="/hoc-cung-con/app">Góc học tập</Link>
+              <Link to="/hoc-cung-con/phu-huynh">Khu vực phụ huynh</Link>
               <button className="header-sign-out" type="button" onClick={onSignOut}>Đăng xuất</button>
             </>
           ) : (

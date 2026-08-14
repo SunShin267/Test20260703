@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { PracticeService } from './practiceService'
 import { AppRepository } from '../../shared/storage/AppRepository'
 import { MemoryStorageAdapter } from '../../shared/storage/MemoryStorageAdapter'
-import { QuestionBankService } from './questionBankService'
+import { LocalQuestionBankService } from './questionBankService'
+import { TOPICS } from './topicCatalog'
 
 const clock = (() => {
   let value = 0
@@ -26,11 +27,40 @@ const createService = () => {
   const service = new PracticeService(repository, { random: (() => {
     let value = 0
     return () => (value++ % 97) / 97
-  })(), now: clock })
+  })(), now: clock, questionBank: new LocalQuestionBankService(repository) })
   return { repository, service }
 }
 
 describe('PracticeService', () => {
+  const capacityCases = TOPICS.flatMap((topic, topicIndex) =>
+    ([1, 2, 3, 4, 5] as const)
+      .filter(grade => topic.minGrade <= grade && grade <= topic.maxGrade)
+      .flatMap(grade => (['easy', 'medium', 'hard'] as const)
+        .map((difficulty, difficultyIndex) => ({ topic, grade, difficulty, seed: 1 + topicIndex * 31 + grade * 7 + difficultyIndex }))))
+
+  it.each(capacityCases)('creates 15 unique $topic.id questions for grade $grade at $difficulty difficulty', ({ topic, grade, difficulty, seed }) => {
+    const repository = new AppRepository(new MemoryStorageAdapter())
+    repository.update(data => ({
+      ...data,
+      profiles: [{
+        id: 'profile-capacity', name: 'An', grade, avatar: '🌱',
+        createdAt: '2026-08-15T00:00:00.000Z', updatedAt: '2026-08-15T00:00:00.000Z', schemaVersion: 1,
+      }],
+      activeProfileId: 'profile-capacity',
+    }))
+    let state = seed >>> 0
+    const random = () => {
+      state = (Math.imul(state, 1_664_525) + 1_013_904_223) >>> 0
+      return state / 0x1_0000_0000
+    }
+    const service = new PracticeService(repository, { questionBank: new LocalQuestionBankService(repository), random, now: () => '2026-08-15T00:00:00.000Z' })
+
+    const session = service.createSession('profile-capacity', topic.id, difficulty, 15)
+
+    expect(session.questions).toHaveLength(15)
+    expect(new Set(session.questions.map(question => question.prompt)).size).toBe(15)
+  })
+
   it('uses the child profile grade and rejects topics outside that grade', () => {
     const { repository, service } = createService()
     repository.update(data => ({
@@ -85,12 +115,12 @@ describe('PracticeService', () => {
         createdAt: '2026-08-15T00:00:00.000Z', updatedAt: '2026-08-15T00:00:00.000Z', schemaVersion: 1,
       }],
     }))
-    const questionBank = new QuestionBankService(repository)
+    const questionBank = new LocalQuestionBankService(repository)
     questionBank.add({ topicId: 'add', prompt: 'Câu tùy chỉnh A', answer: '3', explanation: 'Giải thích A', grade: 1, difficulty: 'easy' })
     questionBank.add({ topicId: 'add', prompt: 'Câu tùy chỉnh B', answer: '4', explanation: 'Giải thích B', grade: 1, difficulty: 'easy' })
     questionBank.add({ topicId: 'add', prompt: 'Không đúng độ khó', answer: '5', explanation: 'Không dùng', grade: 1, difficulty: 'medium' })
 
-    const service = new PracticeService(repository, { random: () => 0, now: () => '2026-08-15T00:00:00.000Z' })
+    const service = new PracticeService(repository, { questionBank, random: () => 0, now: () => '2026-08-15T00:00:00.000Z' })
     const session = service.createSession('profile-1', 'add', 'easy', 5)
 
     expect(session.questions.slice(0, 2).map(question => question.prompt)).toEqual(['Câu tùy chỉnh B', 'Câu tùy chỉnh A'])
