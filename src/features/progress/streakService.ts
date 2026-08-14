@@ -1,14 +1,22 @@
 const dateOnlyPattern = /^\d{4}-\d{2}-\d{2}$/
+const isoCalendarPrefix = /^(\d{4})-(\d{2})-(\d{2})(?:T|$)/
+
+function hasValidCalendarDate(year: number, month: number, day: number): boolean {
+  if (month < 1 || month > 12 || day < 1) return false
+  const daysInMonth = month === 2
+    ? (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0) ? 29 : 28)
+    : [31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1]
+  return day <= daysInMonth
+}
 
 export function localCalendarDate(value: string | Date): string | null {
-  if (typeof value === 'string' && dateOnlyPattern.test(value)) {
-    const [year, month, day] = value.split('-').map(Number)
-    const calendarDate = new Date(year, month - 1, day)
-    return calendarDate.getFullYear() === year
-      && calendarDate.getMonth() === month - 1
-      && calendarDate.getDate() === day
-      ? value
-      : null
+  if (typeof value === 'string') {
+    const calendarParts = value.match(isoCalendarPrefix)
+    if (calendarParts) {
+      const [, yearText, monthText, dayText] = calendarParts
+      if (!hasValidCalendarDate(Number(yearText), Number(monthText), Number(dayText))) return null
+    }
+    if (dateOnlyPattern.test(value)) return value
   }
 
   const date = value instanceof Date ? value : new Date(value)

@@ -45,6 +45,11 @@ function session(options: {
   }
 }
 
+function runtimeLocalDate(value: string | Date): string {
+  const date = value instanceof Date ? value : new Date(value)
+  return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-')
+}
+
 describe('summarizeProgress', () => {
   it('aggregates only completed sessions for the requested profile into seven local days', () => {
     const summary = summarizeProgress('p1', [
@@ -78,12 +83,34 @@ describe('summarizeProgress', () => {
     ])
   })
 
-  it('uses local calendar boundaries for ISO timestamps rather than UTC date strings', () => {
+  it('uses the local calendar day of a locally constructed timestamp', () => {
+    const localMidnight = new Date(2026, 7, 15, 0, 30)
+    const localDay = runtimeLocalDate(localMidnight)
     const summary = summarizeProgress('p1', [
-      session({ id: 'boundary', answers: { 'boundary-q1': '1' }, completedAt: '2026-08-15T00:30:00+07:00' }),
-    ], '2026-08-15')
+      session({ id: 'boundary', answers: { 'boundary-q1': '1' }, completedAt: localMidnight.toISOString() }),
+    ], localDay)
 
-    expect(summary.weekly.at(-1)).toMatchObject({ date: '2026-08-15', sessions: 1, questions: 2, correct: 1 })
+    expect(summary.weekly.at(-1)).toMatchObject({ date: localDay, sessions: 1, questions: 2, correct: 1 })
+  })
+
+  it('parses offset timestamps into the runtime local day', () => {
+    const completedAt = '2026-08-15T00:30:00+07:00'
+    const localDay = runtimeLocalDate(completedAt)
+    const summary = summarizeProgress('p1', [
+      session({ id: 'offset-boundary', answers: { 'offset-boundary-q1': '1' }, completedAt }),
+    ], localDay)
+
+    expect(summary.weekly.at(-1)).toMatchObject({ date: localDay, sessions: 1, questions: 2, correct: 1 })
+  })
+
+  it('does not put invalid ISO calendar date-times into weekly buckets', () => {
+    const summary = summarizeProgress('p1', [
+      session({ id: 'invalid-day', completedAt: '2026-02-29T10:00:00.000Z' }),
+      session({ id: 'invalid-month', completedAt: '2026-13-01T10:00:00.000Z' }),
+    ], '2026-03-01')
+
+    expect(summary.totalSessions).toBe(2)
+    expect(summary.weekly.every(day => day.sessions === 0 && day.questions === 0 && day.correct === 0)).toBe(true)
   })
 
   it('breaks accuracy ties by topic id and never chooses an unattempted topic', () => {

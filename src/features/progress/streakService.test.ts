@@ -22,4 +22,10 @@ describe('calculateStreak', () => {
   it('ignores impossible calendar-only dates', () => {
     expect(calculateStreak(['2026-02-31'], '2026-02-31')).toBe(0)
   })
+
+  it('rejects impossible ISO date-times before JavaScript normalizes them', () => {
+    expect(calculateStreak(['2026-02-29T10:00:00.000Z'], '2026-03-01')).toBe(0)
+    expect(calculateStreak(['2026-04-31T10:00:00.000Z'], '2026-05-01')).toBe(0)
+    expect(calculateStreak(['2026-13-01T10:00:00.000Z'], '2026-01-01')).toBe(0)
+  })
 })
