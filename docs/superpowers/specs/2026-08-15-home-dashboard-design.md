@@ -4,7 +4,7 @@ Ngày: 2026-08-15
 
 ## 1. Mục tiêu
 
-Thiết kế lại trang Home/Game Hub sau đăng nhập thành dashboard gia đình tối giản, giúp người dùng nhận biết nhanh chức năng chính và mở hoạt động bằng một thao tác. Trang tiếp tục đồng bộ với thương hiệu **Học cùng con**, nhưng chuyển hệ màu chính sang kem và xanh lá dịu.
+Thiết kế lại trang Home sau đăng nhập thành dashboard gia đình tối giản, giúp người dùng nhận biết nhanh chức năng chính và mở hoạt động bằng một thao tác. Home sử dụng tên thương hiệu **SunShinSon** và chuyển hệ màu chính sang kem và xanh lá dịu.
 
 Thay đổi chỉ tác động đến giao diện và trải nghiệm điều hướng của Home. Các đường dẫn, dữ liệu tài khoản, cơ chế đăng nhập và nội dung của từng game không thay đổi.
 
@@ -12,9 +12,9 @@ Thay đổi chỉ tác động đến giao diện và trải nghiệm điều h�
 
 Trang Home gồm bốn vùng theo thứ tự:
 
-1. Header dùng chung của ứng dụng.
-2. Khối chào mừng có tên tài khoản và lời dẫn ngắn.
-3. Dashboard hoạt động, trong đó **Học cùng con** là lựa chọn chính.
+1. Header dùng chung của ứng dụng, hiển thị thương hiệu **SunShinSon** trên Home.
+2. Khối chào mừng có tiêu đề **SunShinSon**, tên tài khoản và lời dẫn ngắn; tiêu đề “Game Hub” hiện tại được loại bỏ.
+3. Dashboard hoạt động, trong đó khu luyện Toán là lựa chọn chính.
 4. Dòng trạng thái dữ liệu cục bộ ở cuối nội dung.
 
 Không bổ sung thống kê hoặc dữ liệu tiến độ mới trong lần thay đổi này. Mục tiêu là làm rõ phân cấp của những chức năng đã có.
@@ -23,11 +23,11 @@ Không bổ sung thống kê hoặc dữ liệu tiến độ mới trong lần t
 
 ### 3.1 Thẻ chính
 
-Thẻ **Học cùng con** có diện tích và độ nổi bật lớn nhất. Nội dung gồm:
+Thẻ khu luyện Toán có diện tích và độ nổi bật lớn nhất. Nội dung gồm:
 
 - Biểu tượng thương hiệu.
 - Nhãn ngắn thể hiện đây là hoạt động được đề xuất.
-- Tên “Học cùng con”.
+- Tên “SunShinSon”, thay cho “Học cùng con” trên Home.
 - Mô tả luyện Toán lớp 1–5.
 - Nhãn hành động “Bắt đầu học” kèm mũi tên để gợi ý điều hướng.
 
@@ -66,7 +66,7 @@ Kiến trúc danh sách vẫn dựa trên dữ liệu cấu hình để có th�
 
 - Header hiển thị trên một hàng trong vùng nội dung tối đa.
 - Khối chào mừng gọn, không chiếm toàn bộ chiều cao màn hình.
-- Thẻ Học cùng con chiếm khoảng một nửa vùng dashboard.
+- Thẻ SunShinSon dành cho khu luyện Toán chiếm khoảng một nửa vùng dashboard.
 - Ba thẻ game phụ sử dụng phần còn lại theo lưới cân đối.
 
 ### Tablet
@@ -111,7 +111,8 @@ Không thay đổi routing, repository, storage, auth hoặc các trang HTML gam
 
 ## 10. Tiêu chí hoàn thành
 
-- Home thể hiện rõ Học cùng con là hoạt động chính.
+- Home hiển thị thương hiệu SunShinSon thay cho các nhãn “Học cùng con” và “Game Hub” hiện tại.
+- Home thể hiện rõ khu luyện Toán là hoạt động chính.
 - Toàn bộ bốn thẻ đều có thể click/chạm để điều hướng; không còn nút “Mở” riêng.
 - Bố cục không tạo khoảng trống ngang bất thường và hoạt động tốt ở ba nhóm màn hình.
 - Hệ màu kem – xanh lá dịu đồng bộ, dễ đọc và vẫn giữ một điểm nhấn thương hiệu san hô.
