@@ -20,7 +20,7 @@ describe('LoginPage', () => {
     await user.type(screen.getByLabelText('Mật khẩu'), 'matkhau123')
     await user.click(screen.getByRole('button', { name: 'Tạo tài khoản gia đình' }))
 
-    expect(await screen.findByRole('heading', { name: 'Game Hub' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'SunShinSon' })).toBeInTheDocument()
   })
 
   it('returns to login after signing out', async () => {

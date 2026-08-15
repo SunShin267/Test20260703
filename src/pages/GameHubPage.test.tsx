@@ -21,14 +21,16 @@ async function renderAuthenticatedHub() {
   )
 }
 
-it('links every Game Hub card to its stable destination', async () => {
+it('uses SunShinSon branding and makes every activity card the destination link', async () => {
   await renderAuthenticatedHub()
 
-  expect(await screen.findByRole('heading', { name: 'Game Hub' })).toBeInTheDocument()
-  expect(screen.getByRole('link', { name: 'Mở Học cùng con' })).toHaveAttribute('href', '/hoc-cung-con/app')
-  expect(screen.getByRole('link', { name: 'Mở Cờ Caro' })).toHaveAttribute('href', '/games/co-caro.html')
-  expect(screen.getByRole('link', { name: 'Mở Cờ Vua' })).toHaveAttribute('href', '/games/co-vua.html')
-  expect(screen.getByRole('link', { name: 'Mở Random Number' })).toHaveAttribute('href', '/games/random-number-page.html')
+  expect(await screen.findByRole('heading', { level: 1, name: 'SunShinSon' })).toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Game Hub' })).not.toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Bắt đầu học với SunShinSon' })).toHaveAttribute('href', '/hoc-cung-con/app')
+  expect(screen.getByRole('link', { name: 'Chơi Random Number' })).toHaveAttribute('href', '/games/random-number-page.html')
+  expect(screen.getByRole('link', { name: 'Chơi Cờ Caro' })).toHaveAttribute('href', '/games/co-caro.html')
+  expect(screen.getByRole('link', { name: 'Chơi Cờ Vua' })).toHaveAttribute('href', '/games/co-vua.html')
+  expect(screen.queryByText('Mở')).not.toBeInTheDocument()
 })
 
 it('identifies the local account and provides a clear sign-out action', async () => {
