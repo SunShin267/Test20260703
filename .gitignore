@@ -2,3 +2,11 @@
 .superpowers/
 node_modules/
 dist/
+
+# Secrets and local environment files
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.json
