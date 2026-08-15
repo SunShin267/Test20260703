@@ -35,7 +35,7 @@ it('lets a family register, learn with two children, review progress, print, man
   await user.type(screen.getByLabelText('Tên đăng nhập'), 'gia-dinh-an')
   await user.type(screen.getByLabelText('Mật khẩu'), 'matkhau123')
   await user.click(screen.getByRole('button', { name: 'Tạo tài khoản gia đình' }))
-  expect(await screen.findByRole('heading', { name: 'Game Hub' })).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { level: 1, name: 'SunShinSon' })).toBeInTheDocument()
 
   await act(async () => { await router.navigate('/hoc-cung-con/app') })
   await user.type(await screen.findByLabelText('Tên bé'), 'An')
