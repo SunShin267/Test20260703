@@ -259,7 +259,8 @@ td {
   .proof-strip > div { border-bottom: 0; border-right: 1px solid var(--line); padding: 1.25rem 1rem 1.25rem 0; }.proof-strip > div:last-child { border-right: 0; }
   .step-grid, .benefit-grid { grid-template-columns: repeat(2, 1fr); }
   .hub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hub-grid__featured, .hub-grid > li:last-child { grid-column: 1 / -1; }
+  .hub-grid__featured { grid-column: 1 / -1; }
+  .hub-grid > li:last-child { grid-column: 1 / -1; }
   .parent-quote { grid-template-columns: 5.5rem 1fr; }.final-cta { margin-left: 2rem; margin-right: 2rem; padding: 3.75rem 2rem; }.landing-footer { flex-direction: row; padding-left: 2rem; padding-right: 2rem; }
 }
 

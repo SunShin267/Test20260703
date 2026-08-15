@@ -11,7 +11,7 @@ describe('LoginPage', () => {
     expect(screen.getByText(/chỉ được lưu trên thiết bị này/i)).toBeInTheDocument()
   })
 
-  it('navigates to Game Hub after a successful family registration', async () => {
+  it('navigates to the SunShinSon Home after a successful family registration', async () => {
     const user = userEvent.setup()
     renderApp('/')
 

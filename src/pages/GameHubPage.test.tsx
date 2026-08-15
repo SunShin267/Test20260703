@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { readFileSync } from 'node:fs'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { expect, it } from 'vitest'
 import { AppProviders } from '../app/AppProviders'
@@ -40,4 +41,13 @@ it('identifies the local account and provides a clear sign-out action', async ()
   expect(screen.getByText('Dữ liệu và phiên đăng nhập chỉ được lưu trên thiết bị này.')).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Đăng xuất' })).toBeInTheDocument()
   expect(screen.getByRole('link', { name: 'Khu vực phụ huynh' })).toHaveAttribute('href', '/hoc-cung-con/phu-huynh')
+})
+
+it('defines the mobile, tablet and desktop dashboard layout contracts', () => {
+  const css = readFileSync('src/styles/global.css', 'utf8')
+
+  expect(css).toMatch(/\.hub-grid\s*\{[^}]*grid-template-columns:\s*1fr;/)
+  expect(css).toMatch(/@media \(min-width: 560px\)[\s\S]*?\.hub-grid__featured\s*\{[^}]*grid-column:\s*1\s*\/\s*-1;/)
+  expect(css).toMatch(/@media \(min-width: 840px\)[\s\S]*?\.hub-grid\s*\{[^}]*grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\);/)
+  expect(css).toMatch(/@media \(min-width: 840px\)[\s\S]*?\.hub-grid__featured\s*\{[^}]*grid-column:\s*span 2;[^}]*grid-row:\s*span 2;/)
 })
