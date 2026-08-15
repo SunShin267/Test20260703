@@ -1,9 +1,9 @@
-name: Deploy Học cùng con
+name: Deploy SunShinSon Page
 
 on:
   push:
     branches:
-      - codex/hoc-cung-con
+      - main
   workflow_dispatch:
 
 permissions:
