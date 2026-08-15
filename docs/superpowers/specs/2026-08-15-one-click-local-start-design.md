@@ -28,11 +28,12 @@ If Node.js, pnpm/Corepack, dependency installation, or Vite startup fails, the l
 
 ## Platform details
 
-The macOS launcher will use POSIX shell syntax and be committed with its executable bit set. The Windows launcher will use batch syntax and quote its project path so folders containing spaces work correctly.
+The macOS launcher will use POSIX shell syntax and be committed with its executable bit set. The Windows launcher will use batch syntax, enter the project with a checked `pushd`, and restore the previous directory with `popd`, so paths containing spaces and UNC network paths work safely.
 
 ## Verification
 
 - Check the macOS script syntax with `sh -n`.
 - Check that both launchers resolve the repository root and contain the expected install/start commands.
+- Run the Windows launcher behavior check through `cmd.exe` when tests execute on Windows; skip that platform-only check elsewhere.
 - Run the existing project build to confirm the launchers do not disturb the application build.
 - Perform a bounded smoke test of the macOS launcher and confirm Vite serves the page locally.

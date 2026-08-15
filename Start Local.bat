@@ -1,6 +1,7 @@
 @echo off
 setlocal
-cd /d "%~dp0"
+pushd "%~dp0"
+if errorlevel 1 goto directory_failed
 
 where node >nul 2>&1
 if errorlevel 1 goto node_missing
@@ -21,6 +22,7 @@ if errorlevel 1 goto install_failed
 echo Starting the local page...
 call %PNPM% dev --open
 if errorlevel 1 goto start_failed
+popd
 exit /b 0
 
 :node_missing
@@ -39,6 +41,13 @@ goto failed
 echo The local page could not be started.
 
 :failed
+popd
+echo.
+pause
+exit /b 1
+
+:directory_failed
+echo Could not open the project folder.
 echo.
 pause
 exit /b 1
