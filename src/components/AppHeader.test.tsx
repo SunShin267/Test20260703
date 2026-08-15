@@ -23,6 +23,18 @@ it('marks public and authenticated navigation variants for responsive layout', (
   expect(screen.getByRole('button', { name: 'Đăng xuất' })).toBeInTheDocument()
 })
 
+it('supports Home-specific branding without changing the shared defaults', () => {
+  render(
+    <MemoryRouter>
+      <AppHeader accountName="Phụ huynh" brandLabel="SunShinSon" homeLabel="SunShinSon" />
+    </MemoryRouter>,
+  )
+
+  expect(screen.getByRole('link', { name: 'SunShinSon, về trang giới thiệu' })).toBeInTheDocument()
+  expect(screen.getByRole('navigation', { name: 'Điều hướng SunShinSon' })).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'SunShinSon' })).toHaveAttribute('href', '/')
+})
+
 it('stacks the mobile header, uses a two-column authenticated nav and keeps 44px targets', () => {
   const css = readFileSync('src/styles/global.css', 'utf8')
 
