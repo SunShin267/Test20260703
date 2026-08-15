@@ -19,7 +19,7 @@ Each launcher will:
 2. Verify that Node.js is available.
 3. Use the project's pnpm package manager, falling back to Corepack when a standalone `pnpm` command is unavailable.
 4. Run `pnpm install` so missing or outdated dependencies are prepared automatically.
-5. Run `pnpm dev -- --open` so Vite starts and opens the local page in the default browser.
+5. Run `pnpm dev --open` so Vite starts and opens the local page in the default browser.
 6. Keep the terminal attached to the development server until the user presses `Ctrl+C` or closes the window.
 
 ## Error handling

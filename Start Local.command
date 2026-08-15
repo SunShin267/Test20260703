@@ -23,7 +23,7 @@ printf "Preparing dependencies...\n"
 $PNPM install || pause_and_exit "Dependency installation failed."
 
 printf "Starting the local page...\n"
-$PNPM dev -- --open
+$PNPM dev --open
 status=$?
 
 if [ "$status" -ne 0 ] && [ "$status" -ne 130 ]; then

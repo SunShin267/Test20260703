@@ -19,7 +19,7 @@ call %PNPM% install
 if errorlevel 1 goto install_failed
 
 echo Starting the local page...
-call %PNPM% dev -- --open
+call %PNPM% dev --open
 if errorlevel 1 goto start_failed
 exit /b 0
 
