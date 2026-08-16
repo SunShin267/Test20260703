@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { expect, it } from 'vitest'
 import { AppProviders } from '../app/AppProviders'
+import { AuthProvider } from '../features/auth/AuthProvider'
 import { AuthService } from '../features/auth/authService'
 import { SessionRepository } from '../features/auth/sessionRepository'
 import { PracticeService } from '../features/practice/practiceService'
@@ -27,7 +28,9 @@ function renderDashboard(withProfile = true, suppliedRepository?: AppRepository)
 
   render(
     <AppProviders services={{ repository, authService: new AuthService(repository, new SessionRepository(storage)), profileService, practiceService }}>
-      <MemoryRouter><ChildDashboardPage /></MemoryRouter>
+      <AuthProvider>
+        <MemoryRouter><ChildDashboardPage /></MemoryRouter>
+      </AuthProvider>
     </AppProviders>,
   )
   return { repository, practiceService }
@@ -36,6 +39,9 @@ function renderDashboard(withProfile = true, suppliedRepository?: AppRepository)
 it('shows profile onboarding rather than an empty dashboard', () => {
   renderDashboard(false)
 
+  expect(screen.getByRole('link', { name: 'SunShinSon, về trang giới thiệu' })).toBeInTheDocument()
+  expect(screen.getByRole('navigation', { name: 'Điều hướng SunShinSon' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { level: 1, name: 'SunShinSon' })).toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Lưu hồ sơ' })).toBeInTheDocument()
   expect(screen.queryByText('Chọn chủ đề')).not.toBeInTheDocument()
 })
@@ -43,11 +49,12 @@ it('shows profile onboarding rather than an empty dashboard', () => {
 it('filters available topics by the active child grade and exposes the weekly goal', () => {
   renderDashboard()
 
-  expect(screen.getByRole('heading', { name: /Chào An/ })).toBeInTheDocument()
+  expect(screen.getByRole('region', { name: 'SunShinSon' })).toHaveTextContent('Chào An')
   expect(screen.getByRole('button', { name: 'Phép cộng' })).toBeInTheDocument()
   expect(screen.queryByRole('button', { name: 'Phép nhân' })).not.toBeInTheDocument()
   expect(screen.getByLabelText('Mục tiêu tuần')).toHaveTextContent('3 buổi')
   expect(screen.getByRole('link', { name: 'Khu vực phụ huynh' })).toHaveAttribute('href', '/hoc-cung-con/phu-huynh')
+  expect(screen.queryByRole('navigation', { name: 'Điều hướng góc học tập' })).not.toBeInTheDocument()
 })
 
 it('shows the active legacy profile selected by unversioned migration', () => {
@@ -62,7 +69,7 @@ it('shows the active legacy profile selected by unversioned migration', () => {
 
   renderDashboard(true, new AppRepository(storage))
 
-  expect(screen.getByRole('heading', { name: /Chào Bình/ })).toBeInTheDocument()
+  expect(screen.getByRole('region', { name: 'SunShinSon' })).toHaveTextContent('Chào Bình')
   expect(screen.getByRole('button', { name: 'Phép nhân' })).toBeInTheDocument()
 })
 
@@ -115,7 +122,7 @@ it('switches profile and refreshes topics for the selected grade', async () => {
 
   await user.click(screen.getByRole('button', { name: /Bình/ }))
 
-  expect(screen.getByRole('heading', { name: /Chào Bình/ })).toBeInTheDocument()
+  expect(screen.getByRole('region', { name: 'SunShinSon' })).toHaveTextContent('Chào Bình')
   expect(screen.getByRole('button', { name: 'Phép nhân' })).toBeInTheDocument()
 })
 

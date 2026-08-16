@@ -1,6 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useAppServices } from '../app/AppProviders'
+import { FamilyPageLayout } from '../components/FamilyPageLayout'
 import { useAuth } from '../features/auth/AuthProvider'
 import { HistoryTable } from '../features/parent/HistoryTable'
 import { ChangePinForm } from '../features/parent/ChangePinForm'
@@ -29,6 +30,7 @@ export function ParentDashboardPage() {
   const [confirmation, setConfirmation] = useState('')
   const resetConfirmationRef = useRef<HTMLInputElement>(null)
   const refresh = () => setData(repository.load())
+  const accountName = repository.load().account?.username ?? 'gia đình'
   const selectedProfile = data.profiles.find(profile => profile.id === data.activeProfileId) ?? data.profiles[0] ?? null
   const summary = selectedProfile ? summarizeProgress(selectedProfile.id, data.sessions) : null
   const completedSessions = selectedProfile ? data.sessions.filter(session => session.profileId === selectedProfile.id && session.status === 'completed') : []
@@ -42,8 +44,7 @@ export function ParentDashboardPage() {
     navigate('/login', { replace: true })
   }
 
-  return <main>
-    <header><h1>Khu vực phụ huynh</h1><p>Theo dõi tiến độ và quản lý nội dung học tập của con.</p></header>
+  return <FamilyPageLayout description="theo dõi tiến độ và quản lý nội dung học tập của con." greetingName={accountName}>
     <PinGate pinService={pinService} submitLabel="Mở khóa">
       {selectedProfile ? <>
         <section aria-labelledby="selected-profile-heading"><h2 id="selected-profile-heading">Hồ sơ đang xem: {selectedProfile.avatar} {selectedProfile.name}</h2><p>Lớp {selectedProfile.grade}</p></section>
@@ -59,6 +60,5 @@ export function ParentDashboardPage() {
       <section aria-labelledby="data-heading"><h2 id="data-heading">Dữ liệu</h2><button type="button" onClick={() => { setResetOpen(true); setConfirmation('') }}>Đặt lại toàn bộ dữ liệu</button></section>
       {resetOpen && <AccessibleDialog initialFocusRef={resetConfirmationRef} onClose={() => setResetOpen(false)} title="Đặt lại toàn bộ dữ liệu"><p>Thao tác này sẽ xóa tài khoản, hồ sơ, bài luyện và câu hỏi tùy chỉnh trên thiết bị.</p><form onSubmit={resetAll}><label>Nhập XÓA DỮ LIỆU để xác nhận<input aria-label="Nhập XÓA DỮ LIỆU để xác nhận" ref={resetConfirmationRef} value={confirmation} onChange={event => setConfirmation(event.target.value)} /></label><button disabled={confirmation !== 'XÓA DỮ LIỆU'} type="submit">Xóa dữ liệu</button><button type="button" onClick={() => setResetOpen(false)}>Hủy</button></form></AccessibleDialog>}
     </PinGate>
-    <nav aria-label="Điều hướng phụ huynh"><Link to="/hoc-cung-con/app">Về góc học tập</Link></nav>
-  </main>
+  </FamilyPageLayout>
 }

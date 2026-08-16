@@ -40,7 +40,7 @@ it('lets a family register, learn with two children, review progress, print, man
   await act(async () => { await router.navigate('/hoc-cung-con/app') })
   await user.type(await screen.findByLabelText('Tên bé'), 'An')
   await user.click(screen.getByRole('button', { name: 'Lưu hồ sơ' }))
-  expect(await screen.findByRole('heading', { name: /Chào An/ })).toBeInTheDocument()
+  expect(await screen.findByRole('region', { name: 'SunShinSon' })).toHaveTextContent('Chào An')
 
   await user.click(screen.getByRole('link', { name: 'Khu vực phụ huynh' }))
   await user.type(await screen.findByLabelText('Mã PIN mới'), '1234')
@@ -54,7 +54,7 @@ it('lets a family register, learn with two children, review progress, print, man
 
   await act(async () => { await router.navigate('/hoc-cung-con/app') })
   await user.click(await screen.findByRole('button', { name: /Bình/ }))
-  expect(await screen.findByRole('heading', { name: /Chào Bình/ })).toBeInTheDocument()
+  expect(await screen.findByRole('region', { name: 'SunShinSon' })).toHaveTextContent('Chào Bình')
   await user.click(screen.getByRole('button', { name: 'Phép cộng' }))
   await user.click(screen.getByRole('button', { name: 'Bắt đầu làm bài' }))
   const session = repository.load().sessions[0]

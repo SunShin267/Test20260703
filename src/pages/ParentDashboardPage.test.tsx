@@ -42,6 +42,9 @@ it('requires PIN before showing reports and updates a weekly goal', async () => 
   const user = userEvent.setup()
   const repository = await renderParentDashboard()
 
+  expect(screen.getByRole('link', { name: 'SunShinSon, về trang giới thiệu' })).toBeInTheDocument()
+  expect(screen.getByRole('navigation', { name: 'Điều hướng SunShinSon' })).toBeInTheDocument()
+  expect(screen.getByRole('region', { name: 'SunShinSon' })).toHaveTextContent('Chào family')
   expect(screen.queryByText('Tiến bộ tuần này')).not.toBeInTheDocument()
   await user.type(screen.getByLabelText('Mã PIN phụ huynh'), '1234')
   await user.click(screen.getByRole('button', { name: 'Mở khóa' }))

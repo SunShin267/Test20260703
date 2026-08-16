@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useAppServices } from '../app/AppProviders'
+import { FamilyPageLayout } from '../components/FamilyPageLayout'
 import { PracticePage } from '../features/practice/PracticePage'
 import { PracticeSetupDialog } from '../features/practice/PracticeSetupDialog'
 import { TopicGrid } from '../features/practice/TopicGrid'
@@ -42,11 +43,9 @@ export function ChildDashboardPage() {
 
   if (!activeProfile) {
     return (
-      <main>
-        <h1>Góc học tập</h1>
-        <p>Hãy tạo hồ sơ để bắt đầu học cùng con.</p>
+      <FamilyPageLayout description="hãy tạo hồ sơ để bắt đầu học cùng con.">
         <ProfileForm onSubmit={profile => { profileService.create(profile); refresh() }} />
-      </main>
+      </FamilyPageLayout>
     )
   }
 
@@ -74,12 +73,7 @@ export function ChildDashboardPage() {
   }
 
   return (
-    <main>
-      <header>
-        <h1>Chào {activeProfile.name}!</h1>
-        <p>Hôm nay mình cùng chinh phục một bài Toán nhé.</p>
-        <nav aria-label="Điều hướng góc học tập"><Link to="/hoc-cung-con/phu-huynh">Khu vực phụ huynh</Link></nav>
-      </header>
+    <FamilyPageLayout description="hôm nay mình cùng chinh phục một bài Toán nhé." greetingName={activeProfile.name}>
       <ProfileSwitcher activeId={activeProfile.id} onSelect={id => { profileService.select(id); refresh() }} profiles={data.profiles} />
       <ProgressSummaryCards recommendation={recommendation} recentScore={recentScore} streak={streak} summary={summary} />
       <section aria-label="Mục tiêu tuần" className="weekly-goal">
@@ -92,7 +86,7 @@ export function ChildDashboardPage() {
       <WeeklyActivity days={summary.weekly} />
       <TopicGrid onSelect={setSelectedTopic} topics={topics} />
       {selectedTopic && <PracticeSetupDialog onClose={() => setSelectedTopic(null)} onStart={startPractice} topic={selectedTopic} />}
-    </main>
+    </FamilyPageLayout>
   )
 }
 
